@@ -1,4 +1,4 @@
-package com.example.friluftslivcompanionapp.ui.theme
+package no.hiof.friluftslivcompanionapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

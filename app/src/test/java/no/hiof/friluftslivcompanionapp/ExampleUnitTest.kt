@@ -1,4 +1,4 @@
-package com.example.friluftslivcompanionapp
+package no.hiof.friluftslivcompanionapp
 
 import org.junit.Test
 

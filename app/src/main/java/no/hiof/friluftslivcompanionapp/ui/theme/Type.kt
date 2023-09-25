@@ -1,4 +1,4 @@
-package com.example.friluftslivcompanionapp.ui.theme
+package no.hiof.friluftslivcompanionapp.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

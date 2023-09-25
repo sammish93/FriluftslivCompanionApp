@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.friluftslivcompanionapp"
+    namespace = "no.hiof.friluftslivcompanionapp"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.friluftslivcompanionapp"
+        applicationId = "no.hiof.friluftslivcompanionapp"
         minSdk = 26
         targetSdk = 33
         versionCode = 1
