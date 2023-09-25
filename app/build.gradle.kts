@@ -1,17 +1,18 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    kotlin("kapt")
+    id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.example.friluftslivcompanionapp"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.friluftslivcompanionapp"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -68,11 +69,18 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
-    implementation("com.squareup.retrofit2:retrofit:2.7.1")
-}
 
-kapt {
-    correctErrorTypes = true
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.7.1")
+
+    // Hilt - til dependency injection
+    implementation("com.google.dagger:hilt-android:2.47")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    ksp("com.google.dagger:hilt-compiler:2.47")
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
 }
