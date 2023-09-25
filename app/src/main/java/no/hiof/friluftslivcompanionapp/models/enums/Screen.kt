@@ -1,0 +1,20 @@
+package no.hiof.friluftslivcompanionapp.models.enums
+
+enum class Screen {
+    HOME,
+    FLORA_FAUNA,
+    FLORA_FAUNA_ADDITIONAL_INFO,
+    FLORA_FAUNA_ADD,
+    FLORA_FAUNA_SEARCH,
+    FLORA_FAUNA_SEARCH_RESULT,
+    PROFILE,
+    PROFILE_SETTINGS,
+    WEATHER,
+    WEATHER_SEARCH,
+    WEATHER_SEARCH_RESULT,
+    TRIPS,
+    TRIPS_ADDITIONAL_INFO,
+    TRIPS_ADD,
+    TRIPS_RECENT_ACTIVITY,
+    LOGIN
+}
