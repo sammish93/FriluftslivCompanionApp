@@ -1,6 +1,6 @@
 package no.hiof.friluftslivcompanionapp.models.enums
 
-enum class Language {
+enum class SupportedLanguage {
     ENGLISH,
     NORWEGIAN
 }
