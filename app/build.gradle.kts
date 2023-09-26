@@ -3,9 +3,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
-    /* COMMENTED OUT FIREBASE DEPENDENCY UNTIL IT'S FULLY SET UP (OTHERWISE COMPILE ERRORS)
     id("com.google.gms.google-services")
-     */
+
 }
 
 android {
@@ -83,7 +82,6 @@ dependencies {
     ksp("com.google.dagger:hilt-compiler:2.47")
 
     // Firebase
-    /* COMMENTED OUT FIREBASE DEPENDENCY UNTIL IT'S FULLY SET UP (OTHERWISE COMPILE ERRORS)
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
