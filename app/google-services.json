@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "249214876391",
+    "project_id": "friluftslivcompanionapp",
+    "storage_bucket": "friluftslivcompanionapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:249214876391:android:e829cbe6a227d999e94042",
+        "android_client_info": {
+          "package_name": "no.hiof.friluftslivcompanionapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSrQESTzET_U52d1EjG6vFjShALyx8ATo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
