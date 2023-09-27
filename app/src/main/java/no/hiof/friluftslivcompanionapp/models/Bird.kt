@@ -1,12 +1,12 @@
 package no.hiof.friluftslivcompanionapp.models
 
-data class Bird(
-    val speciesNameEnglish: String?,
-    val speciesNameNorwegian: String?,
-    val speciesNameScientific: String,
-    val descriptionEnglish: String?,
-    val descriptionNorwegian: String?,
-    val photoUrl: String?
+class Bird(
+    var speciesNameEnglish: String?,
+    var speciesNameNorwegian: String?,
+    var speciesNameScientific: String,
+    var descriptionEnglish: String?,
+    var descriptionNorwegian: String?,
+    var photoUrl: String?
 ) : Animal(
     speciesNameEnglish,
     speciesNameNorwegian,
