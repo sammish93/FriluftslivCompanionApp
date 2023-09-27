@@ -1,7 +1,8 @@
-package no.hiof.friluftslivcompanionapp.data.repositories
+package no.hiof.friluftslivcompanionapp.data.api
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import no.hiof.friluftslivcompanionapp.data.api.http_interface.EbirdApiService
+import no.hiof.friluftslivcompanionapp.data.api.http_interface.EBirdApiService
 import no.hiof.friluftslivcompanionapp.data.network.HttpClient
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.SimpleBirdSighting
@@ -9,8 +10,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.Exception
 
-
-class BirdRepository {
+class EBirdApi {
 
     // Base url for the eBird API.
     private val baseUrl = "https://api.ebird.org/"
@@ -25,16 +25,16 @@ class BirdRepository {
     }
 
     // eBird API Service instance.
-    private val eBirdApiService: EbirdApiService by lazy {
-        retrofit.create(EbirdApiService::class.java)
+    private val eBirdApiService: EBirdApiService by lazy {
+        retrofit.create(EBirdApiService::class.java)
     }
 
     // Function to get recent bird observations. This function can only be called from
     // another 'suspend' function or from a coroutine.
-    suspend fun getRecentObservations(): List<Bird>? {
+    suspend fun getRecentObservations(language: String): List<Bird>? {
         return withContext(Dispatchers.IO) {
             try {
-                val response = eBirdApiService.getRecentObservations().execute()
+                val response = eBirdApiService.getRecentObservations(language).execute()
                 if (response.isSuccessful) {
                     response.body()?.map { mapToBird(it)}
                 } else null
