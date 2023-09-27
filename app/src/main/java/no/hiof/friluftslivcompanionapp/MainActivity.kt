@@ -1,8 +1,10 @@
 package no.hiof.friluftslivcompanionapp
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.NavigationBar
@@ -23,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -44,6 +47,7 @@ class MainActivity : ComponentActivity() {
             FriluftslivCompanionAppTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
+                    tonalElevation = 5.dp,
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
@@ -132,10 +136,35 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = true)
+
+
 @Composable
-fun GreetingPreview() {
-    FriluftslivCompanionAppTheme {
-        FriluftslivApp()
+private fun ThemePreview(
+    isDarkTheme: Boolean,
+    content: @Composable () -> Unit
+) {
+    FriluftslivCompanionAppTheme(useDarkTheme = isDarkTheme) {
+        content()
+    }
+}
+
+@Preview(showBackground = true, name = "Light Theme")
+@Composable
+fun LightThemePreview() {
+    Surface (tonalElevation = 5.dp){
+        ThemePreview(isDarkTheme = false) {
+            FriluftslivApp()
+        }
+    }
+
+}
+
+@Preview(showBackground = true, name = "Dark Theme")
+@Composable
+fun DarkThemePreview() {
+    Surface (tonalElevation = 5.dp){
+        ThemePreview(isDarkTheme = true) {
+            FriluftslivApp()
+        }
     }
 }
