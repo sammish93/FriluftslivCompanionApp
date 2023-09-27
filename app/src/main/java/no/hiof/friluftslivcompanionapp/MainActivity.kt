@@ -5,8 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.DateRange
@@ -67,7 +67,7 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
         bottomBar = {
             // Consult this website for additional information:
             // https://developer.android.com/jetpack/compose/navigation#bottom-nav
-            BottomNavigation {
+            NavigationBar {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
                 val bottomNavOptions = mapOf(
@@ -81,7 +81,7 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
                 bottomNavOptions.forEach { screen ->
                     val screenPage = screen.key
                     val icon = screen.value
-                    BottomNavigationItem(
+                    NavigationBarItem(
                         icon = { Icon(icon, contentDescription = null) },
                         // Displays text if desired.
                         // label = { Text(screen.name) },
