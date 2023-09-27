@@ -1,12 +1,8 @@
 package no.hiof.friluftslivcompanionapp.models
 
+// Class used to get the name and scientific name from the eBird API.
 data class SimpleBirdSighting(
-    val speciesCode: String,
     val comName: String,
     val sciName: String,
-    val obsDt: String,
-    val howMany: Int,
-    val lat: Double,
-    val lng: Double
 )
 

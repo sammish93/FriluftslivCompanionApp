@@ -1,12 +1,12 @@
 package no.hiof.friluftslivcompanionapp.models
 
-class Bird(
-    speciesNameEnglish: String?,
-    speciesNameNorwegian: String?,
-    speciesNameScientific: String,
-    descriptionEnglish: String?,
-    descriptionNorwegian: String?,
-    photoUrl: String?
+data class Bird(
+    val speciesNameEnglish: String?,
+    val speciesNameNorwegian: String?,
+    val speciesNameScientific: String,
+    val descriptionEnglish: String?,
+    val descriptionNorwegian: String?,
+    val photoUrl: String?
 ) : Animal(
     speciesNameEnglish,
     speciesNameNorwegian,
@@ -15,4 +15,11 @@ class Bird(
     descriptionNorwegian,
     photoUrl
 ) {
+
+    override fun toString(): String {
+        return StringBuilder().apply {
+            append(speciesNameEnglish)
+            append(speciesNameScientific)
+        }.toString()
+    }
 }
