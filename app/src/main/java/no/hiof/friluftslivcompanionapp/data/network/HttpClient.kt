@@ -1,5 +1,5 @@
 package no.hiof.friluftslivcompanionapp.data.network
-
+import no.hiof.friluftslivcompanionapp.BuildConfig
 import okhttp3.OkHttpClient
 
 /**
@@ -12,7 +12,7 @@ object HttpClient {
             .addInterceptor { chain ->
                 val original = chain.request()
                 val requestBuilder = original.newBuilder()
-                    .header("x-ebirdapitoken", "h6q39105qsqu")
+                    .header("x-ebirdapitoken", BuildConfig.EBIRD_API_KEY)
                     .method(original.method(), original.body())
                 val request = requestBuilder.build()
                 chain.proceed(request)

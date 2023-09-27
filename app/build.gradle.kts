@@ -27,6 +27,7 @@ android {
 
     buildTypes {
         debug {
+            buildConfigField("String", "EBIRD_API_KEY", "\"${System.getenv("EBIRD_API_KEY")}\"")
         }
         release {
             isMinifyEnabled = false
@@ -34,6 +35,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "EBIRD_API_KEY", "\"${System.getenv("EBIRD_API_KEY")}\"")
         }
     }
     compileOptions {
@@ -44,6 +46,7 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     composeOptions {
@@ -77,7 +80,6 @@ dependencies {
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.7.1")
-    implementation("com.squareup.retrofit2:converter-gson:(insert latest version")
 
     // Hilt
     implementation("com.google.dagger:hilt-android:2.47")
