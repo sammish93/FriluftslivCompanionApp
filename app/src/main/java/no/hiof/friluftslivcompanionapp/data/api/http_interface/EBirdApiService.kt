@@ -1,5 +1,5 @@
 package no.hiof.friluftslivcompanionapp.data.api.http_interface
-import no.hiof.friluftslivcompanionapp.models.SimpleBirdSighting
+import no.hiof.friluftslivcompanionapp.models.api.SimpleBirdSighting
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

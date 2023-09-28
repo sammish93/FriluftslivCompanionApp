@@ -1,4 +1,4 @@
-package no.hiof.friluftslivcompanionapp.models
+package no.hiof.friluftslivcompanionapp.models.api
 
 // Class used to get the name and scientific name from the eBird API.
 data class SimpleBirdSighting(
