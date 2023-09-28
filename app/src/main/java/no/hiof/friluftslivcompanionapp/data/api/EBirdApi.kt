@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.hiof.friluftslivcompanionapp.data.api.http_interface.EBirdApiService
 import no.hiof.friluftslivcompanionapp.data.network.HttpClient
+import no.hiof.friluftslivcompanionapp.data.network.RetrofitBuilder
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.api.SimpleBirdSighting
 import retrofit2.Retrofit
@@ -15,7 +16,6 @@ import java.lang.Exception
  * It uses Retrofit to make network requests and Gson to parse the JSON responses.
  *
  * @property baseUrl The base URL for the eBird API.
- * @property retrofit The Retrofit instance used to create the eBird API Service instance.
  * @property eBirdApiService The service instance used to make API calls.
  *
  * This class provides a method to get recent bird observations and map them to `Bird` objects.
@@ -26,17 +26,9 @@ class EBirdApi {
 
     private val baseUrl = "https://api.ebird.org/"
 
-    // Retrofit instance.
-    private val retrofit: Retrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .client(HttpClient.instance) // Using the singleton instance from /networks/HttpClient.
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    }
-
     // eBird API Service instance.
     private val eBirdApiService: EBirdApiService by lazy {
+        val retrofit = RetrofitBuilder.build(baseUrl)
         retrofit.create(EBirdApiService::class.java)
     }
 
