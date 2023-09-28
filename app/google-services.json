@@ -12,7 +12,20 @@
           "package_name": "no.hiof.friluftslivcompanionapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "249214876391-f2vio7mnfkk2s323vts0eq44ape8fncb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "no.hiof.friluftslivcompanionapp",
+            "certificate_hash": "cf2f7a8ddcc4c3dbc1076cf44d14d5fe448ebada"
+          }
+        },
+        {
+          "client_id": "249214876391-ree7cl8e48k60gl7ctfnrlrau18spr8q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBSrQESTzET_U52d1EjG6vFjShALyx8ATo"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "249214876391-ree7cl8e48k60gl7ctfnrlrau18spr8q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
