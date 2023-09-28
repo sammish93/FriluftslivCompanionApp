@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
+import ListItemComponent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -36,7 +37,9 @@ fun TripsScreen(modifier: Modifier = Modifier) {
                 .padding(16.dp)
         )
 
-        ListComponent(items = cardItems)
+        ListComponent(items = cardItems){
+            cardItem, style -> ListItemComponent(cardItem, style){it.title}
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
