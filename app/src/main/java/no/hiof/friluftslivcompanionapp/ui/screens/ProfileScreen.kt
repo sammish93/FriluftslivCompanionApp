@@ -11,7 +11,8 @@ import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 @Composable
 fun ProfileScreen(modifier: Modifier = Modifier) {
     Text(text = "This is the Profile screen!",
-        style = CustomTypography.Header,
+        style = CustomTypography.headlineLarge,
         textAlign = TextAlign.Center,
-        modifier = modifier.fillMaxSize())
+        modifier = modifier.fillMaxSize()
+    )
 }
