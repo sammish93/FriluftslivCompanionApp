@@ -9,16 +9,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import no.hiof.friluftslivcompanionapp.data.CardItem.cardItems
+import no.hiof.friluftslivcompanionapp.ui.components.items.cardItems
 import no.hiof.friluftslivcompanionapp.ui.components.CardComponent
+import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 
 @Composable
@@ -37,6 +35,8 @@ fun TripsScreen(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .padding(16.dp)
         )
+
+        ListComponent(items = cardItems)
 
         Spacer(modifier = Modifier.height(16.dp))
 
