@@ -6,6 +6,8 @@ import no.hiof.friluftslivcompanionapp.data.api.http_interface.WikipediaApiServi
 import no.hiof.friluftslivcompanionapp.data.network.RetrofitBuilder
 import no.hiof.friluftslivcompanionapp.models.api.SimpleWikipediaResponse
 import no.hiof.friluftslivcompanionapp.models.api.WikipediaResponse
+import no.hiof.friluftslivcompanionapp.data.network.Result
+
 
 // Remember to have an option to retrieve an article in either English or Norwegian (because
 // the app will support both languages).
@@ -18,18 +20,18 @@ class WikipediaApi {
         retrofit.create(WikipediaApiService::class.java)
     }
 
-    suspend fun getBirdInfo(birdName: String): SimpleWikipediaResponse? {
+    suspend fun getAdditionalBirdInfo(birdName: String): Result<SimpleWikipediaResponse?> {
         return withContext(Dispatchers.IO) {
             try {
                 val response = wikipediaApiService.getAdditionalBirdInfo(titles = birdName)
                 if (response.isSuccessful) {
                     val wikipediaResponse = response.body()
                     wikipediaResponse?.let {
-                        mapToSimpleResponse(it)
-                    }
-                } else null
+                        return@withContext Result.Success(mapToSimpleResponse(it))
+                    } ?: return@withContext Result.Failure("No body in response")
+                } else return@withContext Result.Failure("Unsuccessful response: ${response.errorBody()?.string()}")
             } catch (e: Exception) {
-                null
+                return@withContext Result.Failure(e.message ?: "Unknown failure")
             }
         }
     }
@@ -41,5 +43,4 @@ class WikipediaApi {
             thumbnail = page.thumbnail?.source
         )
     }
-
 }
