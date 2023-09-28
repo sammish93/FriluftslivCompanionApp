@@ -11,7 +11,8 @@ import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 @Composable
 fun FloraFaunaScreen(modifier: Modifier = Modifier) {
     Text(text = "This is the FloraFauna screen!",
-        style = CustomTypography.Header,
+        style = CustomTypography.headlineLarge,
         textAlign = TextAlign.Center,
-        modifier = modifier.fillMaxSize())
+        modifier = modifier.fillMaxSize()
+    )
 }

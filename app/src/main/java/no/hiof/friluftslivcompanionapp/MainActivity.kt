@@ -7,14 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,8 +18,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -39,13 +29,18 @@ import no.hiof.friluftslivcompanionapp.ui.screens.ProfileScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.TripsScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.WeatherScreen
 import no.hiof.friluftslivcompanionapp.ui.theme.FriluftslivCompanionAppTheme
+import androidx.compose.material3.Typography
+import no.hiof.friluftslivcompanionapp.ui.components.CustomNavigationBar
+import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            FriluftslivCompanionAppTheme {
-                // A surface container using the 'background' color from the theme
+            FriluftslivCompanionAppTheme(
+                typography = CustomTypography,
+                //useDarkTheme = true
+            ) {
                 Surface(
                     tonalElevation = 5.dp,
                     modifier = Modifier.fillMaxSize(),
@@ -69,46 +64,7 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
 
     Scaffold(
         bottomBar = {
-            // Consult this website for additional information:
-            // https://developer.android.com/jetpack/compose/navigation#bottom-nav
-            NavigationBar {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-                val bottomNavOptions = mapOf(
-                    Screen.TRIPS to Icons.Filled.DateRange,
-                    Screen.WEATHER to Icons.Filled.LocationOn,
-                    Screen.HOME to Icons.Filled.Home,
-                    Screen.FLORA_FAUNA to Icons.Filled.Star,
-                    Screen.PROFILE to Icons.Filled.AccountCircle
-                )
-
-                bottomNavOptions.forEach { screen ->
-                    val screenPage = screen.key
-                    val icon = screen.value
-                    NavigationBarItem(
-                        icon = { Icon(icon, contentDescription = null) },
-                        // Displays text if desired.
-                        // label = { Text(screen.name) },
-                        selected = currentDestination?.hierarchy?.any { it.route == screenPage.name } == true,
-                        onClick = {
-                            navController.navigate(screenPage.name) {
-                                // Pop up to the start destination of the graph to
-                                // avoid building up a large stack of destinations
-                                // on the back stack as users select items
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                // Avoid multiple copies of the same destination when
-                                // reselecting the same item
-                                launchSingleTop = true
-                                // Restore state when reselecting a previously selected item
-                                restoreState = true
-                            }
-                        }
-                    )
-                }
-
-            }
+            CustomNavigationBar(navController)
         }
     ) { innerPadding ->
         NavHost(
@@ -140,10 +96,11 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
 
 @Composable
 private fun ThemePreview(
+    typography: Typography,
     isDarkTheme: Boolean,
     content: @Composable () -> Unit
 ) {
-    FriluftslivCompanionAppTheme(useDarkTheme = isDarkTheme) {
+    FriluftslivCompanionAppTheme(typography = CustomTypography, useDarkTheme = isDarkTheme) {
         content()
     }
 }
@@ -152,7 +109,7 @@ private fun ThemePreview(
 @Composable
 fun LightThemePreview() {
     Surface (tonalElevation = 5.dp){
-        ThemePreview(isDarkTheme = false) {
+        ThemePreview(typography = CustomTypography,isDarkTheme = false) {
             FriluftslivApp()
         }
     }
@@ -163,7 +120,7 @@ fun LightThemePreview() {
 @Composable
 fun DarkThemePreview() {
     Surface (tonalElevation = 5.dp){
-        ThemePreview(isDarkTheme = true) {
+        ThemePreview(typography = CustomTypography,isDarkTheme = true) {
             FriluftslivApp()
         }
     }

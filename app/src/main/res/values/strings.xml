@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Friluftsliv Companion App</string>
+    <string name="trips">Trips</string>
+    <string name="weather">Weather</string>
+    <string name="home">Home</string>
+    <string name="flora_and_fauna">Flora and Fauna</string>
+    <string name="profile">Profile</string>
+    <string name="unknown">Unknown</string>
 </resources>

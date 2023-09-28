@@ -11,7 +11,7 @@ import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 @Composable
 fun WeatherScreen(modifier: Modifier = Modifier) {
     Text(text = "This is the Weather screen!",
-        style =  CustomTypography.Header,
+        style =  CustomTypography.bodyLarge,
         textAlign = TextAlign.Center,
         modifier = modifier.fillMaxSize())
 }
