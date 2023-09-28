@@ -1,4 +1,4 @@
-package no.hiof.friluftslivcompanionapp.data.CardItem;
+package no.hiof.friluftslivcompanionapp.ui.components.items;
 
 import androidx.annotation.DrawableRes
 import no.hiof.friluftslivcompanionapp.R
@@ -11,3 +11,4 @@ val cardItems = listOf(
         CardItem(R.drawable.ic_launcher_foreground, title = "Hike 1",),
         CardItem(R.drawable.ic_launcher_foreground, title = "Hike 2",)
 )
+
