@@ -4,7 +4,6 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services")
-
 }
 
 android {
@@ -86,6 +85,9 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
+
+    //Google Play need to have this for google authentication
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
     */
 
     //Google Fonts
