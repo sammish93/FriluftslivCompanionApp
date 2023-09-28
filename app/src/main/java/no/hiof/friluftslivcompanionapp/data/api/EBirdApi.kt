@@ -3,12 +3,9 @@ package no.hiof.friluftslivcompanionapp.data.api
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.hiof.friluftslivcompanionapp.data.api.http_interface.EBirdApiService
-import no.hiof.friluftslivcompanionapp.data.network.HttpClient
 import no.hiof.friluftslivcompanionapp.data.network.RetrofitBuilder
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.api.SimpleBirdSighting
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.Exception
 
 /**

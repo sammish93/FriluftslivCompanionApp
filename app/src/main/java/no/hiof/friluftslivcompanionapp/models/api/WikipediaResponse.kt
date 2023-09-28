@@ -1,7 +1,19 @@
 package no.hiof.friluftslivcompanionapp.models.api
 
-/**
- * Model class that represent the response from MediaWikiAPI.
- */
-class WikipediaResponse {
+data class WikipediaResponse(
+    val query: Query
+) {
+    data class Query(
+        val pages: Map<String, Page>
+    ) {
+        data class Page(
+            val extract: String,
+            val thumbnail: Thumbnail?
+        ) {
+            data class Thumbnail(
+                val source: String
+            )
+        }
+    }
 }
+

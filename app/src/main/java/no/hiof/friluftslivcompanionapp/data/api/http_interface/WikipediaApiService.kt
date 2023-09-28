@@ -8,14 +8,14 @@ import retrofit2.http.Query
 interface WikipediaApiService {
 
     @GET("/w/api.php")
-    fun getAdditionalBirdInfo(
+    suspend fun getAdditionalBirdInfo(
         @Query("format") format: String = "json",
         @Query("action") action: String = "query",
         @Query("prop") prop: String = "extracts|pageimages|pageterms",
         @Query("piprop") piprop: String = "thumbnail",
         @Query("pithumbsize") pithumbsize: Int = 600,
-        @Query("exintro") exintro: String = "",
-        @Query("explaintext") explaintext: String = "",
+        @Query("exintro") exintro: Boolean = true,
+        @Query("explaintext") explaintext: Boolean = true,
         @Query("redirects") redirects: Int = 1,
         @Query("titles") titles: String
     ): Response<WikipediaResponse>
