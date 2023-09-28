@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import no.hiof.friluftslivcompanionapp.ui.components.items.cardItems
 import no.hiof.friluftslivcompanionapp.ui.components.CardComponent
 import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
+import no.hiof.friluftslivcompanionapp.ui.components.TopBar
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 
 @Composable
@@ -28,6 +29,10 @@ fun TripsScreen(modifier: Modifier = Modifier) {
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
+        TopBar("Topbar"){
+            // Handle tilbakeknapp klikk her
+        }
+
         Text(
             text = "This is the Trip screen!",
             style = CustomTypography.headlineLarge,
