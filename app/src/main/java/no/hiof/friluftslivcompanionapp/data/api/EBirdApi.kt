@@ -3,9 +3,12 @@ package no.hiof.friluftslivcompanionapp.data.api
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.hiof.friluftslivcompanionapp.data.api.http_interface.EBirdApiService
+import no.hiof.friluftslivcompanionapp.data.network.Result
 import no.hiof.friluftslivcompanionapp.data.network.RetrofitBuilder
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.api.SimpleBirdSighting
+import no.hiof.friluftslivcompanionapp.models.api.SimpleWikipediaResponse
+import no.hiof.friluftslivcompanionapp.models.enums.Language
 import java.lang.Exception
 
 /**
@@ -21,11 +24,9 @@ import java.lang.Exception
  */
 class EBirdApi {
 
-    private val baseUrl = "https://api.ebird.org/"
-
     // eBird API Service instance.
     private val eBirdApiService: EBirdApiService by lazy {
-        val retrofit = RetrofitBuilder.build(baseUrl)
+        val retrofit = RetrofitBuilder.buildEBirdApi()
         retrofit.create(EBirdApiService::class.java)
     }
 
@@ -34,26 +35,36 @@ class EBirdApi {
     suspend fun getRecentObservations(language: String): List<Bird>? {
         return withContext(Dispatchers.IO) {
             try {
-                val response = eBirdApiService.getRecentObservations(language).execute()
+                val response = eBirdApiService.getRecentObservations(language)
                 if (response.isSuccessful) {
-                    response.body()?.map { mapToBird(it)}
-                } else null
-            }
-            catch (e: Exception) {
+                    response.body()?.map { mapToBird(it) }
+                } else {
+                    println("Error: ${response.code()} - ${response.errorBody()?.string()}")
+                    null
+                }
+            } catch (e: Exception) {
+                println("Exception: ${e.message}")
                 null
             }
         }
     }
 
+    private suspend fun getAdditionalBirdInformation(sighting: SimpleBirdSighting): Result<SimpleWikipediaResponse?> {
+        val api = WikipediaApi(Language.EN)
+        return api.getAdditionalBirdInfo(sighting.sciName)
+    }
+
     // Function used to map SimpleBirdSighting to a Bird object.
     private fun mapToBird(sighting: SimpleBirdSighting): Bird {
+        // val additional = getAdditionalBirdInformation(sighting)
+
         return Bird(
             speciesNameEnglish = sighting.comName,
             speciesNameScientific = sighting.sciName,
             speciesNameNorwegian = null,
             descriptionEnglish = null,
             descriptionNorwegian = null,
-            photoUrl = null,
+            photoUrl = null
         )
     }
 }

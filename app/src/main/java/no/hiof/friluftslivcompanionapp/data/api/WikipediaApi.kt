@@ -7,16 +7,15 @@ import no.hiof.friluftslivcompanionapp.data.network.RetrofitBuilder
 import no.hiof.friluftslivcompanionapp.models.api.SimpleWikipediaResponse
 import no.hiof.friluftslivcompanionapp.models.api.WikipediaResponse
 import no.hiof.friluftslivcompanionapp.data.network.Result
+import no.hiof.friluftslivcompanionapp.models.enums.Language
 
 
 // Remember to have an option to retrieve an article in either English or Norwegian (because
 // the app will support both languages).
-class WikipediaApi {
-
-    private val baseUrl = "https://en.wikipedia.org/"
+class WikipediaApi(private val language: Language) {
 
     private val wikipediaApiService: WikipediaApiService by lazy {
-        val retrofit = RetrofitBuilder.build(baseUrl)
+        val retrofit = RetrofitBuilder.buildWikipediaApi()
         retrofit.create(WikipediaApiService::class.java)
     }
 

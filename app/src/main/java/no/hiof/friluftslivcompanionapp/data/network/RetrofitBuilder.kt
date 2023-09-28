@@ -8,9 +8,17 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 object RetrofitBuilder {
 
-    fun build(baseUrl: String): Retrofit {
+    fun buildEBirdApi(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(baseUrl)
+            .baseUrl("https://api.ebird.org/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(HttpClient.instance)
+            .build()
+    }
+
+    fun buildWikipediaApi(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("https://en.wikipedia.org/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
