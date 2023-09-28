@@ -6,4 +6,6 @@
     <string name="flora_and_fauna">Flora and Fauna</string>
     <string name="profile">Profile</string>
     <string name="unknown">Unknown</string>
+    <string name="more_info_icon">More Info-Icon</string>
+    <string name="completed_hikes">Pictures of your completed hikes</string>
 </resources>
