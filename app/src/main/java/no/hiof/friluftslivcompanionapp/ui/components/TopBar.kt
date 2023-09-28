@@ -30,7 +30,7 @@ fun TopBar(title: String, onBackClick: () -> Unit) {
                 IconButton(onClick = onBackClick) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Click for going one page back",
+                        contentDescription = "Click to navigate back",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
