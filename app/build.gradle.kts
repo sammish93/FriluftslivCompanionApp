@@ -86,4 +86,8 @@ dependencies {
 
     //Google Play need to have this for google authentication
     implementation("com.google.android.gms:play-services-auth:20.7.0")
+
+    //Firebase UI Library
+    implementation("com.firebaseui:firebase-ui-auth:8.0.2")
+    implementation("com.firebaseui:firebase-ui-database:8.0.2")
 }
