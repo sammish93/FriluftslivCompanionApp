@@ -1,6 +1,7 @@
 package no.hiof.friluftslivcompanionapp.domain
 
 import no.hiof.friluftslivcompanionapp.data.api.EBirdApi
+import no.hiof.friluftslivcompanionapp.data.network.Result
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 
@@ -16,11 +17,17 @@ class BirdObservations {
      * This method creates an instance of `EBirdApi` and calls the `getRecentObservations`
      * method on it, passing the language code as a parameter.
      *
+     * @param regionCode The code of the region where birds have been observed.
      * @param language The language in which the bird observations should be fetched.
+     * @param maxResult The returned results are limited by this value.
      * @return A list of `Bird` objects representing the recent bird observations in Oslo.
      */
-    suspend fun getRecentObservationsInOslo(language: SupportedLanguage): List<Bird>? {
-        return EBirdApi().getRecentObservations(language.code)
+    suspend fun getRecentObservationsInOslo(
+        regionCode: String="NO-03",
+        language: SupportedLanguage=SupportedLanguage.ENGLISH,
+        maxResult: Int=2
+    ): Result<List<Bird>> {
+        return EBirdApi().getRecentObservations(regionCode, language.code, maxResult)
     }
 
     /**

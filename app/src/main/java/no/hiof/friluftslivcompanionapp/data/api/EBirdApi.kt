@@ -37,44 +37,37 @@ class EBirdApi {
 
     // Function to get recent bird observations. This function can only be called from
     // another 'suspend' function or from a coroutine.
-    suspend fun getRecentObservations(languageCode: String): List<Bird>? {
+    suspend fun getRecentObservations(regionCode: String, languageCode: String, maxResult: Int): Result<List<Bird>> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = eBirdApiService.getRecentObservations(languageCode, 4)
+                val response = eBirdApiService.getRecentObservations(regionCode, languageCode, maxResult)
                 if (response.isSuccessful) {
-                    response.body()?.map { mapToBird(it, languageCode) }
+                    val birds = response.body()?.map { mapToBird(it, languageCode) }
+                    birds?.let { Result.Success(it) } ?: Result.Failure("No birds in response")
                 } else {
-                    println("Error: ${response.code()} - ${response.errorBody()?.string()}")
-                    null
+                    Result.Failure("Error: ${response.code()} - ${response.errorBody()?.string()}")
                 }
             } catch (e: Exception) {
-                println("Exception: ${e.message}")
-                null
+                Result.Failure("Exception: ${e.message}")
             }
         }
     }
 
-    private suspend fun getBirdInformation(sighting: SimpleBirdSighting, languageCode: String): Result<SimpleWikipediaResponse?> {
+    private suspend fun getBirdInformation(sighting: SimpleBirdSighting, languageCode: String): SimpleWikipediaResponse? {
         val api = WikipediaApi(languageCode)
-        return api.getAdditionalBirdInfo(sighting.sciName)
+        val result = api.getAdditionalBirdInfo(sighting.sciName)
+        return if (result is Result.Success) result.value else null
     }
 
-    // Function used to map SimpleBirdSighting to a Bird object, enriched with additional
-    // information from Wikipedia.
+    // Function used to map 'SimpleBirdSighting' to 'Bird' objects.
     private suspend fun mapToBird(sighting: SimpleBirdSighting, languageCode: String): Bird {
         val additionalInfo = getBirdInformation(sighting, languageCode)
-
         return Bird(
             speciesName = sighting.comName,
             speciesNameScientific = sighting.sciName,
-            description = when (additionalInfo) {
-                is Result.Success -> additionalInfo.value?.extract
-                is Result.Failure -> "Failed to fetch bird description: ${additionalInfo.message}."
-            },
-            photoUrl = when (additionalInfo) {
-                is Result.Success -> additionalInfo.value?.thumbnail
-                is Result.Failure -> "Failed to fetch thumbnail: ${additionalInfo.message}"
-            }
+            description = additionalInfo?.extract,
+            photoUrl = additionalInfo?.thumbnail
         )
     }
+
 }
