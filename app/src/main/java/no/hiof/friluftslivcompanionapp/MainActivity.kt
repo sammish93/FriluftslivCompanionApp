@@ -41,8 +41,11 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import no.hiof.friluftslivcompanionapp.ui.components.CustomNavigationBar
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
 import no.hiof.friluftslivcompanionapp.ui.screens.AddScreen
+import no.hiof.friluftslivcompanionapp.ui.screens.FloraFaunaSearchScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.TripsAddScreen
+import no.hiof.friluftslivcompanionapp.ui.screens.TripsCreateScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.TripsRecentActivityScreen
+import no.hiof.friluftslivcompanionapp.ui.screens.WeatherSearchScreen
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 
 class MainActivity : ComponentActivity() {
@@ -92,10 +95,10 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
                 TripsScreen(navController, modifier.padding(innerPadding))
             }
             composable(Screen.WEATHER.name) {
-                WeatherScreen(modifier.padding(innerPadding))
+                WeatherScreen(navController, modifier.padding(innerPadding))
             }
             composable(Screen.FLORA_FAUNA.name) {
-                FloraFaunaScreen(modifier.padding(innerPadding))
+                FloraFaunaScreen(navController, modifier.padding(innerPadding))
             }
             composable(Screen.PROFILE.name) {
                 ProfileScreen(modifier.padding(innerPadding))
@@ -103,8 +106,17 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
             composable(Screen.TRIPS_RECENT_ACTIVITY.name) {
                 TripsRecentActivityScreen(navController, modifier.padding(innerPadding))
             }
-            composable(Screen.TRIPS_ADD.name) {
-                TripsAddScreen(navController, modifier.padding(innerPadding))
+            composable(Screen.TRIPS_CREATE.name) {
+                TripsCreateScreen(navController, modifier.padding(innerPadding))
+            }
+            composable(Screen.FLORA_FAUNA_SEARCH_LOCATION.name) {
+                FloraFaunaSearchScreen("Location", navController, modifier.padding(innerPadding))
+            }
+            composable(Screen.FLORA_FAUNA_SEARCH_SPECIES.name) {
+                FloraFaunaSearchScreen("Species", navController, modifier.padding(innerPadding))
+            }
+            composable(Screen.WEATHER_SEARCH.name) {
+                WeatherSearchScreen(navController, modifier.padding(innerPadding))
             }
         }
     }

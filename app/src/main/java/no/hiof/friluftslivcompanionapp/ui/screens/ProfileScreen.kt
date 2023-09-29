@@ -11,7 +11,9 @@ import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 
 @Composable
 fun ProfileScreen(modifier: Modifier = Modifier) {
-    Text(text = "This is the Profile screen!",
+    Text(
+        text = "This is the Profile screen! This screen will have a cogwheel icon which, when " +
+                "clicked, will navigate the user to the PROFILE_SETTINGS page",
         style = CustomTypography.titleLarge,
         fontStyle = FontStyle.Italic,
         textAlign = TextAlign.Center,

@@ -19,7 +19,7 @@ import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TripsAddScreen(navController: NavController, modifier: Modifier = Modifier) {
+fun FloraFaunaAddScreen(navController: NavController, modifier: Modifier = Modifier) {
 
     Column(
         modifier = Modifier
@@ -27,6 +27,6 @@ fun TripsAddScreen(navController: NavController, modifier: Modifier = Modifier) 
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        AddScreen("Trips", modifier)
+        AddScreen("FloraFauna", modifier)
     }
 }
