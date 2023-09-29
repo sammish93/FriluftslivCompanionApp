@@ -4,7 +4,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 /**
- * Singleton instance that is used to reuses the retrofit builder.
+ * Retrofit builder that delivers a specific instance of retrofit.
  */
 object RetrofitBuilder {
 
@@ -16,9 +16,9 @@ object RetrofitBuilder {
             .build()
     }
 
-    fun buildWikipediaApi(): Retrofit {
+    fun buildWikipediaApi(languageCode: String): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://en.wikipedia.org/")
+            .baseUrl("https://${languageCode}.wikipedia.org/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

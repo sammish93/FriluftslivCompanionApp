@@ -8,14 +8,12 @@ import no.hiof.friluftslivcompanionapp.data.network.RetrofitBuilder
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.api.SimpleBirdSighting
 import no.hiof.friluftslivcompanionapp.models.api.SimpleWikipediaResponse
-import no.hiof.friluftslivcompanionapp.models.enums.Language
 import java.lang.Exception
 
 /**
  * The `EBirdApi` class is responsible for interacting with the eBird API.
  * It uses Retrofit to make network requests and Gson to parse the JSON responses.
  *
- * @property baseUrl The base URL for the eBird API.
  * @property eBirdApiService The service instance used to make API calls.
  *
  * This class provides a method to get recent bird observations and map them to `Bird` objects.
@@ -32,12 +30,12 @@ class EBirdApi {
 
     // Function to get recent bird observations. This function can only be called from
     // another 'suspend' function or from a coroutine.
-    suspend fun getRecentObservations(language: String): List<Bird>? {
+    suspend fun getRecentObservations(languageCode: String): List<Bird>? {
         return withContext(Dispatchers.IO) {
             try {
-                val response = eBirdApiService.getRecentObservations(language, 4)
+                val response = eBirdApiService.getRecentObservations(languageCode, 4)
                 if (response.isSuccessful) {
-                    response.body()?.map { mapToBird(it) }
+                    response.body()?.map { mapToBird(it, languageCode) }
                 } else {
                     println("Error: ${response.code()} - ${response.errorBody()?.string()}")
                     null
@@ -49,25 +47,26 @@ class EBirdApi {
         }
     }
 
-    private suspend fun getBirdInformation(sighting: SimpleBirdSighting): Result<SimpleWikipediaResponse?> {
-        val api = WikipediaApi(Language.EN)
+    private suspend fun getBirdInformation(sighting: SimpleBirdSighting, languageCode: String): Result<SimpleWikipediaResponse?> {
+        val api = WikipediaApi(languageCode)
         return api.getAdditionalBirdInfo(sighting.sciName)
     }
 
     // Function used to map SimpleBirdSighting to a Bird object.
-    private suspend fun mapToBird(sighting: SimpleBirdSighting): Bird {
-        val additional = getBirdInformation(sighting)
+    private suspend fun mapToBird(sighting: SimpleBirdSighting, languageCode: String): Bird {
+        val additionalInfo = getBirdInformation(sighting, languageCode)
 
         return Bird(
-            speciesNameEnglish = sighting.comName,
+            speciesName = sighting.comName,
             speciesNameScientific = sighting.sciName,
-            speciesNameNorwegian = null,
-            descriptionEnglish = when (additional) {
-                is Result.Success -> additional.value?.extract
-                is Result.Failure -> "Failed to fetch bird description: ${additional.message}."
+            description = when (additionalInfo) {
+                is Result.Success -> additionalInfo.value?.extract
+                is Result.Failure -> "Failed to fetch bird description: ${additionalInfo.message}."
             },
-            descriptionNorwegian = null,
-            photoUrl = null
+            photoUrl = when (additionalInfo) {
+                is Result.Success -> additionalInfo.value?.thumbnail
+                is Result.Failure -> "Failed to fetch thumbnail: ${additionalInfo.message}"
+            }
         )
     }
 }

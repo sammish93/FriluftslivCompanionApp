@@ -1,26 +1,23 @@
 package no.hiof.friluftslivcompanionapp.models
 
 class Bird(
-    var speciesNameEnglish: String?,
-    var speciesNameNorwegian: String?,
+    private var speciesName: String?,
     var speciesNameScientific: String,
-    var descriptionEnglish: String?,
-    var descriptionNorwegian: String?,
+    private var description: String?,
     var photoUrl: String?
 ) : Animal(
-    speciesNameEnglish,
-    speciesNameNorwegian,
+    speciesName,
     speciesNameScientific,
-    descriptionEnglish,
-    descriptionNorwegian,
+    description,
     photoUrl
 ) {
 
     override fun toString(): String {
         return StringBuilder().apply {
-            append("name: $speciesNameEnglish\n")
+            append("\nname: $speciesName\n")
             append("scientific: $speciesNameScientific\n")
-            append("description: $descriptionEnglish")
+            append("photoUrl: $photoUrl\n")
+            append("description: $description\n")
         }.toString()
     }
 }
