@@ -12,6 +12,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
@@ -30,7 +33,16 @@ import no.hiof.friluftslivcompanionapp.ui.screens.TripsScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.WeatherScreen
 import no.hiof.friluftslivcompanionapp.ui.theme.FriluftslivCompanionAppTheme
 import androidx.compose.material3.Typography
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import no.hiof.friluftslivcompanionapp.ui.components.CustomNavigationBar
+import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
+import no.hiof.friluftslivcompanionapp.ui.screens.AddScreen
+import no.hiof.friluftslivcompanionapp.ui.screens.TripsAddScreen
+import no.hiof.friluftslivcompanionapp.ui.screens.TripsRecentActivityScreen
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 
 class MainActivity : ComponentActivity() {
@@ -62,6 +74,16 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
             ?: Screen.HOME.name
     )
 
+    val titles = mapOf("Trips" to Screen.TRIPS, "Recent Activity" to Screen.TRIPS_RECENT_ACTIVITY, "Create Trip" to Screen.TRIPS_ADD)
+
+    val thing = CustomTabsBar(
+        mapOf(
+            "Trips" to Screen.TRIPS,
+            "Recent Activity" to Screen.TRIPS_RECENT_ACTIVITY,
+            "Create Trip" to Screen.TRIPS_ADD
+        ), navController
+    )
+
     Scaffold(
         bottomBar = {
             CustomNavigationBar(navController)
@@ -77,7 +99,7 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
                 HomeScreen(modifier.padding(innerPadding))
             }
             composable(Screen.TRIPS.name) {
-                TripsScreen(modifier.padding(innerPadding))
+                TripsScreen(navController, modifier.padding(innerPadding))
             }
             composable(Screen.WEATHER.name) {
                 WeatherScreen(modifier.padding(innerPadding))
@@ -88,10 +110,15 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
             composable(Screen.PROFILE.name) {
                 ProfileScreen(modifier.padding(innerPadding))
             }
+            composable(Screen.TRIPS_RECENT_ACTIVITY.name) {
+                TripsRecentActivityScreen(navController, modifier.padding(innerPadding))
+            }
+            composable(Screen.TRIPS_ADD.name) {
+                TripsAddScreen(navController, modifier.padding(innerPadding))
+            }
         }
     }
 }
-
 
 
 @Composable
@@ -108,19 +135,18 @@ private fun ThemePreview(
 @Preview(showBackground = true, name = "Light Theme")
 @Composable
 fun LightThemePreview() {
-    Surface (tonalElevation = 5.dp){
-        ThemePreview(typography = CustomTypography,isDarkTheme = false) {
+    Surface(tonalElevation = 5.dp) {
+        ThemePreview(typography = CustomTypography, isDarkTheme = false) {
             FriluftslivApp()
         }
     }
-
 }
 
 @Preview(showBackground = true, name = "Dark Theme")
 @Composable
 fun DarkThemePreview() {
-    Surface (tonalElevation = 5.dp){
-        ThemePreview(typography = CustomTypography,isDarkTheme = true) {
+    Surface(tonalElevation = 5.dp) {
+        ThemePreview(typography = CustomTypography, isDarkTheme = true) {
             FriluftslivApp()
         }
     }
