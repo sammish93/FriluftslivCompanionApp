@@ -1,6 +1,7 @@
 package no.hiof.friluftslivcompanionapp
 
 import android.content.Intent
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -23,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
+import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,6 +38,8 @@ import no.hiof.friluftslivcompanionapp.ui.screens.ProfileScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.TripsScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.WeatherScreen
 import no.hiof.friluftslivcompanionapp.ui.theme.FriluftslivCompanionAppTheme
+import javax.inject.Inject
+@AndroidEntryPoint
 import javax.inject.Inject
 
 import androidx.compose.material3.Typography
@@ -56,6 +61,7 @@ import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 class MainActivity : ComponentActivity() {
     @Inject
     lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
