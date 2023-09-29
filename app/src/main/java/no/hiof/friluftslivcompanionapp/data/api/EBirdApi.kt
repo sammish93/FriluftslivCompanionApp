@@ -35,7 +35,7 @@ class EBirdApi {
     suspend fun getRecentObservations(language: String): List<Bird>? {
         return withContext(Dispatchers.IO) {
             try {
-                val response = eBirdApiService.getRecentObservations(language)
+                val response = eBirdApiService.getRecentObservations(language, 4)
                 if (response.isSuccessful) {
                     response.body()?.map { mapToBird(it) }
                 } else {
@@ -49,20 +49,23 @@ class EBirdApi {
         }
     }
 
-    private suspend fun getAdditionalBirdInformation(sighting: SimpleBirdSighting): Result<SimpleWikipediaResponse?> {
+    private suspend fun getBirdInformation(sighting: SimpleBirdSighting): Result<SimpleWikipediaResponse?> {
         val api = WikipediaApi(Language.EN)
         return api.getAdditionalBirdInfo(sighting.sciName)
     }
 
     // Function used to map SimpleBirdSighting to a Bird object.
-    private fun mapToBird(sighting: SimpleBirdSighting): Bird {
-        // val additional = getAdditionalBirdInformation(sighting)
+    private suspend fun mapToBird(sighting: SimpleBirdSighting): Bird {
+        val additional = getBirdInformation(sighting)
 
         return Bird(
             speciesNameEnglish = sighting.comName,
             speciesNameScientific = sighting.sciName,
             speciesNameNorwegian = null,
-            descriptionEnglish = null,
+            descriptionEnglish = when (additional) {
+                is Result.Success -> additional.value?.extract
+                is Result.Failure -> "Failed to fetch bird description: ${additional.message}."
+            },
             descriptionNorwegian = null,
             photoUrl = null
         )

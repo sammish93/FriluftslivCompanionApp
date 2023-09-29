@@ -18,8 +18,9 @@ class Bird(
 
     override fun toString(): String {
         return StringBuilder().apply {
-            append("name: $speciesNameEnglish ")
-            append("scientific: $speciesNameScientific")
+            append("name: $speciesNameEnglish\n")
+            append("scientific: $speciesNameScientific\n")
+            append("description: $descriptionEnglish")
         }.toString()
     }
 }

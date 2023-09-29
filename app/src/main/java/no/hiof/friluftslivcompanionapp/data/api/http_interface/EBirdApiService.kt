@@ -9,6 +9,7 @@ interface EBirdApiService {
     // NO-03 is the region code of Oslo.
     @GET("/v2/data/obs/NO-03/recent")
     suspend fun getRecentObservations(
-        @Query("sppLocale") language: String = "en"
+        @Query("sppLocale") language: String = "en",
+        @Query("maxResults") maxResult: Int = 3
     ): Response<List<SimpleBirdSighting>>
 }
