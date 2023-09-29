@@ -11,6 +11,6 @@ interface EBirdApiService {
     @GET("/v2/data/obs/NO-03/recent")
     suspend fun getRecentObservations(
         @Query("sppLocale") language: String = SupportedLanguage.ENGLISH.code,
-        @Query("maxResults") maxResult: Int = 3
+        @Query("maxResults") maxResult: Int = 2
     ): Response<List<SimpleBirdSighting>>
 }

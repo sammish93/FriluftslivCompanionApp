@@ -11,14 +11,21 @@ import no.hiof.friluftslivcompanionapp.models.api.SimpleWikipediaResponse
 import java.lang.Exception
 
 /**
- * The `EBirdApi` class is responsible for interacting with the eBird API.
+ * The `EBirdApi` class is responsible for interacting with the eBird API and Wikipedia API.
  * It uses Retrofit to make network requests and Gson to parse the JSON responses.
  *
- * @property eBirdApiService The service instance used to make API calls.
+ * @property eBirdApiService The service instance used to make API calls to eBird API.
  *
- * This class provides a method to get recent bird observations and map them to `Bird` objects.
+ * This class provides a method to get recent bird observations, enrich them with additional
+ * information from Wikipedia, and map them to `Bird` objects.
  * The method `getRecentObservations` is a suspending function and should be called from a coroutine
  * or another suspending function.
+ *
+ * The `getBirdInformation` method is used to fetch additional bird information from Wikipedia API
+ * based on the scientific name of the bird from the eBird API response.
+ *
+ * The `mapToBird` method is used to map `SimpleBirdSighting` objects to `Bird` objects, enriching
+ * them with additional information fetched from Wikipedia.
  */
 class EBirdApi {
 
@@ -52,7 +59,8 @@ class EBirdApi {
         return api.getAdditionalBirdInfo(sighting.sciName)
     }
 
-    // Function used to map SimpleBirdSighting to a Bird object.
+    // Function used to map SimpleBirdSighting to a Bird object, enriched with additional
+    // information from Wikipedia.
     private suspend fun mapToBird(sighting: SimpleBirdSighting, languageCode: String): Bird {
         val additionalInfo = getBirdInformation(sighting, languageCode)
 
