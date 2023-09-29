@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -74,13 +75,14 @@ class MainActivity : ComponentActivity() {
                         // Replace MainContent with your actual main content Composable
                         FriluftslivApp()
                     } else {
-                        // User is not signed in, show the sign-in activity
-                        SignInActivity()
+                        val signInIntent = Intent(this, SignInActivity::class.java)
+                        startActivity(signInIntent)
+                    }
                     }
                 }
             }
         }
-    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
