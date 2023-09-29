@@ -20,6 +20,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -32,6 +34,8 @@ import no.hiof.friluftslivcompanionapp.ui.screens.ProfileScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.TripsScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.WeatherScreen
 import no.hiof.friluftslivcompanionapp.ui.theme.FriluftslivCompanionAppTheme
+import javax.inject.Inject
+
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,8 +51,10 @@ import no.hiof.friluftslivcompanionapp.ui.screens.TripsCreateScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.TripsRecentActivityScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.WeatherSearchScreen
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -61,7 +67,16 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    FriluftslivApp()
+
+                    val currentUser = auth.currentUser
+                    if (currentUser != null) {
+                        // User is signed in, show the main content of your app
+                        // Replace MainContent with your actual main content Composable
+                        FriluftslivApp()
+                    } else {
+                        // User is not signed in, show the sign-in activity
+                        SignInActivity()
+                    }
                 }
             }
         }
@@ -134,7 +149,7 @@ private fun ThemePreview(
     }
 }
 
-@Preview(showBackground = true, name = "Light Theme")
+@Preview(showBackground = true)
 @Composable
 fun LightThemePreview() {
     Surface(tonalElevation = 5.dp) {
