@@ -18,7 +18,7 @@ import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FloraFaunaScreen(navController: NavController, modifier: Modifier = Modifier) {
+fun FloraFaunaSearchScreen(searchBy: String, navController: NavController, modifier: Modifier = Modifier) {
 
     Scaffold(
         topBar = {
@@ -27,7 +27,7 @@ fun FloraFaunaScreen(navController: NavController, modifier: Modifier = Modifier
                     Screen.FLORA_FAUNA to "Lifelist",
                     Screen.FLORA_FAUNA_SEARCH_LOCATION to "Search (By Location)",
                     Screen.FLORA_FAUNA_SEARCH_SPECIES to "Search (By Species)"
-                ), navController
+                ),  navController
             )
         }
     ) { innerPadding ->
@@ -38,8 +38,7 @@ fun FloraFaunaScreen(navController: NavController, modifier: Modifier = Modifier
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "This is the FloraFauna screen! When a card is pressed it will navigate " +
-                        "the user to the FLORA_FAUNA_ADDITIONAL_INFO screen",
+                text = "This is the Search By $searchBy tab inside the Search screen!",
                 style = CustomTypography.headlineLarge,
                 textAlign = TextAlign.Center,
                 modifier = modifier.fillMaxSize()

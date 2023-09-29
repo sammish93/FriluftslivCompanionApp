@@ -25,7 +25,7 @@ fun TripsRecentActivityScreen(navController: NavController, modifier: Modifier =
                 mapOf(
                     Screen.TRIPS to "Trips",
                     Screen.TRIPS_RECENT_ACTIVITY to "Recent Activity",
-                    Screen.TRIPS_ADD to "Create Trip"
+                    Screen.TRIPS_CREATE to "Create Trip"
                 ),  navController
             )
         }

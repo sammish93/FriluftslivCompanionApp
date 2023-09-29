@@ -40,7 +40,7 @@ fun TripsScreen(navController: NavController, modifier: Modifier = Modifier) {
                 mapOf(
                     Screen.TRIPS to "Trips",
                     Screen.TRIPS_RECENT_ACTIVITY to "Recent Activity",
-                    Screen.TRIPS_ADD to "Create Trip"
+                    Screen.TRIPS_CREATE to "Create Trip"
                 ),  navController
             )
         }
@@ -56,7 +56,8 @@ fun TripsScreen(navController: NavController, modifier: Modifier = Modifier) {
             }
 
             Text(
-                text = "This is the Trip screen!",
+                text = "This is the Trip screen! When a card is pressed it will navigate the user " +
+                        "to the TRIPS_ADDITIONAL_INFO screen",
                 style = CustomTypography.headlineLarge,
                 textAlign = TextAlign.Center,
                 modifier = modifier
