@@ -1,9 +1,9 @@
 package no.hiof.friluftslivcompanionapp.models
 
 class Bird(
-    private var speciesName: String?,
+    var speciesName: String?,
     var speciesNameScientific: String,
-    private var description: String?,
+    var description: String?,
     var photoUrl: String?
 ) : Animal(
     speciesName,
