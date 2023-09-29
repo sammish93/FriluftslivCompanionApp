@@ -12,6 +12,7 @@ import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import com.firebase.ui.common.R
 
 @AndroidEntryPoint
 class SignInActivity : AppCompatActivity() {
@@ -26,17 +27,7 @@ class SignInActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Check if the user is already signed in
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            // User is signed in, navigate to MainActivity
-            startActivity(Intent(this, MainActivity::class.java))
-            finish() // Finish the SignInActivity
-        } else {
-            // User is not signed in, show sign-in options
-            showSignInOptions()
-        }
+        showSignInOptions()
     }
 
     private fun showSignInOptions() {
@@ -48,6 +39,7 @@ class SignInActivity : AppCompatActivity() {
         val signInIntent = AuthUI.getInstance()
             .createSignInIntentBuilder()
             .setAvailableProviders(providers)
+            .setTheme(no.hiof.friluftslivcompanionapp.R.style.Theme_FriluftslivCompanionApp)
             .build()
 
         signInLauncher.launch(signInIntent)

@@ -14,10 +14,10 @@
         android:theme="@style/Theme.FriluftslivCompanionApp"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".SignInActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.FriluftslivCompanionApp">
+            android:label="Sign In"
+            android:theme="@style/Theme.AppCompat">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
