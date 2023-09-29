@@ -24,9 +24,9 @@ fun TripsAddScreen(navController: NavController, modifier: Modifier = Modifier) 
         topBar = {
             CustomTabsBar(
                 mapOf(
-                    "Trips" to Screen.TRIPS,
-                    "Recent Activity" to Screen.TRIPS_RECENT_ACTIVITY,
-                    "Create Trip" to Screen.TRIPS_ADD
+                    Screen.TRIPS to "Trips",
+                    Screen.TRIPS_RECENT_ACTIVITY to "Recent Activity",
+                    Screen.TRIPS_ADD to "Create Trip"
                 ), navController
             )
         }

@@ -74,16 +74,6 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
             ?: Screen.HOME.name
     )
 
-    val titles = mapOf("Trips" to Screen.TRIPS, "Recent Activity" to Screen.TRIPS_RECENT_ACTIVITY, "Create Trip" to Screen.TRIPS_ADD)
-
-    val thing = CustomTabsBar(
-        mapOf(
-            "Trips" to Screen.TRIPS,
-            "Recent Activity" to Screen.TRIPS_RECENT_ACTIVITY,
-            "Create Trip" to Screen.TRIPS_ADD
-        ), navController
-    )
-
     Scaffold(
         bottomBar = {
             CustomNavigationBar(navController)
