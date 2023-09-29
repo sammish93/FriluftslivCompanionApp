@@ -4,7 +4,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 /**
- * Retrofit builder that delivers a specific instance of retrofit.
+ * A Singleton object `RetrofitBuilder` that provides methods to create instances of Retrofit for
+ * different APIs. It ensures that the Retrofit instances are configured correctly with the
+ * appropriate base URL, converter factory, and, if needed, a client.
+ *
+ * This object provides a centralized way to configure and create Retrofit instances, promoting
+ * code re-usability and reducing redundancy.
  */
 object RetrofitBuilder {
 

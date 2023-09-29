@@ -3,8 +3,13 @@ import no.hiof.friluftslivcompanionapp.BuildConfig
 import okhttp3.OkHttpClient
 
 /**
- * A Singleton object of the OkHttpClient. It performs best when we only use one
- * instance of this class, and reuse it for all our HTTP calls.
+ * A Singleton object `HttpClient` that holds an instance of OkHttpClient.
+ * OkHttpClient is designed to be shared across the application, and it’s efficient to share an instance
+ * to use for all HTTP calls. This is because the shared instance will keep track of all ongoing requests
+ * and reuse connections and threads, reducing latency and memory usage.
+ *
+ * The instance of OkHttpClient in this object is configured with an interceptor that adds the eBird API key
+ * to all outgoing requests. This is necessary for making authenticated requests to the eBird API.
  */
 object HttpClient {
     val instance: OkHttpClient by lazy {
