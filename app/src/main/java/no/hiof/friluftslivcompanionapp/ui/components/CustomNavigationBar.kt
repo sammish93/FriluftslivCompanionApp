@@ -23,7 +23,7 @@ import no.hiof.friluftslivcompanionapp.models.enums.Screen
 // Consult this website for additional information:
 // https://developer.android.com/jetpack/compose/navigation#bottom-nav
 @Composable
-fun CustomNavigationBar(navController:NavController) {
+fun CustomNavigationBar(navController: NavController) {
     NavigationBar {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
@@ -39,7 +39,7 @@ fun CustomNavigationBar(navController:NavController) {
             val screenPage = screen.key
             val icon = screen.value
 
-            val contentDescription = when(screenPage){
+            val contentDescription = when (screenPage) {
                 Screen.TRIPS -> stringResource(R.string.trips)
                 Screen.WEATHER -> stringResource(R.string.weather)
                 Screen.HOME -> stringResource(R.string.home)
@@ -48,7 +48,7 @@ fun CustomNavigationBar(navController:NavController) {
                 else -> stringResource(R.string.unknown)
             }
             NavigationBarItem(
-                icon = { Icon(icon, contentDescription= contentDescription) },
+                icon = { Icon(icon, contentDescription = contentDescription) },
                 // Displays text if desired.
                 // label = { Text(screen.name) },
                 selected = currentDestination?.hierarchy?.any { it.route == screenPage.name } == true,
@@ -69,7 +69,5 @@ fun CustomNavigationBar(navController:NavController) {
                 }
             )
         }
-
     }
-
 }
