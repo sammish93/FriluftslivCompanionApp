@@ -7,10 +7,9 @@ import no.hiof.friluftslivcompanionapp.data.network.RetrofitBuilder
 import no.hiof.friluftslivcompanionapp.models.api.SimpleWikipediaResponse
 import no.hiof.friluftslivcompanionapp.models.api.WikipediaResponse
 import no.hiof.friluftslivcompanionapp.data.network.Result
+import retrofit2.Response
 
 
-// Remember to have an option to retrieve an article in either English or Norwegian (because
-// the app will support both languages).
 class WikipediaApi(private var language: String) {
 
     private val wikipediaApiService: WikipediaApiService by lazy {
@@ -22,15 +21,19 @@ class WikipediaApi(private var language: String) {
         return withContext(Dispatchers.IO) {
             try {
                 val response = wikipediaApiService.getAdditionalBirdInfo(titles = birdName)
-                if (response.isSuccessful) {
-                    val wikipediaResponse = response.body()
-                    wikipediaResponse?.let {
-                        return@withContext Result.Success(mapToSimpleResponse(it))
-                    } ?: return@withContext Result.Failure("No body in response")
-                } else return@withContext Result.Failure("Unsuccessful response: ${response.errorBody()?.string()}")
+                handleResponse(response)
             } catch (e: Exception) {
-                return@withContext Result.Failure(e.message ?: "Unknown failure")
+                Result.Failure(e.message ?: "Unknown failure")
             }
+        }
+    }
+
+    private fun handleResponse(response: Response<WikipediaResponse>): Result<SimpleWikipediaResponse?> {
+        return if (response.isSuccessful) {
+            val wikipediaResponse = response.body()
+            wikipediaResponse?.let {Result.Success(mapToSimpleResponse(it)) } ?: Result.Failure("No body in response")
+        } else {
+            Result.Failure("Unsuccessful response: ${response.errorBody()?.string()}")
         }
     }
 
