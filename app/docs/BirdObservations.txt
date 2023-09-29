@@ -1,0 +1,18 @@
+Example of using the 'processBirdList' method in teh 'BirdObservations' class:
+
+1. Retrieve only the name of the birds
+
+    val api = BirdObservations()
+    val birds: List<Bird>? = api.getRecentObservationsInOslo(SupportedLanguage.ENGLISH)
+
+    val names = api.processBirdList(birds) { bird -> bird.speciesName ?: "Unknown" }
+
+2. Retrieve only the descriptions
+
+    val api = BirdObservations()
+    val birds: List<Bird>? = api.getRecentObservationsInOslo(SupportedLanguage.ENGLISH)
+
+    val descriptions = api.processBirdList(birds) { bird -> bird.description ?: "Unknown" }
+
+3. And the same applies for the photoUrl.
+

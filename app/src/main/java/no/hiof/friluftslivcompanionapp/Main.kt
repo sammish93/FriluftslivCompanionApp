@@ -10,7 +10,7 @@ suspend fun main() {
     val api = BirdObservations()
     val result: List<Bird>? = api.getRecentObservationsInOslo(SupportedLanguage.ENGLISH)
 
-    val imageUrl = api.processBirdList(result) { url -> url.photoUrl ?: "No URL"}
+    val imageUrl = api.processBirdList(result) { url -> url.speciesName ?: "No URL"}
 
     println(imageUrl)
     exitProcess(0)
