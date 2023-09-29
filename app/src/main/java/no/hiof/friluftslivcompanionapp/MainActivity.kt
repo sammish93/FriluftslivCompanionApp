@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,6 +17,7 @@ import no.hiof.friluftslivcompanionapp.ui.theme.FriluftslivCompanionAppTheme
 import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     @Inject
     lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,13 +35,14 @@ class MainActivity : ComponentActivity() {
                         // Replace MainContent with your actual main content Composable
                         Greeting(name = "ashti")
                     } else {
-                        // User is not signed in, show the sign-in activity
-                        SignInActivity()
+                        val signInIntent = Intent(this, SignInActivity::class.java)
+                        startActivity(signInIntent)
+                    }
                     }
                 }
             }
         }
-    }
+
 }
 
 @Composable
