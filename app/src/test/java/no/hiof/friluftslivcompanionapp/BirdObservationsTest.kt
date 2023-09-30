@@ -1,0 +1,49 @@
+package no.hiof.friluftslivcompanionapp
+
+import kotlinx.coroutines.runBlocking
+import no.hiof.friluftslivcompanionapp.data.network.Result
+import no.hiof.friluftslivcompanionapp.domain.BirdObservations
+import no.hiof.friluftslivcompanionapp.models.Bird
+import no.hiof.friluftslivcompanionapp.models.Location
+import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
+
+import org.junit.Assert.*
+import org.junit.Before
+import org.junit.Test
+import java.time.LocalDateTime
+
+
+class BirdObservationsTest {
+
+    private lateinit var birdObservations: BirdObservations
+
+    @Before
+    fun setUp() {
+        birdObservations = BirdObservations.getInstance(SupportedLanguage.ENGLISH)
+    }
+
+    @Test
+    fun getRecentObservations_returnsExpectedResult() = runBlocking {
+
+        val expected = Result.Success(listOf(
+            Bird(
+                speciesName = "Common Murre",
+                speciesNameScientific = "Uria aalge",
+                number = 16,
+                photoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Common_Murre_Uria_aalge.jpg/600px-Common_Murre_Uria_aalge.jpg",
+                description = "The common murre or common guillemot (Uria aalge) is a large auk...",
+                observationDate = LocalDateTime.of(2023, 9, 30, 16, 37),
+                coordinates = Location(lat = 59.904504, lon = 10.753352)
+            )
+        ))
+
+        val result = birdObservations.getRecentObservations(year=2023, month=9, day=30)
+        val observations = if (result is Result.Success) result.value else listOf()
+
+        assertEquals(expected.value[0].speciesName, observations[0].speciesName)
+        assertEquals(expected.value[0].speciesNameScientific, observations[0].speciesNameScientific)
+        assertEquals(expected.value[0].photoUrl, observations[0].photoUrl)
+        assertEquals(expected.value[0].observationDate, observations[0].observationDate)
+        assertEquals(expected.value[0].coordinates, observations[0].coordinates)
+    }
+}
