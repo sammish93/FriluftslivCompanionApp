@@ -5,6 +5,7 @@ import no.hiof.friluftslivcompanionapp.data.network.Result
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 /**
@@ -13,47 +14,55 @@ import java.time.temporal.ChronoUnit
  * It is responsible for invoking methods from the data layer to fetch data, which then
  * can be passed to the presentation layer.
  */
-class BirdObservations {
+class BirdObservations(private val languageCode: SupportedLanguage) {
 
     /**
      * This method creates an instance of `EBirdApi` and calls the `getRecentObservations`
-     * method on it, passing the language code as a parameter.
+     * method on it, passing the language code, region code, year, month, day, and maxResult as parameters.
      *
-     * @param regionCode The code of the region where birds have been observed.
-     * @param language The language in which the bird observations should be fetched.
-     * @param maxResult The returned results are limited by this value.
-     * @return A list of `Bird` objects representing the recent bird observations in Oslo.
+     * @param regionCode The region code where birds have been observed. Default is "NO-03".
+     * @param year The year of the observations. Default is the current year.
+     * @param month The month of the observations. Default is the current month.
+     * @param day The day of the observations. Default is the current day.
+     * @param maxResult The maximum number of results to be returned. Default is 1.
+     * @return A `Result` object containing a list of `Bird` objects representing the recent bird
+     * observations in the specified region, or an error if the operation fails.
      */
     suspend fun getRecentObservations(
         regionCode: String="NO-03",
-        year: Int=2023,
-        month: Int=9,
-        day: Int=30,
-        language: SupportedLanguage=SupportedLanguage.ENGLISH,
+        year: Int=LocalDate.now().year,
+        month: Int=LocalDate.now().monthValue,
+        day: Int=LocalDate.now().dayOfMonth,
         maxResult: Int=1
     ): Result<List<Bird>> {
 
-        val api = EBirdApi(language)
-        return api.getRecentObservations(regionCode, year, month, day, language.code, maxResult)
+        val api = EBirdApi(languageCode)
+        return api.getRecentObservations(regionCode, year, month, day, maxResult)
     }
 
+    /**
+     * This method fetches bird observations between two dates.
+     *
+     * @param startDate The start date of the observation period.
+     * @param endDate The end date of the observation period.
+     * @param regionCode The code of the region where birds have been observed. Default is "NO-03".
+     * @param maxResult The maximum number of results to be returned for each day in the range. Default is 1.
+     * @return A `Result` object containing a list of `Bird` objects.
+     */
     suspend fun getObservationsBetweenDates(
         startDate: LocalDate,
         endDate: LocalDate,
         regionCode: String="NO-03",
-        language: SupportedLanguage=SupportedLanguage.ENGLISH,
         maxResult: Int = 1
     ): Result<List<Bird>> {
 
         val validationResult = validateDate(startDate, endDate)
+
         if (validationResult is Result.Failure)
             return validationResult
 
         val days = getDaysBetween(startDate, endDate)
-        val allObservations: MutableList<Bird>
-        allObservations = iterateOverDays(startDate, days, regionCode, language, maxResult)
-
-        return Result.Success(allObservations)
+        return Result.Success(iterateOverDays(startDate, days, regionCode, maxResult))
     }
 
     /**
@@ -85,14 +94,13 @@ class BirdObservations {
         startDate: LocalDate,
         daysBetween: Int,
         regionCode: String,
-        language: SupportedLanguage,
         maxResult: Int
     ): MutableList<Bird> {
         val allObservations = mutableListOf<Bird>()
 
         for (day in 0..daysBetween) {
             val date = startDate.plusDays(day.toLong())
-            val result = getObservationsForDate(date, regionCode, language, maxResult)
+            val result = getObservationsForDate(date, regionCode, maxResult)
             if (result is Result.Success) allObservations.addAll(result.value)
         }
         return allObservations
@@ -101,7 +109,6 @@ class BirdObservations {
     private suspend fun getObservationsForDate(
         date: LocalDate,
         regionCode: String,
-        language: SupportedLanguage,
         maxResult: Int
     ): Result<List<Bird>> {
 
@@ -110,7 +117,6 @@ class BirdObservations {
             year = date.year,
             month = date.monthValue,
             day = date.dayOfMonth,
-            language = language,
             maxResult = maxResult
         )
     }

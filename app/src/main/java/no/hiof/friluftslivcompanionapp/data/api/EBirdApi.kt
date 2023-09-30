@@ -31,8 +31,6 @@ import java.time.format.DateTimeFormatter
  * The `mapToBird` method is used to map `SimpleBirdSighting` objects to `Bird` objects, enriching
  * them with additional information fetched from Wikipedia.
  */
-
-// FIX THIS LATER!
 class EBirdApi(private val language: SupportedLanguage) {
 
     private val wikipediaApi = WikipediaApi(language.code)
@@ -50,13 +48,12 @@ class EBirdApi(private val language: SupportedLanguage) {
         year: Int,
         month: Int,
         day: Int,
-        languageCode: String,
         maxResult: Int
     ): Result<List<Bird>> {
         return withContext(Dispatchers.IO) {
             try {
                 val response = eBirdApiService.getRecentObservations(
-                    regionCode, year, month, day,  languageCode, maxResult
+                    regionCode, year, month, day, language.code, maxResult
                 )
                 if (response.isSuccessful) {
                     val birds = response.body()?.map { mapToBird(it) }
@@ -77,7 +74,6 @@ class EBirdApi(private val language: SupportedLanguage) {
 
     private suspend fun mapToBird(sighting: SimpleBirdSighting): Bird {
         val additionalInfo = getBirdInformation(sighting)
-
         return Bird(
             speciesName = sighting.comName,
             speciesNameScientific = sighting.sciName,
