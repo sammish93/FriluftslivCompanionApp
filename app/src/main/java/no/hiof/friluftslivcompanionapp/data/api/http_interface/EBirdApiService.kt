@@ -8,10 +8,13 @@ import retrofit2.http.Query
 
 interface EBirdApiService {
 
-    @GET("/v2/data/obs/{regionCode}/recent")
+    @GET("/v2/data/obs/{regionCode}/historic/{year}/{month}/{day}")
     suspend fun getRecentObservations(
-        @Path("regionCode") regionCode: String = "NO-03", // NO-03 is the region code of Oslo.
+        @Path("regionCode") regionCode: String,
+        @Path("year") year: Int,
+        @Path("month") month: Int,
+        @Path("day") day: Int,
         @Query("sppLocale") language: String = SupportedLanguage.ENGLISH.code,
-        @Query("maxResults") maxResult: Int = 2
+        @Query("maxResults") maxResult: Int
     ): Response<List<SimpleBirdSighting>>
 }

@@ -9,6 +9,7 @@ import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.api.SimpleBirdSighting
 import no.hiof.friluftslivcompanionapp.models.api.SimpleWikipediaResponse
+import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import java.lang.Exception
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -30,7 +31,11 @@ import java.time.format.DateTimeFormatter
  * The `mapToBird` method is used to map `SimpleBirdSighting` objects to `Bird` objects, enriching
  * them with additional information fetched from Wikipedia.
  */
-class EBirdApi {
+
+// FIX THIS LATER!
+class EBirdApi(private val language: SupportedLanguage) {
+
+    private val wikipediaApi = WikipediaApi(language.code)
 
     // eBird API Service instance.
     private val eBirdApiService: EBirdApiService by lazy {
@@ -40,12 +45,21 @@ class EBirdApi {
 
     // Function to get recent bird observations. This function can only be called from
     // another 'suspend' function or from a coroutine.
-    suspend fun getRecentObservations(regionCode: String, languageCode: String, maxResult: Int): Result<List<Bird>> {
+    suspend fun getRecentObservations(
+        regionCode: String,
+        year: Int,
+        month: Int,
+        day: Int,
+        languageCode: String,
+        maxResult: Int
+    ): Result<List<Bird>> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = eBirdApiService.getRecentObservations(regionCode, languageCode, maxResult)
+                val response = eBirdApiService.getRecentObservations(
+                    regionCode, year, month, day,  languageCode, maxResult
+                )
                 if (response.isSuccessful) {
-                    val birds = response.body()?.map { mapToBird(it, languageCode) }
+                    val birds = response.body()?.map { mapToBird(it) }
                     birds?.let { Result.Success(it) } ?: Result.Failure("No birds in response")
                 } else {
                     Result.Failure("Error: ${response.code()} - ${response.errorBody()?.string()}")
@@ -56,15 +70,13 @@ class EBirdApi {
         }
     }
 
-    private suspend fun getBirdInformation(sighting: SimpleBirdSighting, languageCode: String): SimpleWikipediaResponse? {
-        val api = WikipediaApi(languageCode)
-        val result = api.getAdditionalBirdInfo(sighting.sciName)
+    private suspend fun getBirdInformation(sighting: SimpleBirdSighting): SimpleWikipediaResponse? {
+        val result = wikipediaApi.getAdditionalBirdInfo(sighting.sciName)
         return if (result is Result.Success) result.value else null
     }
 
-    // Function used to map 'SimpleBirdSighting' to 'Bird' objects.
-    private suspend fun mapToBird(sighting: SimpleBirdSighting, languageCode: String): Bird {
-        val additionalInfo = getBirdInformation(sighting, languageCode)
+    private suspend fun mapToBird(sighting: SimpleBirdSighting): Bird {
+        val additionalInfo = getBirdInformation(sighting)
 
         return Bird(
             speciesName = sighting.comName,

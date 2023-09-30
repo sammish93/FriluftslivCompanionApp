@@ -1,16 +1,16 @@
 package no.hiof.friluftslivcompanionapp
 
-import no.hiof.friluftslivcompanionapp.data.network.Result
 import no.hiof.friluftslivcompanionapp.domain.BirdObservations
-import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
+import java.time.LocalDate
 import kotlin.system.exitProcess
 
 suspend fun main() {
 
     val api = BirdObservations()
-    val result = api.getRecentObservationsInOslo(language = SupportedLanguage.NORWEGIAN, maxResult = 1)
-    val birdList = if (result is Result.Success) result.value else null
+    val start = LocalDate.of(2023, 8, 13)
+    val end = LocalDate.of(2023, 8, 15)
+    val result = api.getObservationsBetweenDates(start, end, maxResult = 1)
 
-    println(birdList)
+    println(result)
     exitProcess(0)
 }
