@@ -10,6 +10,8 @@ import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.api.SimpleBirdSighting
 import no.hiof.friluftslivcompanionapp.models.api.SimpleWikipediaResponse
 import java.lang.Exception
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 /**
  * The `EBirdApi` class is responsible for interacting with the eBird API and Wikipedia API.
@@ -63,14 +65,21 @@ class EBirdApi {
     // Function used to map 'SimpleBirdSighting' to 'Bird' objects.
     private suspend fun mapToBird(sighting: SimpleBirdSighting, languageCode: String): Bird {
         val additionalInfo = getBirdInformation(sighting, languageCode)
+
         return Bird(
             speciesName = sighting.comName,
             speciesNameScientific = sighting.sciName,
             number = sighting.howMany,
             description = additionalInfo?.extract,
             photoUrl = additionalInfo?.thumbnail,
+            observationDate = formatObservationDate(sighting.obsDt),
             coordinates = Location(sighting.lat, sighting.lng)
         )
+    }
+
+    private fun formatObservationDate(observationDate: String): LocalDateTime {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+        return LocalDateTime.parse(observationDate, formatter)
     }
 
 }

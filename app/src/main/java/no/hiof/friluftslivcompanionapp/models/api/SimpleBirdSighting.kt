@@ -5,6 +5,7 @@ data class SimpleBirdSighting(
     val comName: String,
     val sciName: String,
     val howMany: Int,
+    val obsDt: String,
     var lat: Double,
     var lng: Double
 )

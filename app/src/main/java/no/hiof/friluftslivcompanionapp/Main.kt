@@ -8,7 +8,7 @@ import kotlin.system.exitProcess
 suspend fun main() {
 
     val api = BirdObservations()
-    val result = api.getRecentObservationsInOslo(regionCode = "NO", language = SupportedLanguage.NORWEGIAN, maxResult = 10)
+    val result = api.getRecentObservationsInOslo(language = SupportedLanguage.NORWEGIAN, maxResult = 1)
     val birdList = if (result is Result.Success) result.value else null
 
     println(birdList)
