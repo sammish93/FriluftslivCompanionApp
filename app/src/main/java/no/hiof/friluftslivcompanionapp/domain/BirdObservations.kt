@@ -5,16 +5,31 @@ import no.hiof.friluftslivcompanionapp.data.network.Result
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 /**
- * The `BirdObservations` class serves as a domain layer in the application architecture.
+ * The `BirdObservations` class serves as a domain layer in the application architecture,
+ * designed as a Singleton to ensure a single instance in the application.
  * It acts as an intermediary between the data layer (`EBirdApi`) and the presentation layer.
  * It is responsible for invoking methods from the data layer to fetch data, which then
  * can be passed to the presentation layer.
+ *
+ * To get an instance of this class, use the `getInstance` method with the required `languageCode`.
  */
-class BirdObservations(private val languageCode: SupportedLanguage) {
+class BirdObservations private constructor(languageCode: SupportedLanguage) {
+
+    private val api = EBirdApi(languageCode)
+    companion object {
+
+        @Volatile
+        private var instance: BirdObservations? = null
+
+        fun getInstance(languageCode: SupportedLanguage): BirdObservations {
+            return instance ?: synchronized(this) {
+                instance ?: BirdObservations(languageCode).also { instance = it }
+            }
+        }
+    }
 
     /**
      * This method creates an instance of `EBirdApi` and calls the `getRecentObservations`
@@ -36,7 +51,6 @@ class BirdObservations(private val languageCode: SupportedLanguage) {
         maxResult: Int=1
     ): Result<List<Bird>> {
 
-        val api = EBirdApi(languageCode)
         return api.getRecentObservations(regionCode, year, month, day, maxResult)
     }
 
@@ -57,7 +71,6 @@ class BirdObservations(private val languageCode: SupportedLanguage) {
     ): Result<List<Bird>> {
 
         val validationResult = validateDate(startDate, endDate)
-
         if (validationResult is Result.Failure)
             return validationResult
 
@@ -74,9 +87,8 @@ class BirdObservations(private val languageCode: SupportedLanguage) {
      * @param action The lambda function to apply to each Bird object in the list.
      * @return A list of results obtained by applying the lambda function to each Bird object.
      */
-    fun processBirdList(birds: List<Bird>?, action: (Bird) -> String): List<String>? {
-        if (birds != null) return birds.map(action)
-        return null
+    fun processBirdList(birds: List<Bird>?, action: (Bird) -> String): List<String> {
+        return birds?.map(action) ?: emptyList()
     }
 
     private fun validateDate(startDate: LocalDate, endDate: LocalDate): Result<Unit> {
@@ -95,15 +107,15 @@ class BirdObservations(private val languageCode: SupportedLanguage) {
         daysBetween: Int,
         regionCode: String,
         maxResult: Int
-    ): MutableList<Bird> {
-        val allObservations = mutableListOf<Bird>()
+    ): List<Bird> {
 
+        val allObservations = mutableListOf<Bird>()
         for (day in 0..daysBetween) {
             val date = startDate.plusDays(day.toLong())
             val result = getObservationsForDate(date, regionCode, maxResult)
             if (result is Result.Success) allObservations.addAll(result.value)
         }
-        return allObservations
+        return allObservations.toList()
     }
 
     private suspend fun getObservationsForDate(

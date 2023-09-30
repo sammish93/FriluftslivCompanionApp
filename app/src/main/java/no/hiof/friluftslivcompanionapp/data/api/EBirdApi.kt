@@ -32,7 +32,6 @@ import java.time.format.DateTimeFormatter
  * them with additional information fetched from Wikipedia.
  */
 class EBirdApi(private val language: SupportedLanguage) {
-
     private val wikipediaApi = WikipediaApi(language.code)
 
     // eBird API Service instance.
@@ -89,5 +88,4 @@ class EBirdApi(private val language: SupportedLanguage) {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
         return LocalDateTime.parse(observationDate, formatter)
     }
-
 }

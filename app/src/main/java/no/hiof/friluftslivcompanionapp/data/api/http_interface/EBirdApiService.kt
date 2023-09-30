@@ -5,7 +5,11 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-
+/**
+ * `EBirdApiService` is an interface representing the API service for eBird, providing
+ * a method to fetch recent bird observations. It is intended to be used with a Retrofit instance
+ * to create the actual implementation of the API service.
+ */
 interface EBirdApiService {
 
     @GET("/v2/data/obs/{regionCode}/historic/{year}/{month}/{day}")

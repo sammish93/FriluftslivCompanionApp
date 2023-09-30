@@ -7,8 +7,8 @@ import kotlin.system.exitProcess
 
 suspend fun main() {
 
-    val api = BirdObservations(SupportedLanguage.ENGLISH)
-    val result = api.getRecentObservations()
+    val api = BirdObservations.getInstance(SupportedLanguage.ENGLISH)
+    val result = api.getRecentObservations(maxResult = 10)
 
     if (result is Result.Success)
         println(result.value)
