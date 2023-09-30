@@ -4,5 +4,8 @@ package no.hiof.friluftslivcompanionapp.models.api
 data class SimpleBirdSighting(
     val comName: String,
     val sciName: String,
+    val howMany: Int,
+    var lat: Double,
+    var lng: Double
 )
 

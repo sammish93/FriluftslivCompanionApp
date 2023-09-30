@@ -6,6 +6,7 @@ import no.hiof.friluftslivcompanionapp.data.api.http_interface.EBirdApiService
 import no.hiof.friluftslivcompanionapp.data.network.Result
 import no.hiof.friluftslivcompanionapp.data.network.RetrofitBuilder
 import no.hiof.friluftslivcompanionapp.models.Bird
+import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.api.SimpleBirdSighting
 import no.hiof.friluftslivcompanionapp.models.api.SimpleWikipediaResponse
 import java.lang.Exception
@@ -65,8 +66,10 @@ class EBirdApi {
         return Bird(
             speciesName = sighting.comName,
             speciesNameScientific = sighting.sciName,
+            number = sighting.howMany,
             description = additionalInfo?.extract,
-            photoUrl = additionalInfo?.thumbnail
+            photoUrl = additionalInfo?.thumbnail,
+            coordinates = Location(sighting.lat, sighting.lng)
         )
     }
 
