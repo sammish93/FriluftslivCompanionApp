@@ -66,7 +66,7 @@ class BirdObservations private constructor() {
      * @return A `Result` object containing a list of `Bird` objects.
      */
     suspend fun getObservationsBetweenDates(
-        languageCode: SupportedLanguage,
+        languageCode: SupportedLanguage=SupportedLanguage.ENGLISH,
         startDate: LocalDate,
         endDate: LocalDate,
         regionCode: String="NO-03",

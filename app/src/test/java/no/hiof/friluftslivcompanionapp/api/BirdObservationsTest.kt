@@ -1,4 +1,4 @@
-package no.hiof.friluftslivcompanionapp
+package no.hiof.friluftslivcompanionapp.api
 
 import kotlinx.coroutines.runBlocking
 import no.hiof.friluftslivcompanionapp.data.network.Result
@@ -27,6 +27,7 @@ class BirdObservationsTest {
     @Test
     fun getRecentObservations_returnsExpectedResult() = runBlocking {
 
+        // Arrange
         val expected = Result.Success(listOf(
             Bird(
                 speciesName = "Common Murre",
@@ -38,11 +39,13 @@ class BirdObservationsTest {
                 coordinates = Location(lat = 59.904504, lon = 10.753352)
             )
         ))
-
         `when`(birdObservations.getRecentObservations(year = 2023, month = 9, day = 30)).thenReturn(expected)
+
+        // Act
         val result = birdObservations.getRecentObservations(year = 2023, month = 9, day = 30)
         val observations = if (result is Result.Success) result.value else listOf()
 
+        // Assert
         assertEquals(expected.value[0].speciesName, observations[0].speciesName)
         assertEquals(expected.value[0].speciesNameScientific, observations[0].speciesNameScientific)
         assertEquals(expected.value[0].photoUrl, observations[0].photoUrl)
@@ -53,6 +56,7 @@ class BirdObservationsTest {
     @Test
     fun getRecentObservations_returnsResultInNorwegian() = runBlocking {
 
+        // Arrange
         val expected = Result.Success(listOf(
             Bird(
                 speciesName = "lomvi",
@@ -67,15 +71,16 @@ class BirdObservationsTest {
                 coordinates = Location(lat = 59.904504, lon = 10.753352)
             )
         ))
-
         `when`(birdObservations.getRecentObservations(
             languageCode = SupportedLanguage.NORWEGIAN, year = 2023, month = 9, day = 30))
             .thenReturn(expected)
 
+        // Act
         val observations = birdObservations.getRecentObservations(
             languageCode = SupportedLanguage.NORWEGIAN, year = 2023, month = 9, day = 30)
         val result = if (observations is Result.Success) observations.value else listOf()
 
+        // Assert
         assertEquals(expected.value[0].speciesName, result[0].speciesName)
         assertEquals(expected.value[0].speciesNameScientific, result[0].speciesNameScientific)
         assertEquals(expected.value[0].number, result[0].number)
@@ -83,5 +88,37 @@ class BirdObservationsTest {
         assertEquals(expected.value[0].description, result[0].description)
         assertEquals(expected.value[0].observationDate, result[0].observationDate)
         assertEquals(expected.value[0].coordinates, result[0].coordinates)
+    }
+
+    @Test
+    fun getRecentObservations_returnRightAmountOfBirdObjects() = runBlocking {
+
+        // Arrange
+        val birdMock = mock<Bird>()
+        val birdList = Result.Success(List(5) { birdMock })
+       `when`(birdObservations.getRecentObservations(maxResult = 5)).thenReturn(birdList)
+
+        // Act
+        val observation = birdObservations.getRecentObservations(maxResult = 5)
+        val result = if (observation is Result.Success) observation.value else listOf()
+
+        // Assert
+        assertEquals(birdList.value.size, result.size)
+    }
+
+    @Test
+    fun getRecentObservation_returnErrorMessageOnNonExistingRegionCode() = runBlocking {
+
+        // Arrange
+        val errorMessage = "Error 400 - Invalid request: Please check the region code and try again"
+        `when`(birdObservations.getRecentObservations(regionCode = "FSFDf"))
+            .thenReturn(Result.Failure(errorMessage))
+
+        // Act
+        val observations = birdObservations.getRecentObservations(regionCode = "FSFDf")
+        val result = if (observations is Result.Failure) observations.message else ""
+
+        // Assert
+        assertEquals(errorMessage, result)
     }
 }
