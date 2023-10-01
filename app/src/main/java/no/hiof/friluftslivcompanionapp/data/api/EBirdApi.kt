@@ -31,8 +31,11 @@ import java.time.format.DateTimeFormatter
  * The `mapToBird` method is used to map `SimpleBirdSighting` objects to `Bird` objects, enriching
  * them with additional information fetched from Wikipedia.
  */
-class EBirdApi(private val language: SupportedLanguage) {
-    private val wikipediaApi = WikipediaApi(language.code)
+class EBirdApi {
+
+    private var _language: SupportedLanguage = SupportedLanguage.ENGLISH
+
+    private val wikipediaApi = WikipediaApi()
 
     // eBird API Service instance.
     private val eBirdApiService: EBirdApiService by lazy {
@@ -43,6 +46,7 @@ class EBirdApi(private val language: SupportedLanguage) {
     // Function to get recent bird observations. This function can only be called from
     // another 'suspend' function or from a coroutine.
     suspend fun getRecentObservations(
+        languageCode: SupportedLanguage,
         regionCode: String,
         year: Int,
         month: Int,
@@ -51,8 +55,9 @@ class EBirdApi(private val language: SupportedLanguage) {
     ): Result<List<Bird>> {
         return withContext(Dispatchers.IO) {
             try {
+                wikipediaApi.language = languageCode
                 val response = eBirdApiService.getRecentObservations(
-                    regionCode, year, month, day, language.code, maxResult
+                    regionCode, year, month, day, languageCode.code, maxResult
                 )
                 if (response.isSuccessful) {
                     val birds = response.body()?.map { mapToBird(it) }
@@ -88,4 +93,10 @@ class EBirdApi(private val language: SupportedLanguage) {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
         return LocalDateTime.parse(observationDate, formatter)
     }
+
+    var language: SupportedLanguage
+        get() = _language
+        set(value) {
+            _language = value
+        }
 }

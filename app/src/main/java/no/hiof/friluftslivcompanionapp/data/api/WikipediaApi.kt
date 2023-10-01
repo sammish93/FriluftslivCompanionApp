@@ -7,6 +7,7 @@ import no.hiof.friluftslivcompanionapp.data.network.RetrofitBuilder
 import no.hiof.friluftslivcompanionapp.models.api.SimpleWikipediaResponse
 import no.hiof.friluftslivcompanionapp.models.api.WikipediaResponse
 import no.hiof.friluftslivcompanionapp.data.network.Result
+import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import retrofit2.Response
 
 /**
@@ -19,11 +20,13 @@ import retrofit2.Response
  * This class provides a method to get additional bird information and map it to
  * `SimpleWikipediaResponse` objects.
  */
-class WikipediaApi(private var language: String) {
+class WikipediaApi {
+
+    private var _language: SupportedLanguage = SupportedLanguage.ENGLISH
 
     // Wikipedia API Service instance.
     private val wikipediaApiService: WikipediaApiService by lazy {
-        val retrofit = RetrofitBuilder.buildWikipediaApi(language)
+        val retrofit = RetrofitBuilder.buildWikipediaApi(_language.code)
         retrofit.create(WikipediaApiService::class.java)
     }
 
@@ -64,4 +67,11 @@ class WikipediaApi(private var language: String) {
             thumbnail = page.thumbnail?.source
         )
     }
+
+    // Getter and setter for _language.
+    var language: SupportedLanguage
+        get() = _language
+        set(value) {
+            _language = value
+        }
 }

@@ -16,17 +16,17 @@ import java.time.temporal.ChronoUnit
  *
  * To get an instance of this class, use the `getInstance` method with the required `languageCode`.
  */
-class BirdObservations private constructor(languageCode: SupportedLanguage) {
+class BirdObservations private constructor() {
 
-    private val api = EBirdApi(languageCode)
+    private val eBirdApi = EBirdApi()
     companion object {
 
         @Volatile
         private var instance: BirdObservations? = null
 
-        fun getInstance(languageCode: SupportedLanguage): BirdObservations {
+        fun getInstance(): BirdObservations {
             return instance ?: synchronized(this) {
-                instance ?: BirdObservations(languageCode).also { instance = it }
+                instance ?: BirdObservations().also { instance = it }
             }
         }
     }
@@ -44,6 +44,7 @@ class BirdObservations private constructor(languageCode: SupportedLanguage) {
      * observations in the specified region, or an error if the operation fails.
      */
     suspend fun getRecentObservations(
+        languageCode: SupportedLanguage=SupportedLanguage.ENGLISH,
         regionCode: String="NO-03",
         year: Int=LocalDate.now().year,
         month: Int=LocalDate.now().monthValue,
@@ -51,7 +52,8 @@ class BirdObservations private constructor(languageCode: SupportedLanguage) {
         maxResult: Int=1
     ): Result<List<Bird>> {
 
-        return api.getRecentObservations(regionCode, year, month, day, maxResult)
+        eBirdApi.language = languageCode
+        return eBirdApi.getRecentObservations(languageCode, regionCode, year, month, day, maxResult)
     }
 
     /**
@@ -64,6 +66,7 @@ class BirdObservations private constructor(languageCode: SupportedLanguage) {
      * @return A `Result` object containing a list of `Bird` objects.
      */
     suspend fun getObservationsBetweenDates(
+        languageCode: SupportedLanguage,
         startDate: LocalDate,
         endDate: LocalDate,
         regionCode: String="NO-03",
@@ -75,7 +78,7 @@ class BirdObservations private constructor(languageCode: SupportedLanguage) {
             return validationResult
 
         val days = getDaysBetween(startDate, endDate)
-        return Result.Success(iterateOverDays(startDate, days, regionCode, maxResult))
+        return Result.Success(iterateOverDays(languageCode, startDate, days, regionCode, maxResult))
     }
 
     /**
@@ -103,6 +106,7 @@ class BirdObservations private constructor(languageCode: SupportedLanguage) {
     }
 
     private suspend fun iterateOverDays(
+        languageCode: SupportedLanguage,
         startDate: LocalDate,
         daysBetween: Int,
         regionCode: String,
@@ -112,19 +116,21 @@ class BirdObservations private constructor(languageCode: SupportedLanguage) {
         val allObservations = mutableListOf<Bird>()
         for (day in 0..daysBetween) {
             val date = startDate.plusDays(day.toLong())
-            val result = getObservationsForDate(date, regionCode, maxResult)
+            val result = getObservationsForDate(languageCode, date, regionCode, maxResult)
             if (result is Result.Success) allObservations.addAll(result.value)
         }
         return allObservations.toList()
     }
 
     private suspend fun getObservationsForDate(
+        languageCode: SupportedLanguage,
         date: LocalDate,
         regionCode: String,
         maxResult: Int
     ): Result<List<Bird>> {
 
         return getRecentObservations(
+            languageCode = languageCode,
             regionCode = regionCode,
             year = date.year,
             month = date.monthValue,

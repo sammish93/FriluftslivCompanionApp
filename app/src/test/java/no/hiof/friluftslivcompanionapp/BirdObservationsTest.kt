@@ -19,7 +19,7 @@ class BirdObservationsTest {
 
     @Before
     fun setUp() {
-        birdObservations = BirdObservations.getInstance(SupportedLanguage.ENGLISH)
+        birdObservations = BirdObservations.getInstance()
     }
 
     @Test
