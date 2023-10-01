@@ -12,6 +12,9 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import no.hiof.friluftslivcompanionapp.data.repositories.UserRepository
 import no.hiof.friluftslivcompanionapp.models.UserPreferences
 
@@ -55,7 +58,7 @@ class SignInActivity : AppCompatActivity() {
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
         val response = result.idpResponse
         if (result.resultCode == RESULT_OK) {
-            val user = FirebaseAuth.getInstance().currentUser
+            val user = auth.currentUser
 
             if (user != null) {
                 // Create or update the user document using the UserRepository
@@ -67,16 +70,13 @@ class SignInActivity : AppCompatActivity() {
                     lifelist = null,
                     tripActivity = null
                 )
+                launch {
+                    userRepository.createUser(userData)
 
-                userRepository.createUser(userData) { success ->
-                    if (success) {
-                        val mainIntent = Intent(this, MainActivity::class.java)
-                        startActivity(mainIntent)
-                        finish()
-                    } else {
-                        Log.e("SignInActivity", "Error creating/updating user document")
-                    }
+                    navigateToMainActivity()
+
                 }
+
             } else {
                 Log.e("SignInActivity", "User is null")
             }
@@ -85,6 +85,12 @@ class SignInActivity : AppCompatActivity() {
             Log.e("SignInActivity", errorMessage)
         }
     }
+    private fun launch(block: suspend () -> Unit) {
+        kotlinx.coroutines.GlobalScope.launch {
+            withContext(Dispatchers.IO) {
+                block()
+            }
+        }
 
     /*
     //This code is blocked out for now the above code is making sure the userRepository is working
@@ -102,4 +108,10 @@ class SignInActivity : AppCompatActivity() {
 
 
      */
+    }
+    private fun navigateToMainActivity() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish() // Optional: Close the current activity if needed
+    }
 }
