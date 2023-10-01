@@ -1,7 +1,9 @@
 package no.hiof.friluftslivcompanionapp
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -35,6 +37,7 @@ import no.hiof.friluftslivcompanionapp.ui.screens.TripsScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.WeatherScreen
 import no.hiof.friluftslivcompanionapp.ui.theme.FriluftslivCompanionAppTheme
 import javax.inject.Inject
+
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,34 +57,38 @@ import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 class MainActivity : ComponentActivity() {
     @Inject
     lateinit var auth: FirebaseAuth
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            FriluftslivCompanionAppTheme(
-                typography = CustomTypography,
-                //useDarkTheme = true
-            ) {
-                Surface(
-                    tonalElevation = 5.dp,
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
 
-                    val currentUser = auth.currentUser
-                    if (currentUser != null) {
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+
+            // User is signed in, shows the main content
+            setContent {
+                FriluftslivCompanionAppTheme(
+                    typography = CustomTypography,
+                    //useDarkTheme = true
+                ) {
+                    Surface(
+                        tonalElevation = 5.dp,
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
                         FriluftslivApp()
-                    } else if (savedInstanceState == null) {
-                        // Avoid redirecting if the activity is recreated (e.g., on orientation change)
-                        val signInIntent = Intent(this, SignInActivity::class.java)
-                        startActivity(signInIntent)
-                    }
                     }
                 }
             }
+        } else {
+            // No user signed in, start SignInActivity
+            val signInIntent = Intent(this, SignInActivity::class.java)
+            startActivity(signInIntent)
+            finish()
         }
+    }
+
 
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
