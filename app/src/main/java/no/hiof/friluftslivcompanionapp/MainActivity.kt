@@ -1,8 +1,6 @@
 package no.hiof.friluftslivcompanionapp
 
 import android.content.Intent
-import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,8 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
-import com.google.firebase.auth.FirebaseAuth
-import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -39,9 +35,6 @@ import no.hiof.friluftslivcompanionapp.ui.screens.TripsScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.WeatherScreen
 import no.hiof.friluftslivcompanionapp.ui.theme.FriluftslivCompanionAppTheme
 import javax.inject.Inject
-@AndroidEntryPoint
-import javax.inject.Inject
-
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -77,10 +70,9 @@ class MainActivity : ComponentActivity() {
 
                     val currentUser = auth.currentUser
                     if (currentUser != null) {
-                        // User is signed in, show the main content of your app
-                        // Replace MainContent with your actual main content Composable
                         FriluftslivApp()
-                    } else {
+                    } else if (savedInstanceState == null) {
+                        // Avoid redirecting if the activity is recreated (e.g., on orientation change)
                         val signInIntent = Intent(this, SignInActivity::class.java)
                         startActivity(signInIntent)
                     }
