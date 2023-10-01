@@ -95,4 +95,6 @@ dependencies {
     implementation("com.google.firebase:firebase-storage-ktx")
     */
 
+    // Mockito
+    androidTestImplementation("org.mockito:mockito-core:5.5.0")
 }
