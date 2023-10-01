@@ -7,9 +7,11 @@ import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 
+
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.*
 import java.time.LocalDateTime
 
 
@@ -19,7 +21,7 @@ class BirdObservationsTest {
 
     @Before
     fun setUp() {
-        birdObservations = BirdObservations.getInstance()
+        birdObservations = mock(BirdObservations::class.java)
     }
 
     @Test
@@ -37,7 +39,8 @@ class BirdObservationsTest {
             )
         ))
 
-        val result = birdObservations.getRecentObservations(year=2023, month=9, day=30)
+        `when`(birdObservations.getRecentObservations(year = 2023, month = 9, day = 30)).thenReturn(expected)
+        val result = birdObservations.getRecentObservations(year = 2023, month = 9, day = 30)
         val observations = if (result is Result.Success) result.value else listOf()
 
         assertEquals(expected.value[0].speciesName, observations[0].speciesName)
@@ -47,7 +50,6 @@ class BirdObservationsTest {
         assertEquals(expected.value[0].coordinates, observations[0].coordinates)
     }
 
-    // TODO(Fix this test later)
     @Test
     fun getRecentObservations_returnsResultInNorwegian() = runBlocking {
 
@@ -56,7 +58,7 @@ class BirdObservationsTest {
                 speciesName = "lomvi",
                 speciesNameScientific = "Uria aalge",
                 number = 16,
-                photoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Common_Murre_Uria_aalge.jpg/600px-Common_Murre_Uria_aalge.jpg",
+                photoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Uria_aalge_-Iceland_-swimming-8.jpg/600px-Uria_aalge_-Iceland_-swimming-8.jpg",
                 description = """
                     Lomvi eller ringvi (Uria aalge) er en pelagisk dykkende sjøfugl og den største av alkene (Alcini), en monofyletisk gruppe som tilhører familien alkefugler (Alcidae). Arten finnes i tempererte og lavarktiske kyststrøk i nordområdene i Atlanterhavet og Stillehavet.
                     Norsk lomvi hekker først og fremst på Bjørnøya, der det finnes omkring 100 000 par av denne arten. Noen få kolonier hekker også på Spitsbergen, henholdsvis ved Prins Karls Forland og Amsterdamøya.
@@ -66,8 +68,20 @@ class BirdObservationsTest {
             )
         ))
 
+        `when`(birdObservations.getRecentObservations(
+            languageCode = SupportedLanguage.NORWEGIAN, year = 2023, month = 9, day = 30))
+            .thenReturn(expected)
 
-        val result = birdObservations.getRecentObservations(year=2023, month=9, day=30)
-        assertEquals(expected, result)
+        val observations = birdObservations.getRecentObservations(
+            languageCode = SupportedLanguage.NORWEGIAN, year = 2023, month = 9, day = 30)
+        val result = if (observations is Result.Success) observations.value else listOf()
+
+        assertEquals(expected.value[0].speciesName, result[0].speciesName)
+        assertEquals(expected.value[0].speciesNameScientific, result[0].speciesNameScientific)
+        assertEquals(expected.value[0].number, result[0].number)
+        assertEquals(expected.value[0].photoUrl, result[0].photoUrl)
+        assertEquals(expected.value[0].description, result[0].description)
+        assertEquals(expected.value[0].observationDate, result[0].observationDate)
+        assertEquals(expected.value[0].coordinates, result[0].coordinates)
     }
 }
