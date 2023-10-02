@@ -230,4 +230,45 @@ class BirdObservationsTest {
         assertEquals(error, "Start date must be before end date!")
         assertTrue(result is Result.Failure)
     }
+
+    @Test
+    fun processBirdList_returnsProcessedList() = runBlocking {
+
+        // Arrange
+        val observations = BirdObservations.getInstance()
+
+        // Act
+        val result = observations.getRecentObservations(maxResult = 2)
+        val success = if (result is Result.Success) result.value else emptyList()
+
+        val birdNames = observations.processBirdList(success) { bird ->
+            bird.speciesName ?: ""
+        }
+
+        val birdPhotos = observations.processBirdList(success) { url ->
+            url.photoUrl ?: ""
+        }
+
+        // Assert
+        assertTrue(birdNames[0] == success[0].speciesName)
+        assertTrue(birdNames[1] == success[1].speciesName)
+        assertTrue(birdPhotos[0] == success[0].photoUrl)
+        assertTrue(birdPhotos[1] == success[1].photoUrl)
+    }
+
+    @Test
+    fun processBirdList_returnsEmptyListIfActionIsNotSpecified() = runBlocking {
+
+        // Arrange
+        val observations = BirdObservations.getInstance()
+
+        // Act
+        val result = observations.getRecentObservations()
+        val success = if (result is Result.Success) result.value else emptyList()
+
+        val processed = observations.processBirdList(success) { null }
+
+        // Assert
+        assertTrue(processed.isEmpty())
+    }
 }
