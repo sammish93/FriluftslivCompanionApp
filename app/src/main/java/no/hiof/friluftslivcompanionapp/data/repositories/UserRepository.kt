@@ -13,14 +13,15 @@ import no.hiof.friluftslivcompanionapp.models.TripActivity
 import no.hiof.friluftslivcompanionapp.models.User
 import no.hiof.friluftslivcompanionapp.models.UserPreferences
 import javax.inject.Inject
-// Responsible for retrieving data from the db about a specific user.
-// NOTE: also uses ActivityRepository, LifelistRepository, and PreferencesRepository
-// to retrieve a single user's activity, lifelist, and user preferences.
-// The instantiation of said user object would be best suited to the domain layer.
 class UserRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth
 ){
+    /**
+     * Method for creating a new user with the id of
+     * the firestire auth token. It can also be used for editing an
+     * existing user's fields
+     */
     suspend fun createUser(user: User) {
         try {
             val currentUser = auth.currentUser
