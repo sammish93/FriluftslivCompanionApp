@@ -191,4 +191,43 @@ class BirdObservationsTest {
             assertTrue(bird.observationDate.toLocalDate() <= end)
         }
     }
+
+    @Test
+    fun getObservationsBetweenDates_returnsRightAmountOfObjects() = runBlocking {
+
+        // Arrange
+        val start = LocalDate.of(2023, 9, 13)
+        val end = LocalDate.of(2023, 9, 15)
+        val numberOfDays = (end.dayOfMonth - start.dayOfMonth) + 1
+        val observations = BirdObservations.getInstance()
+
+        // Act
+        val result = observations.getObservationsBetweenDates(
+            startDate = start,
+            endDate = end,
+            maxResult = 5
+        )
+        val data = if (result is Result.Success) result.value else emptyList()
+
+        // Assert
+        // Five results will be returned for each day, so the size is 5 * 3 = 15.
+        assertTrue(data.size == (5 * numberOfDays))
+    }
+
+    @Test
+    fun getObservationsBetweenDates_returnsErrorOnInvalidStartAndEndDate() = runBlocking {
+
+        // Arrange
+        val start = LocalDate.of(2023, 9, 13)
+        val invalidEnd = LocalDate.of(2023, 9, 10)
+        val observations = BirdObservations.getInstance()
+
+        // Act
+        val result = observations.getObservationsBetweenDates(startDate = start, endDate = invalidEnd)
+        val error = if (result is Result.Failure) result.message else ""
+
+        // Assert
+        assertEquals(error, "Start date must be before end date!")
+        assertTrue(result is Result.Failure)
+    }
 }
