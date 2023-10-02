@@ -97,10 +97,9 @@ class BirdObservationsTest {
         // Arrange
         val birdMock = mock<Bird>()
         val birdList = Result.Success(List(5) { birdMock })
-       `when`(birdObservations.getRecentObservations(maxResult = 5)).thenReturn(birdList)
 
         // Act
-        val observation = birdObservations.getRecentObservations(maxResult = 5)
+        val observation = BirdObservations.getInstance().getRecentObservations(maxResult = 5)
         val result = if (observation is Result.Success) observation.value else listOf()
 
         // Assert
@@ -128,12 +127,9 @@ class BirdObservationsTest {
 
         // Arrange
         val emptyList = emptyList<Bird>()
-        val birdList = Result.Success(emptyList)
-        `when`(birdObservations.getRecentObservations(year = 2025, month = 5, day = 10))
-            .thenReturn(birdList)
 
         // Act
-        val observation = birdObservations.getRecentObservations(year = 2025, month = 5, day = 10)
+        val observation = BirdObservations.getInstance().getRecentObservations(year = 2025, month = 5, day = 10)
         val result = if (observation is Result.Success) observation.value else null
 
         // Assert
@@ -153,5 +149,46 @@ class BirdObservationsTest {
 
         // Assert
         assertEquals(currentDate, result[0].observationDate.toLocalDate())
+    }
+
+    @Test
+    fun getObservationsBetweenDates_returnsSuccessOnValidParameters() = runBlocking {
+
+        // Arrange
+        val start = LocalDate.of(2023, 9, 13)
+        val end = LocalDate.of(2023, 9, 15)
+        val observations = BirdObservations.getInstance()
+
+        // Act
+        val result = observations.getObservationsBetweenDates(startDate = start, endDate = end)
+        val data = if (result is Result.Success) result.value else null
+
+        // Assert
+        assertTrue(result is Result.Success)
+        assertFalse(result is Result.Failure)
+        assertNotNull(data)
+    }
+
+    @Test
+    fun getObservationsBetweenDates_returnsObservationsBetweenSpecifiedDate() = runBlocking {
+
+        // Arrange
+        val start = LocalDate.of(2023, 9, 13)
+        val end = LocalDate.of(2023, 9, 15)
+        val observations = BirdObservations.getInstance()
+
+        // Act
+        val result = observations.getObservationsBetweenDates(
+            startDate = start,
+            endDate = end,
+            maxResult = 5
+        )
+        val data = if (result is Result.Success) result.value else emptyList()
+
+        // Assert
+        data.forEach { bird ->
+            assertTrue(bird.observationDate.toLocalDate() >= start)
+            assertTrue(bird.observationDate.toLocalDate() <= end)
+        }
     }
 }
