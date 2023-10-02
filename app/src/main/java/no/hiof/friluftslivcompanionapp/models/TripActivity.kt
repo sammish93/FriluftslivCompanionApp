@@ -1,7 +1,6 @@
 package no.hiof.friluftslivcompanionapp.models
 
-import com.google.type.DateTime
+import java.util.Date
 
-// Datetime vs Date - Datetime allows a user to do multiple trips on the same day while still
-// using Map.
-data class TripActivity(val activity: Map<DateTime, Trip>)
+// Datetime vs Date - Datetime seems to cause compile errors with kotlin. Date supports time alse.
+data class TripActivity(val activity: Map<Date, Trip>)
