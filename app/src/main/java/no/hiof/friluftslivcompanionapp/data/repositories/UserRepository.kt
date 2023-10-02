@@ -2,6 +2,7 @@ package no.hiof.friluftslivcompanionapp.data.repositories
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
@@ -18,42 +19,16 @@ class UserRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth
 ){
-    /*
-   fun createUser(user: no.hiof.friluftslivcompanionapp.models.User, onComplete: (Boolean) -> Unit) {
-        val userId = auth.currentUser?.uid
-
-        if (userId != null) {
-            // Set the user document in Firestore with the Firebase Auth UID as the document ID
-            firestore.collection("users")
-                .document(userId)
-                .set(user, SetOptions.merge())
-                .addOnSuccessListener {
-                    onComplete(true)
-                }
-                .addOnFailureListener {
-                    onComplete(false)
-                }
-        } else {
-            onComplete(false)
-        }
-    }
-
-
-     */
-
     suspend fun createUser(user: User) {
         try {
             val currentUser = auth.currentUser
             if (currentUser != null) {
                 val userId = currentUser.uid
 
-
                 val userCollection = firestore.collection("users")
                 val userDocument = userCollection.document(userId)
 
-
                 userDocument.set(user).await()
-
 
             } else {
 
@@ -64,7 +39,24 @@ class UserRepository @Inject constructor(
             e.printStackTrace()
         }
     }
+    suspend fun getUser(uid: String): User? {
+        return try {
+            val userCollection = firestore.collection("users")
+            val userDocument = userCollection.document(uid)
+
+            val documentSnapshot: DocumentSnapshot = userDocument.get().await()
+
+            if (documentSnapshot.exists()) {
+                val userData = documentSnapshot.toObject(User::class.java)
+                userData?.copy(userId = documentSnapshot.id)
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+            null
+        }
 
 
-
-}
+}}
