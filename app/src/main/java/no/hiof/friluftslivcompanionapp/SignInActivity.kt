@@ -43,7 +43,8 @@ class SignInActivity : AppCompatActivity() {
     private fun showSignInOptions() {
         val providers = arrayListOf(
             AuthUI.IdpConfig.AnonymousBuilder().build(),
-            AuthUI.IdpConfig.GoogleBuilder().build()
+            AuthUI.IdpConfig.GoogleBuilder().build(),
+            AuthUI.IdpConfig.EmailBuilder().build()
         )
 
         val signInIntent = AuthUI.getInstance()
@@ -112,6 +113,6 @@ class SignInActivity : AppCompatActivity() {
     private fun navigateToMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
-        finish() // Optional: Close the current activity if needed
+        finish()
     }
 }
