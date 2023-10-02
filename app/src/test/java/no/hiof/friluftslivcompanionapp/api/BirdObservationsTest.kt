@@ -12,6 +12,7 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.*
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 
@@ -120,5 +121,37 @@ class BirdObservationsTest {
 
         // Assert
         assertEquals(errorMessage, result)
+    }
+
+    @Test
+    fun getRecentObservations_returnsEmptyListOnInvalidDate() = runBlocking {
+
+        // Arrange
+        val emptyList = emptyList<Bird>()
+        val birdList = Result.Success(emptyList)
+        `when`(birdObservations.getRecentObservations(year = 2025, month = 5, day = 10))
+            .thenReturn(birdList)
+
+        // Act
+        val observation = birdObservations.getRecentObservations(year = 2025, month = 5, day = 10)
+        val result = if (observation is Result.Success) observation.value else null
+
+        // Assert
+        assertEquals(emptyList, result)
+
+    }
+
+    @Test
+    fun getRecentObservations_returnsResultsBasedOnTheCurrentDayWithDefaultParameter() = runBlocking {
+
+        // Arrange
+        val currentDate = LocalDate.now()
+
+        // Act
+        val observations = BirdObservations.getInstance().getRecentObservations()
+        val result = if (observations is Result.Success) observations.value else emptyList()
+
+        // Assert
+        assertEquals(currentDate, result[0].observationDate.toLocalDate())
     }
 }
