@@ -1,9 +1,11 @@
 package no.hiof.friluftslivcompanionapp.data.repositories
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
 import no.hiof.friluftslivcompanionapp.models.Lifelist
@@ -50,6 +52,7 @@ class UserRepository @Inject constructor(
                 val userData = documentSnapshot.toObject(User::class.java)
                 userData?.copy(userId = documentSnapshot.id)
             } else {
+
                 null
             }
         } catch (e: Exception) {
@@ -57,6 +60,31 @@ class UserRepository @Inject constructor(
             e.printStackTrace()
             null
         }
+    }
+
+    suspend fun deleteUser(uid: String): Boolean {
+        return try {
+            val userCollection = firestore.collection("users")
+            val userDocument = userCollection.document(uid)
+
+            val documentSnapshot: DocumentSnapshot = userDocument.get().await()
+
+            if (documentSnapshot.exists()) {
+
+                userDocument.delete().await()
+                true
+            } else {
+
+                false
+            }
+        } catch (e: FirebaseFirestoreException) {
+            Log.e(TAG, "Firestore Exception: ${e.message}", e)
+            false
+        } catch (e: Exception) {
+            Log.e(TAG, "An unexpected error occurred: ${e.message}", e)
+            false
+        }
+    }
 
 
-}}
+}
