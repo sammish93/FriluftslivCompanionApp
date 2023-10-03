@@ -24,12 +24,16 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "EBIRD_API_KEY", "\"${System.getenv("EBIRD_API_KEY")}\"")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "EBIRD_API_KEY", "\"${System.getenv("EBIRD_API_KEY")}\"")
         }
     }
     compileOptions {
@@ -40,6 +44,7 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     composeOptions {
@@ -64,6 +69,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.appcompat:appcompat:1.6.1")
     // Possibly unnecessary - was used for BottomNavigation but they renamed it.
+    // implementation("androidx.compose.material:material:1.5.1")
     //implementation("androidx.compose.material:material:1.5.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     testImplementation("junit:junit:4.13.2")
@@ -96,7 +102,7 @@ dependencies {
     implementation("com.firebaseui:firebase-ui-database:8.0.2")
 
 
-    //Google Fonts
+    // Google Fonts
     implementation("androidx.compose.ui:ui-text-google-fonts:1.4.3")
 
 
@@ -106,4 +112,8 @@ dependencies {
     //Firebase UI Library
     implementation("com.firebaseui:firebase-ui-auth:8.0.2")
     implementation("com.firebaseui:firebase-ui-database:8.0.2")
+    // Mockito
+    testImplementation("org.mockito:mockito-core:5.5.0")
+
+
 }

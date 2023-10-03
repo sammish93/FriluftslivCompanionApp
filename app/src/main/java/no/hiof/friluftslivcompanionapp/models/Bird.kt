@@ -1,18 +1,31 @@
 package no.hiof.friluftslivcompanionapp.models
 
+import java.time.LocalDateTime
+
 class Bird(
-    speciesNameEnglish: String?,
-    speciesNameNorwegian: String?,
-    speciesNameScientific: String,
-    descriptionEnglish: String?,
-    descriptionNorwegian: String?,
-    photoUrl: String?
+    val speciesName: String?,
+    val speciesNameScientific: String,
+    val number: Int,
+    var description: String?,
+    val photoUrl: String?,
+    val observationDate: LocalDateTime,
+    val coordinates: Location
 ) : Animal(
-    speciesNameEnglish,
-    speciesNameNorwegian,
+    speciesName,
     speciesNameScientific,
-    descriptionEnglish,
-    descriptionNorwegian,
+    description,
     photoUrl
 ) {
+
+    override fun toString(): String {
+        return StringBuilder().apply {
+            append("\nname: $speciesName\n")
+            append("scientific: $speciesNameScientific\n")
+            append("How many: $number\n")
+            append("photoUrl: $photoUrl\n")
+            append("description: $description\n")
+            append("observationDate: $observationDate\n")
+            append("coordinates: $coordinates\n")
+        }.toString()
+    }
 }
