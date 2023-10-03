@@ -27,6 +27,7 @@ import no.hiof.friluftslivcompanionapp.ui.components.CardComponent
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
 import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
 import no.hiof.friluftslivcompanionapp.ui.components.TopBar
+import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapView
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.ui.theme.FriluftslivCompanionAppTheme
 
@@ -54,6 +55,9 @@ fun TripsScreen(navController: NavController, modifier: Modifier = Modifier) {
             TopBar("Topbar") {
                 // Handle tilbakeknapp klikk her
             }
+            // The Google Map Composable.
+            GoogleMapView()
+            /*
 
             Text(
                 text = "This is the Trip screen! When a card is pressed it will navigate the user " +
@@ -76,6 +80,8 @@ fun TripsScreen(navController: NavController, modifier: Modifier = Modifier) {
                     CardComponent(cardItem)
                 }
             }
+             */
         }
+
     }
 }
