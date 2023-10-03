@@ -90,8 +90,8 @@ class BirdObservations private constructor() {
      * @param action The lambda function to apply to each Bird object in the list.
      * @return A list of results obtained by applying the lambda function to each Bird object.
      */
-    fun processBirdList(birds: List<Bird>?, action: (Bird) -> String): List<String> {
-        return birds?.map(action) ?: emptyList()
+    fun <T> processBirdList(birds: List<Bird>?, action: (Bird) -> T?): List<T> {
+        return birds?.mapNotNull(action) ?: emptyList()
     }
 
     private fun validateDate(startDate: LocalDate, endDate: LocalDate): Result<Unit> {
