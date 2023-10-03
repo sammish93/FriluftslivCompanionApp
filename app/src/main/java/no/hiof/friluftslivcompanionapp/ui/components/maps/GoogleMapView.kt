@@ -1,8 +1,12 @@
 package no.hiof.friluftslivcompanionapp.ui.components.maps
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -18,13 +22,15 @@ fun GoogleMapView() {
         position = CameraPosition.fromLatLngZoom(oslo, 10f)
     }
     GoogleMap(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 70.dp),
         cameraPositionState = cameraPositionState
     ) {
         Marker(
             state = MarkerState(position = oslo),
-            title = "Singapore",
-            snippet = "Marker in Singapore"
+            title = "Oslo",
+            snippet = "Marker in Oslo"
         )
     }
 }
