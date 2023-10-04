@@ -53,6 +53,9 @@ import no.hiof.friluftslivcompanionapp.ui.screens.TripsCreateScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.TripsRecentActivityScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.WeatherSearchScreen
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
+import androidx.hilt.navigation.compose.hiltViewModel
+import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @Inject
@@ -113,8 +116,9 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
             composable(Screen.HOME.name) {
                 HomeScreen(modifier.padding(innerPadding))
             }
-            composable(Screen.TRIPS.name) {
-                TripsScreen(navController, modifier.padding(innerPadding))
+            composable(Screen.TRIPS.name) { backStackEntry ->
+                val viewModel = hiltViewModel<TripsViewModel>()
+                TripsScreen(navController, modifier.padding(innerPadding), viewModel)
             }
             composable(Screen.WEATHER.name) {
                 WeatherScreen(navController, modifier.padding(innerPadding))
@@ -125,11 +129,13 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
             composable(Screen.PROFILE.name) {
                 ProfileScreen(modifier.padding(innerPadding))
             }
-            composable(Screen.TRIPS_RECENT_ACTIVITY.name) {
-                TripsRecentActivityScreen(navController, modifier.padding(innerPadding))
+            composable(Screen.TRIPS_RECENT_ACTIVITY.name) { backStackEntry ->
+                val viewModel = hiltViewModel<TripsViewModel>()
+                TripsRecentActivityScreen(navController, modifier.padding(innerPadding), viewModel)
             }
-            composable(Screen.TRIPS_CREATE.name) {
-                TripsCreateScreen(navController, modifier.padding(innerPadding))
+            composable(Screen.TRIPS_CREATE.name) { backStackEntry ->
+                val viewModel = hiltViewModel<TripsViewModel>()
+                TripsCreateScreen(navController, modifier.padding(innerPadding), viewModel)
             }
             composable(Screen.FLORA_FAUNA_SEARCH_LOCATION.name) {
                 FloraFaunaSearchScreen("Location", navController, modifier.padding(innerPadding))

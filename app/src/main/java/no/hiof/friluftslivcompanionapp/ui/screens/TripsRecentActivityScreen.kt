@@ -11,14 +11,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
+import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TripsRecentActivityScreen(navController: NavController, modifier: Modifier = Modifier) {
+fun TripsRecentActivityScreen(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    viewModel: TripsViewModel = viewModel()
+) {
     Scaffold(
         topBar = {
             CustomTabsBar(
@@ -26,7 +32,7 @@ fun TripsRecentActivityScreen(navController: NavController, modifier: Modifier =
                     Screen.TRIPS to "Trips",
                     Screen.TRIPS_RECENT_ACTIVITY to "Recent Activity",
                     Screen.TRIPS_CREATE to "Create Trip"
-                ),  navController
+                ), navController
             )
         }
     ) { innerPadding ->

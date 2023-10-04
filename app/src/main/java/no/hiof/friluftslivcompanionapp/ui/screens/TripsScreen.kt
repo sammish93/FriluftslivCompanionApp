@@ -29,10 +29,13 @@ import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
 import no.hiof.friluftslivcompanionapp.ui.components.TopBar
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.ui.theme.FriluftslivCompanionAppTheme
+import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TripsScreen(navController: NavController, modifier: Modifier = Modifier) {
+fun TripsScreen(navController: NavController, modifier: Modifier = Modifier,
+                viewModel: TripsViewModel = viewModel()) {
 
     Scaffold(
         topBar = {
