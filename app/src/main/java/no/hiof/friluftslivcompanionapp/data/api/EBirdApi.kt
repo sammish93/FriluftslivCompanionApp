@@ -65,7 +65,7 @@ class EBirdApi {
                 } else {
                     when (response.code()) {
                         400 -> Result.Failure("Error 400 - Invalid request: Please check the region code and try again")
-                        404 -> Result.Failure("Error 404 -No observations found for the specific region code.")
+                        404 -> Result.Failure("Error 404 - No observations found for the specific region code.")
                         else -> Result.Failure("An unknown error occurred. Please try again later.")
                     }
                 }
