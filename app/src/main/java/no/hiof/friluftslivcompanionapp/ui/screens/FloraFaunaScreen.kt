@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
@@ -27,27 +28,18 @@ fun FloraFaunaScreen(
     modifier: Modifier = Modifier,
     viewModel: FloraFaunaViewModel = viewModel()
 ) {
-
-    Scaffold(
-        topBar = {
-            CustomTabsBar(
-                viewModel, navController
-            )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "This is the FloraFauna screen! When a card is pressed it will navigate " +
-                        "the user to the FLORA_FAUNA_ADDITIONAL_INFO screen",
-                style = CustomTypography.headlineLarge,
-                textAlign = TextAlign.Center,
-                modifier = modifier.fillMaxSize()
-            )
-        }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "This is the FloraFauna screen! When a card is pressed it will navigate " +
+                    "the user to the FLORA_FAUNA_ADDITIONAL_INFO screen",
+            style = CustomTypography.headlineLarge,
+            textAlign = TextAlign.Center,
+            modifier = modifier.fillMaxSize()
+        )
     }
 }

@@ -39,13 +39,15 @@ fun CustomTabsBar(viewModel: TabNavigation, navController: NavController) {
     //    }
     //}
 
-    val highlightedTabState by viewModel.highlightedTab.collectAsState()
+    //val highlightedTabState by viewModel.highlightedTab.collectAsState()
 
-    TabRow(selectedTabIndex = highlightedTabState) {
+    val tabsUiState by viewModel.uiState.collectAsState()
+
+    TabRow(selectedTabIndex = tabsUiState.currentTabIndex) {
         viewModel.tabDestinations.onEachIndexed { index, (destination, title) ->
             Tab(
                 text = { Text(title) },
-                selected = highlightedTabState == index,
+                selected = tabsUiState.currentTabIndex == index,
                 //selected = tabIndex == index,
                 onClick = {
                     viewModel.changeHighlightedTab(index)

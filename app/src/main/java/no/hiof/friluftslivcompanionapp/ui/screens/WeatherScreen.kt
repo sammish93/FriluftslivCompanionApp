@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
@@ -21,27 +22,22 @@ import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WeatherScreen(navController: NavController, modifier: Modifier = Modifier, viewModel: WeatherViewModel = viewModel()) {
-
-    Scaffold(
-        topBar = {
-            CustomTabsBar(
-                viewModel, navController
-            )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "This is the Weather screen!",
-                style = CustomTypography.headlineLarge,
-                textAlign = TextAlign.Center,
-                modifier = modifier.fillMaxSize()
-            )
-        }
+fun WeatherScreen(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    viewModel: WeatherViewModel = viewModel()
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "This is the Weather screen!",
+            style = CustomTypography.headlineLarge,
+            textAlign = TextAlign.Center,
+            modifier = modifier.fillMaxSize()
+        )
     }
 }

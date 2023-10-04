@@ -104,6 +104,15 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
             ?: Screen.HOME.name
     )
 
+    // ViewModels go here.
+    val tripsViewModel = hiltViewModel<TripsViewModel>()
+    val floraFaunaViewModel = hiltViewModel<FloraFaunaViewModel>()
+    val weatherViewModel = hiltViewModel<WeatherViewModel>()
+
+    val tripsTabsBar : @Composable () -> Unit = {CustomTabsBar(tripsViewModel,  navController)}
+    val floraFaunaTabsBar : @Composable () -> Unit = {CustomTabsBar(floraFaunaViewModel,  navController)}
+    val weatherTabsBar : @Composable () -> Unit = {CustomTabsBar(weatherViewModel,  navController)}
+
     Scaffold(
         bottomBar = {
             CustomNavigationBar(navController)
@@ -118,50 +127,64 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
             composable(Screen.HOME.name) {
                 HomeScreen(modifier.padding(innerPadding))
             }
-            composable(Screen.TRIPS.name) { backStackEntry ->
-                val viewModel = hiltViewModel<TripsViewModel>()
-                TripsScreen(navController, modifier.padding(innerPadding), viewModel)
+            composable(Screen.TRIPS.name) {
+                Scaffold(
+                    topBar = tripsTabsBar
+                ) { innerPadding ->
+                    TripsScreen(navController, modifier.padding(innerPadding), tripsViewModel)
+                }
             }
-            composable(Screen.WEATHER.name) { backStackEntry ->
-                val viewModel = hiltViewModel<WeatherViewModel>()
-                WeatherScreen(navController, modifier.padding(innerPadding), viewModel)
+            composable(Screen.WEATHER.name) {
+                Scaffold(
+                    topBar = weatherTabsBar
+                ) { innerPadding ->
+                    WeatherScreen(navController, modifier.padding(innerPadding), weatherViewModel)
+                }
             }
-            composable(Screen.FLORA_FAUNA.name) { backStackEntry ->
-                val viewModel = hiltViewModel<FloraFaunaViewModel>()
-                FloraFaunaScreen(navController, modifier.padding(innerPadding), viewModel)
+            composable(Screen.FLORA_FAUNA.name) {
+                Scaffold(
+                    topBar = floraFaunaTabsBar
+                ) { innerPadding ->
+                    FloraFaunaScreen(navController, modifier.padding(innerPadding), floraFaunaViewModel)
+                }
             }
             composable(Screen.PROFILE.name) {
                 ProfileScreen(modifier.padding(innerPadding))
             }
-            composable(Screen.TRIPS_RECENT_ACTIVITY.name) { backStackEntry ->
-                val viewModel = hiltViewModel<TripsViewModel>()
-                TripsRecentActivityScreen(navController, modifier.padding(innerPadding), viewModel)
+            composable(Screen.TRIPS_RECENT_ACTIVITY.name) {
+                Scaffold(
+                    topBar = tripsTabsBar
+                ) { innerPadding ->
+                    TripsRecentActivityScreen(navController, modifier.padding(innerPadding), tripsViewModel)
+                }
             }
-            composable(Screen.TRIPS_CREATE.name) { backStackEntry ->
-                val viewModel = hiltViewModel<TripsViewModel>()
-                TripsCreateScreen(navController, modifier.padding(innerPadding), viewModel)
+            composable(Screen.TRIPS_CREATE.name) {
+                Scaffold(
+                    topBar = tripsTabsBar
+                ) { innerPadding ->
+                    TripsCreateScreen(navController, modifier.padding(innerPadding), tripsViewModel)
+                }
             }
-            composable(Screen.FLORA_FAUNA_SEARCH_LOCATION.name) { backStackEntry ->
-                val viewModel = hiltViewModel<FloraFaunaViewModel>()
-                FloraFaunaSearchScreen(
-                    "Location",
-                    navController,
-                    modifier.padding(innerPadding),
-                    viewModel
-                )
+            composable(Screen.FLORA_FAUNA_SEARCH_LOCATION.name) {
+                Scaffold(
+                    topBar = floraFaunaTabsBar
+                ) { innerPadding ->
+                    FloraFaunaSearchScreen("Location", navController, modifier.padding(innerPadding), floraFaunaViewModel)
+                }
             }
-            composable(Screen.FLORA_FAUNA_SEARCH_SPECIES.name) { backStackEntry ->
-                val viewModel = hiltViewModel<FloraFaunaViewModel>()
-                FloraFaunaSearchScreen(
-                    "Species",
-                    navController,
-                    modifier.padding(innerPadding),
-                    viewModel
-                )
+            composable(Screen.FLORA_FAUNA_SEARCH_SPECIES.name) {
+                Scaffold(
+                    topBar = floraFaunaTabsBar
+                ) { innerPadding ->
+                    FloraFaunaSearchScreen("Species", navController, modifier.padding(innerPadding), floraFaunaViewModel)
+                }
             }
-            composable(Screen.WEATHER_SEARCH.name) { backStackEntry ->
-                val viewModel = hiltViewModel<WeatherViewModel>()
-                WeatherSearchScreen(navController, modifier.padding(innerPadding), viewModel)
+            composable(Screen.WEATHER_SEARCH.name) {
+                Scaffold(
+                    topBar = weatherTabsBar
+                ) { innerPadding ->
+                    WeatherSearchScreen(navController, modifier.padding(innerPadding), weatherViewModel)
+                }
             }
         }
     }

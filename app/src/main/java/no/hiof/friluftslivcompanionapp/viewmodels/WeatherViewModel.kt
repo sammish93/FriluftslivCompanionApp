@@ -10,6 +10,9 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import no.hiof.friluftslivcompanionapp.data.TabsUiState
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
 import no.hiof.friluftslivcompanionapp.ui.screens.TripsScreen
@@ -31,14 +34,19 @@ class WeatherViewModel @Inject constructor(
     // private val repository: TripsRepository
 ) : ViewModel(), TabNavigation {
 
+    private val _uiState = MutableStateFlow(TabsUiState())
+    override val uiState: StateFlow<TabsUiState> = _uiState.asStateFlow()
+
     override var tabDestinations = mapOf(
         Screen.WEATHER to "Weather",
         Screen.WEATHER_SEARCH to "Search"
     )
 
-    override var highlightedTab : MutableStateFlow<Int> = MutableStateFlow(0)
-
     override fun changeHighlightedTab(index: Int) {
-        highlightedTab = MutableStateFlow(index)
+        _uiState.update { currentState ->
+            currentState.copy(
+                currentTabIndex = index
+            )
+        }
     }
 }

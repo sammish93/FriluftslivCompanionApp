@@ -12,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
@@ -26,26 +27,18 @@ fun TripsRecentActivityScreen(
     modifier: Modifier = Modifier,
     viewModel: TripsViewModel = viewModel()
 ) {
-    Scaffold(
-        topBar = {
-            CustomTabsBar(
-                viewModel, navController
-            )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "This is the Recent Activity tab inside the Trips screen!",
-                style = CustomTypography.titleLarge,
-                fontStyle = FontStyle.Italic,
-                textAlign = TextAlign.Center,
-                modifier = modifier.fillMaxSize()
-            )
-        }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "This is the Recent Activity tab inside the Trips screen!",
+            style = CustomTypography.titleLarge,
+            fontStyle = FontStyle.Italic,
+            textAlign = TextAlign.Center,
+            modifier = modifier.fillMaxSize()
+        )
     }
 }

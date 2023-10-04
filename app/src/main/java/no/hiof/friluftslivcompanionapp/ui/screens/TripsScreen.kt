@@ -35,43 +35,35 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TripsScreen(navController: NavController, modifier: Modifier = Modifier,
-                viewModel: TripsViewModel = viewModel()) {
+fun TripsScreen(
+    navController: NavController, modifier: Modifier = Modifier,
+    viewModel: TripsViewModel = viewModel()
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "This is the Trip screen! When a card is pressed it will navigate the user " +
+                    "to the TRIPS_ADDITIONAL_INFO screen",
+            style = CustomTypography.headlineLarge,
+            textAlign = TextAlign.Center,
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        )
 
-
-    Scaffold(
-        topBar = {
-            CustomTabsBar(
-                viewModel,  navController
-            )
+        ListComponent(items = cardItems) { cardItem, style ->
+            ListItemComponent(cardItem, style) { it.title }
         }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "This is the Trip screen! When a card is pressed it will navigate the user " +
-                        "to the TRIPS_ADDITIONAL_INFO screen",
-                style = CustomTypography.headlineLarge,
-                textAlign = TextAlign.Center,
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            )
 
-            ListComponent(items = cardItems) { cardItem, style ->
-                ListItemComponent(cardItem, style) { it.title }
-            }
+        Spacer(modifier = Modifier.height(16.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                items(cardItems) { cardItem ->
-                    CardComponent(cardItem)
-                }
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            items(cardItems) { cardItem ->
+                CardComponent(cardItem)
             }
         }
     }
