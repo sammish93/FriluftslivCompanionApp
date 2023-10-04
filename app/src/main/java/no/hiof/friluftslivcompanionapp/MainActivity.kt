@@ -54,7 +54,9 @@ import no.hiof.friluftslivcompanionapp.ui.screens.TripsRecentActivityScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.WeatherSearchScreen
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import androidx.hilt.navigation.compose.hiltViewModel
+import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
+import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -120,11 +122,13 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
                 val viewModel = hiltViewModel<TripsViewModel>()
                 TripsScreen(navController, modifier.padding(innerPadding), viewModel)
             }
-            composable(Screen.WEATHER.name) {
-                WeatherScreen(navController, modifier.padding(innerPadding))
+            composable(Screen.WEATHER.name) { backStackEntry ->
+                val viewModel = hiltViewModel<WeatherViewModel>()
+                WeatherScreen(navController, modifier.padding(innerPadding), viewModel)
             }
-            composable(Screen.FLORA_FAUNA.name) {
-                FloraFaunaScreen(navController, modifier.padding(innerPadding))
+            composable(Screen.FLORA_FAUNA.name) { backStackEntry ->
+                val viewModel = hiltViewModel<FloraFaunaViewModel>()
+                FloraFaunaScreen(navController, modifier.padding(innerPadding), viewModel)
             }
             composable(Screen.PROFILE.name) {
                 ProfileScreen(modifier.padding(innerPadding))
@@ -137,14 +141,27 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
                 val viewModel = hiltViewModel<TripsViewModel>()
                 TripsCreateScreen(navController, modifier.padding(innerPadding), viewModel)
             }
-            composable(Screen.FLORA_FAUNA_SEARCH_LOCATION.name) {
-                FloraFaunaSearchScreen("Location", navController, modifier.padding(innerPadding))
+            composable(Screen.FLORA_FAUNA_SEARCH_LOCATION.name) { backStackEntry ->
+                val viewModel = hiltViewModel<FloraFaunaViewModel>()
+                FloraFaunaSearchScreen(
+                    "Location",
+                    navController,
+                    modifier.padding(innerPadding),
+                    viewModel
+                )
             }
-            composable(Screen.FLORA_FAUNA_SEARCH_SPECIES.name) {
-                FloraFaunaSearchScreen("Species", navController, modifier.padding(innerPadding))
+            composable(Screen.FLORA_FAUNA_SEARCH_SPECIES.name) { backStackEntry ->
+                val viewModel = hiltViewModel<FloraFaunaViewModel>()
+                FloraFaunaSearchScreen(
+                    "Species",
+                    navController,
+                    modifier.padding(innerPadding),
+                    viewModel
+                )
             }
-            composable(Screen.WEATHER_SEARCH.name) {
-                WeatherSearchScreen(navController, modifier.padding(innerPadding))
+            composable(Screen.WEATHER_SEARCH.name) { backStackEntry ->
+                val viewModel = hiltViewModel<WeatherViewModel>()
+                WeatherSearchScreen(navController, modifier.padding(innerPadding), viewModel)
             }
         }
     }

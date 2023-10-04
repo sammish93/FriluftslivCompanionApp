@@ -16,6 +16,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,14 +38,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun TripsScreen(navController: NavController, modifier: Modifier = Modifier,
                 viewModel: TripsViewModel = viewModel()) {
 
+
     Scaffold(
         topBar = {
             CustomTabsBar(
-                mapOf(
-                    Screen.TRIPS to "Trips",
-                    Screen.TRIPS_RECENT_ACTIVITY to "Recent Activity",
-                    Screen.TRIPS_CREATE to "Create Trip"
-                ),  navController
+                viewModel,  navController
             )
         }
     ) { innerPadding ->
@@ -54,10 +52,6 @@ fun TripsScreen(navController: NavController, modifier: Modifier = Modifier,
                 .padding(innerPadding),
             verticalArrangement = Arrangement.Center
         ) {
-            TopBar("Topbar") {
-                // Handle tilbakeknapp klikk her
-            }
-
             Text(
                 text = "This is the Trip screen! When a card is pressed it will navigate the user " +
                         "to the TRIPS_ADDITIONAL_INFO screen",

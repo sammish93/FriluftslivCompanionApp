@@ -26,15 +26,14 @@ import javax.inject.Inject
 //}
 
 @HiltViewModel
-class TripsViewModel @Inject constructor(
+class WeatherViewModel @Inject constructor(
     // Communication with the data layer can be injected as dependencies here.
     // private val repository: TripsRepository
 ) : ViewModel(), TabNavigation {
 
     override var tabDestinations = mapOf(
-        Screen.TRIPS to "Trips",
-        Screen.TRIPS_RECENT_ACTIVITY to "Recent Activity",
-        Screen.TRIPS_CREATE to "Create Trip"
+        Screen.WEATHER to "Weather",
+        Screen.WEATHER_SEARCH to "Search"
     )
 
     override var highlightedTab : MutableStateFlow<Int> = MutableStateFlow(0)

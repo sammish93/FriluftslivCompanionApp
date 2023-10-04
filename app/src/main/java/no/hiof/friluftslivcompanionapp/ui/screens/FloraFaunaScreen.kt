@@ -11,23 +11,27 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
+import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
+import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FloraFaunaScreen(navController: NavController, modifier: Modifier = Modifier) {
+
+fun FloraFaunaScreen(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    viewModel: FloraFaunaViewModel = viewModel()
+) {
 
     Scaffold(
         topBar = {
             CustomTabsBar(
-                mapOf(
-                    Screen.FLORA_FAUNA to "Lifelist",
-                    Screen.FLORA_FAUNA_SEARCH_LOCATION to "Search (By Location)",
-                    Screen.FLORA_FAUNA_SEARCH_SPECIES to "Search (By Species)"
-                ), navController
+                viewModel, navController
             )
         }
     ) { innerPadding ->

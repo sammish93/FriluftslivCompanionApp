@@ -26,15 +26,15 @@ import javax.inject.Inject
 //}
 
 @HiltViewModel
-class TripsViewModel @Inject constructor(
+class FloraFaunaViewModel @Inject constructor(
     // Communication with the data layer can be injected as dependencies here.
     // private val repository: TripsRepository
 ) : ViewModel(), TabNavigation {
 
     override var tabDestinations = mapOf(
-        Screen.TRIPS to "Trips",
-        Screen.TRIPS_RECENT_ACTIVITY to "Recent Activity",
-        Screen.TRIPS_CREATE to "Create Trip"
+        Screen.FLORA_FAUNA to "Lifelist",
+        Screen.FLORA_FAUNA_SEARCH_LOCATION to "Search (By Location)",
+        Screen.FLORA_FAUNA_SEARCH_SPECIES to "Search (By Species)"
     )
 
     override var highlightedTab : MutableStateFlow<Int> = MutableStateFlow(0)

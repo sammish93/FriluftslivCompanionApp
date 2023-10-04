@@ -11,22 +11,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
+import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
+import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WeatherScreen(navController: NavController, modifier: Modifier = Modifier) {
+fun WeatherScreen(navController: NavController, modifier: Modifier = Modifier, viewModel: WeatherViewModel = viewModel()) {
 
     Scaffold(
         topBar = {
             CustomTabsBar(
-                mapOf(
-                    Screen.WEATHER to "Weather",
-                    Screen.WEATHER_SEARCH to "Search"
-                ), navController
+                viewModel, navController
             )
         }
     ) { innerPadding ->
