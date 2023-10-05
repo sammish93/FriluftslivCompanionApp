@@ -4,6 +4,8 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+
 }
 
 android {
@@ -104,13 +106,22 @@ dependencies {
     implementation("com.firebaseui:firebase-ui-auth:8.0.2")
     implementation("com.firebaseui:firebase-ui-database:8.0.2")
 
+
     // Google Fonts
     implementation("androidx.compose.ui:ui-text-google-fonts:1.4.3")
 
-    // Firebase UI Library
+
+    //Google Play need to have this for google authentication
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+
+    //Firebase UI Library
     implementation("com.firebaseui:firebase-ui-auth:8.0.2")
     implementation("com.firebaseui:firebase-ui-database:8.0.2")
-
     // Mockito
     testImplementation("org.mockito:mockito-core:5.5.0")
+
+    // Google Maps
+    implementation("com.google.maps.android:maps-compose:2.14.0")
+    implementation("com.google.android.gms:play-services-maps:18.1.0")
+
 }
