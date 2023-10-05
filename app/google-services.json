@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "249214876391-f2vio7mnfkk2s323vts0eq44ape8fncb.apps.googleusercontent.com",
+          "client_id": "249214876391-q550nshov9th5q2t950iqt4iersmbpu8.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "no.hiof.friluftslivcompanionapp",
-            "certificate_hash": "cf2f7a8ddcc4c3dbc1076cf44d14d5fe448ebada"
+            "certificate_hash": "c0a4fa64b2a13c7bb50627f7f08c9dcd5a7ebc34"
           }
         },
         {
