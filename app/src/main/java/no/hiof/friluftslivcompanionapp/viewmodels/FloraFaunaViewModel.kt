@@ -1,21 +1,14 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import no.hiof.friluftslivcompanionapp.data.TabsUiState
+import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
-import no.hiof.friluftslivcompanionapp.ui.screens.TripsScreen
 import javax.inject.Inject
 
 // NOTE: Composable Screens in app/ui/screens can communicate with this viewmodel (and thus the data

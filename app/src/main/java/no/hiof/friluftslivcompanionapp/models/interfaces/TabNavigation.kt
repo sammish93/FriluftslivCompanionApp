@@ -1,8 +1,7 @@
 package no.hiof.friluftslivcompanionapp.models.interfaces
 
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import no.hiof.friluftslivcompanionapp.data.TabsUiState
+import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 
 interface TabNavigation {
