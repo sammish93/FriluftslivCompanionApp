@@ -46,17 +46,17 @@ class WeatherDeserialiser private constructor() {
      * Alternatives are:
      * Default (empty value "") - wind speed (meters/s), temperature (kalvins).
      * "imperial" - wind speed (miles/h), temperature (farenheit).
-     * @return A `WeatherForecast` object containing a 'Location' object representing the area of
-     * the weather, along with 9 instances of 'Weather'. The first instance at index 0 is the
-     * current weather. Index 1 is a summary of today's weather, and index 2-8 are summaries of the
-     * following 7 days.
+     * @return A Result object. If successful then it will contain a `WeatherForecast` object
+     * containing a 'Location' object representing the area of the weather, along with 9 instances
+     * of 'Weather'. The first instance at index 0 is the current weather. Index 1 is a summary of
+     * today's weather, and index 2-8 are summaries of the following 7 days.
      */
     suspend fun getWeatherForecast(
         lat: Double,
         lon: Double,
         exclude: String = "minutely,hourly",
         units: String = "metric"
-    ): WeatherForecast? {
+    ): Result<WeatherForecast> {
 
         val result = weatherApi.getWeatherInfo(lat, lon, exclude, units)
 
@@ -73,16 +73,15 @@ class WeatherDeserialiser private constructor() {
                     // Creates a WeatherForecast object
                     val weatherForecast = WeatherForecast(Location(lat, lon), weatherForecastList)
 
-                    return weatherForecast
+                    Result.Success(weatherForecast)
                 } else {
                     // Returns a null object if something went wrong. The stack trace of the
                     // WeatherApi can provide more comprehensive debugging information.
-                    null
+                    Result.Failure("Something went wrong. Take a look at the stack trace.")
                 }
             }
-
             else -> {
-                null
+                Result.Failure("Something went wrong. Take a look at the stack trace.")
             }
         }
     }
@@ -101,15 +100,15 @@ class WeatherDeserialiser private constructor() {
      * Alternatives are:
      * Default (empty value "") - wind speed (meters/s), temperature (kalvins).
      * "imperial" - wind speed (miles/h), temperature (farenheit).
-     * @return A `Weather` object containing the location, date, wind speed, temperature, and
-     * weather type of the current weather.
+     * @return A Result object. If successful then it will contain a `Weather` object containing
+     * the location, date, wind speed, temperature, and weather type of the current weather.
      */
     suspend fun getCurrentWeather(
         lat: Double,
         lon: Double,
         exclude: String = "minutely,hourly",
         units: String = "metric"
-    ): Weather? {
+    ): Result<Weather> {
 
         val result = weatherApi.getWeatherInfo(lat, lon, exclude, units)
 
@@ -118,16 +117,16 @@ class WeatherDeserialiser private constructor() {
                 val weatherResponseList = result.value
                 if (weatherResponseList.isNotEmpty()) {
                     // Returns the first Weather forecast (current weather)
-                    return deserialiseWeather(weatherResponseList.first())
+                    Result.Success(deserialiseWeather(weatherResponseList.first()))
                 } else {
                     // Returns a null object if something went wrong. The stack trace of the
                     // WeatherApi can provide more comprehensive debugging information.
-                    null
+                    Result.Failure("Something went wrong. Take a look at the stack trace.")
                 }
             }
 
             else -> {
-                null
+                Result.Failure("Something went wrong. Take a look at the stack trace.")
             }
         }
     }
