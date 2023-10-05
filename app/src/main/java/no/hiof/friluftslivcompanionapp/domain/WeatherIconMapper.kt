@@ -3,8 +3,10 @@ package no.hiof.friluftslivcompanionapp.domain
 import no.hiof.friluftslivcompanionapp.models.enums.WeatherType
 
 /**
- * This class is used to take a string input from an OpenWeatherMap API request ("icon" key) and
+ * This object is used to take a string input from an OpenWeatherMap API request ("icon" key) and
  * return an enum summarising the weather. This enum can then be used to fetch a drawable icon.
+ * The functions in this object are static and the object does not require instantiating (unlike a
+ * class).
  */
 object WeatherIconMapper {
     fun mapIconToEnum(iconString: String) : WeatherType {

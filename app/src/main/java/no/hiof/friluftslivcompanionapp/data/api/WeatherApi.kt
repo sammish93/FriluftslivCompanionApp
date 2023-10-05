@@ -30,7 +30,12 @@ class WeatherApi {
     suspend fun getWeatherInfo(
         lat: Double,
         lon: Double,
+        // We exclude the minutely and hourly forecasts.
         exclude: String = "minutely,hourly",
+        // The API returns wind speed in meters/s and temperature in celsius.
+        // Alternatives are:
+        // Default (no value) - wind speed (meters/s), temperature (kalvins)
+        // "imperial" - wind speed (miles/h), temperature (farenheit)
         units: String = "metric",
         apiKey: String = BuildConfig.WEATHER_API_KEY
     ): Result<List<SimpleWeatherResponse>?> {
@@ -44,7 +49,7 @@ class WeatherApi {
         }
     }
 
-    // This method handles the response from the Wikipedia API.
+    // This method handles the response from the OpenWeatherMaps API.
     // It checks if the response is successful and returns a Result object accordingly.
     private fun handleResponse(response: Response<WeatherResponse>): Result<List<SimpleWeatherResponse>?> {
         return if (response.isSuccessful) {
@@ -56,17 +61,20 @@ class WeatherApi {
         }
     }
 
-    // This method maps a WikipediaResponse object to a SimpleWikipediaResponse object.
+    // This method maps a WeatherResponse object to several SimpleWeatherResponse objects, and
+    // returns them as a list.
     private fun mapToSimpleResponse(weatherResponse: WeatherResponse): List<SimpleWeatherResponse>? {
 
         val listToReturn = mutableListOf<SimpleWeatherResponse>()
 
+        // Retrieves the current weather
         val currentWeather = weatherResponse.current
         val currentDate = currentWeather.dt
         val currentWindSpeed = currentWeather.wind_speed
         val currentTemp = currentWeather.temp
         val currentIcon = currentWeather.weather.first().icon
 
+        // Adds the current weather in index 0
         listToReturn.add(
             SimpleWeatherResponse(
                 dt = currentDate,
@@ -76,6 +84,7 @@ class WeatherApi {
             )
         )
 
+        // Retrieves the forecast for today and the following 7 days (summarised).
         val forecast = weatherResponse.daily.map {
             val date = it.dt
             val windSpeed = it.wind_speed

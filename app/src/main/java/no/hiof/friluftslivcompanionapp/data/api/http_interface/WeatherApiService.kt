@@ -8,13 +8,14 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
- * `EBirdApiService` is an interface representing the API service for eBird, providing
- * a method to fetch recent bird observations. It is intended to be used with a Retrofit instance
+ * `WeatherApiService` is an interface representing the API service for OpenWeatherMaps, providing
+ * a method to fetch weather forecasts It is intended to be used with a Retrofit instance
  * to create the actual implementation of the API service.
  */
 interface WeatherApiService {
 
-    // Appends this to the end of the URL ?lat={lat}&lon={lon}&units=metric&appid={appid}
+    // Appends the following to the end of the URL:
+    // ?lat={lat}&lon={lon}&exclude={exclude}&units={metric}&appid={appid}
     @GET("/data/3.0/onecall")
     suspend fun getWeatherToday(
         @Query("lat") lat: Double,
