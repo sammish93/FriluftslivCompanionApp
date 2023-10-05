@@ -16,12 +16,17 @@ import java.time.format.DateTimeFormatter
 
 class WeatherApi {
 
-    // eBird API Service instance.
+    // OpenWeatherMaps API Service instance.
     private val weatherApiService: WeatherApiService by lazy {
         val retrofit = RetrofitBuilder.buildWeatherApi()
         retrofit.create(WeatherApiService::class.java)
     }
 
+    // Function to get weather information based on a location (longitude and latitude). This
+    // function returns a list of 9 SimpleWeatherResponse objects.
+    // [0] is the current weather.
+    // [1] is a summary of today's weather.
+    // [2]-[8] are a summary of the weather in the following 7 days.
     suspend fun getWeatherInfo(
         lat: Double,
         lon: Double,
@@ -53,34 +58,29 @@ class WeatherApi {
     // This method maps a WikipediaResponse object to a SimpleWikipediaResponse object.
     private fun mapToSimpleResponse(weatherResponse: WeatherResponse): List<SimpleWeatherResponse>? {
 
-        //val firstDay = weatherResponse.daily.map { it.weather.first().icon }
-        //val firstDate = weatherResponse.daily.first().dt
-        //val firstIcon = firstDay.first()
-
-        /*
-        val forecast = weatherResponse.daily.
-        val firstDate = forecast.dt
-        val firstIcon = forecast.weather.first().icon
-         */
-
         val listToReturn = mutableListOf<SimpleWeatherResponse>()
 
         val currentWeather = weatherResponse.current
         val currentDate = currentWeather.dt
+        val currentWindSpeed = currentWeather.wind_speed
         val currentIcon = currentWeather.weather.first().icon
+
         listToReturn.add(
             SimpleWeatherResponse(
                 dt = currentDate,
+                windSpeed = currentWindSpeed,
                 icon = currentIcon
             )
         )
 
         val forecast = weatherResponse.daily.map {
             val date = it.dt
+            val windSpeed = it.wind_speed
             val icon = it.weather.first().icon
             listToReturn.add(
                 SimpleWeatherResponse(
                     dt = date,
+                    windSpeed = windSpeed,
                     icon = icon
                 )
             )
@@ -88,11 +88,4 @@ class WeatherApi {
 
         return listToReturn
     }
-
-    /*
-    private fun mapToWeather(weatherToday: SimpleWeatherResponse): Weather {
-        var location = Location(62.6259, 7.0867)
-        return Weather(location, LocalDate.now(), WeatherType.CLEAR_SKY)
-    }
-     */
 }

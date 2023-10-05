@@ -6,6 +6,7 @@ data class WeatherResponse(
 ) {
     data class DailyWeather(
         val dt: String,
+        val wind_speed: Double,
         val weather: List<WeatherDetail>
     )
 
