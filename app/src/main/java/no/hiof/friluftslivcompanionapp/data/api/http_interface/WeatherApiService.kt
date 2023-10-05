@@ -1,10 +1,8 @@
 package no.hiof.friluftslivcompanionapp.data.api.http_interface
 
-import no.hiof.friluftslivcompanionapp.models.api.SimpleWeatherResponse
 import no.hiof.friluftslivcompanionapp.models.api.WeatherResponse
 import retrofit2.Response
 import retrofit2.http.GET
-import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
@@ -17,7 +15,7 @@ interface WeatherApiService {
     // Appends the following to the end of the URL:
     // ?lat={lat}&lon={lon}&exclude={exclude}&units={metric}&appid={appid}
     @GET("/data/3.0/onecall")
-    suspend fun getWeatherToday(
+    suspend fun getWeather(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
         @Query("exclude") exclude: String,

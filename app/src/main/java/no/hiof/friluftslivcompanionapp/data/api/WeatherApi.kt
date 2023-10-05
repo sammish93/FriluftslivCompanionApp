@@ -10,9 +10,6 @@ import no.hiof.friluftslivcompanionapp.models.api.SimpleWeatherResponse
 import no.hiof.friluftslivcompanionapp.models.api.WeatherResponse
 import retrofit2.Response
 import java.lang.Exception
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class WeatherApi {
 
@@ -36,13 +33,15 @@ class WeatherApi {
         // Alternatives are:
         // Default (no value) - wind speed (meters/s), temperature (kalvins)
         // "imperial" - wind speed (miles/h), temperature (farenheit)
-        units: String = "metric",
-        apiKey: String = BuildConfig.WEATHER_API_KEY
-    ): Result<List<SimpleWeatherResponse>?> {
+        units: String = "metric"
+    ): Result<List<SimpleWeatherResponse>> {
+        // Retrieves the API key from an environment variable.
+        val apiKey: String = BuildConfig.WEATHER_API_KEY
+
         return withContext(Dispatchers.IO) {
             try {
-                val response = weatherApiService.getWeatherToday(lat, lon, exclude, units, apiKey)
-                handleResponse(response)
+                val response = weatherApiService.getWeather(lat, lon, exclude, units, apiKey)
+                handleResponse(response, lat, lon)
             } catch (e: Exception) {
                 Result.Failure(e.message ?: "Unknown failure")
             }
@@ -51,10 +50,10 @@ class WeatherApi {
 
     // This method handles the response from the OpenWeatherMaps API.
     // It checks if the response is successful and returns a Result object accordingly.
-    private fun handleResponse(response: Response<WeatherResponse>): Result<List<SimpleWeatherResponse>?> {
+    private fun handleResponse(response: Response<WeatherResponse>, lat: Double, lon: Double): Result<List<SimpleWeatherResponse>> {
         return if (response.isSuccessful) {
             val weatherResponse = response.body()
-            weatherResponse?.let { Result.Success(mapToSimpleResponse(it)) }
+            weatherResponse?.let { Result.Success(mapToSimpleResponse(it, lat, lon)) }
                 ?: Result.Failure("No body in response")
         } else {
             Result.Failure("Unsuccessful response: ${response.errorBody()?.string()}")
@@ -63,7 +62,7 @@ class WeatherApi {
 
     // This method maps a WeatherResponse object to several SimpleWeatherResponse objects, and
     // returns them as a list.
-    private fun mapToSimpleResponse(weatherResponse: WeatherResponse): List<SimpleWeatherResponse>? {
+    private fun mapToSimpleResponse(weatherResponse: WeatherResponse, lat: Double, lon: Double): List<SimpleWeatherResponse> {
 
         val listToReturn = mutableListOf<SimpleWeatherResponse>()
 
@@ -77,6 +76,8 @@ class WeatherApi {
         // Adds the current weather in index 0
         listToReturn.add(
             SimpleWeatherResponse(
+                lat = lat,
+                lon = lon,
                 dt = currentDate,
                 windSpeed = currentWindSpeed,
                 temp = currentTemp,
@@ -92,6 +93,8 @@ class WeatherApi {
             val icon = it.weather.first().icon
             listToReturn.add(
                 SimpleWeatherResponse(
+                    lat = lat,
+                    lon = lon,
                     dt = date,
                     windSpeed = windSpeed,
                     temp = temp,
