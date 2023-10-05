@@ -14,5 +14,5 @@ plugins {
     /* COMMENTED OUT FIREBASE DEPENDENCY UNTIL IT'S FULLY SET UP (OTHERWISE COMPILE ERRORS)
 
     id("com.google.gms.google-services") version "4.3.15" apply false
-
+    */
 }
