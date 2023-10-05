@@ -20,6 +20,7 @@ interface WeatherApiService {
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
         @Query("exclude") exclude: String,
+        @Query("units") units: String,
         @Query("appid") appid: String
     ): Response<WeatherResponse>
 }

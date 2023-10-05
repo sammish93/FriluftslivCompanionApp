@@ -31,11 +31,12 @@ class WeatherApi {
         lat: Double,
         lon: Double,
         exclude: String = "minutely,hourly",
+        units: String = "metric",
         apiKey: String = BuildConfig.WEATHER_API_KEY
     ): Result<List<SimpleWeatherResponse>?> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = weatherApiService.getWeatherToday(lat, lon, exclude, apiKey)
+                val response = weatherApiService.getWeatherToday(lat, lon, exclude, units, apiKey)
                 handleResponse(response)
             } catch (e: Exception) {
                 Result.Failure(e.message ?: "Unknown failure")
@@ -63,12 +64,14 @@ class WeatherApi {
         val currentWeather = weatherResponse.current
         val currentDate = currentWeather.dt
         val currentWindSpeed = currentWeather.wind_speed
+        val currentTemp = currentWeather.temp
         val currentIcon = currentWeather.weather.first().icon
 
         listToReturn.add(
             SimpleWeatherResponse(
                 dt = currentDate,
                 windSpeed = currentWindSpeed,
+                temp = currentTemp,
                 icon = currentIcon
             )
         )
@@ -76,11 +79,13 @@ class WeatherApi {
         val forecast = weatherResponse.daily.map {
             val date = it.dt
             val windSpeed = it.wind_speed
+            val temp = it.temp.day
             val icon = it.weather.first().icon
             listToReturn.add(
                 SimpleWeatherResponse(
                     dt = date,
                     windSpeed = windSpeed,
+                    temp = temp,
                     icon = icon
                 )
             )
