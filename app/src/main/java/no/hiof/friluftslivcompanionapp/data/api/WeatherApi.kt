@@ -25,9 +25,9 @@ class WeatherApi {
     suspend fun getWeatherInfo(
         lat: Double,
         lon: Double,
-        exclude: String = "current,minutely,hourly",
+        exclude: String = "minutely,hourly",
         apiKey: String = BuildConfig.WEATHER_API_KEY
-    ): Result<SimpleWeatherResponse?> {
+    ): Result<List<SimpleWeatherResponse>?> {
         return withContext(Dispatchers.IO) {
             try {
                 val response = weatherApiService.getWeatherToday(lat, lon, exclude, apiKey)
@@ -40,7 +40,7 @@ class WeatherApi {
 
     // This method handles the response from the Wikipedia API.
     // It checks if the response is successful and returns a Result object accordingly.
-    private fun handleResponse(response: Response<WeatherResponse>): Result<SimpleWeatherResponse?> {
+    private fun handleResponse(response: Response<WeatherResponse>): Result<List<SimpleWeatherResponse>?> {
         return if (response.isSuccessful) {
             val weatherResponse = response.body()
             weatherResponse?.let { Result.Success(mapToSimpleResponse(it)) }
@@ -51,17 +51,42 @@ class WeatherApi {
     }
 
     // This method maps a WikipediaResponse object to a SimpleWikipediaResponse object.
-    private fun mapToSimpleResponse(weatherResponse: WeatherResponse): SimpleWeatherResponse? {
+    private fun mapToSimpleResponse(weatherResponse: WeatherResponse): List<SimpleWeatherResponse>? {
 
-        val firstDay = weatherResponse.daily.map { it.weather.first().icon }
-        val firstDate = weatherResponse.daily.first().dt
-        val firstIcon = firstDay.first()
+        //val firstDay = weatherResponse.daily.map { it.weather.first().icon }
+        //val firstDate = weatherResponse.daily.first().dt
+        //val firstIcon = firstDay.first()
 
+        /*
+        val forecast = weatherResponse.daily.
+        val firstDate = forecast.dt
+        val firstIcon = forecast.weather.first().icon
+         */
 
-        return SimpleWeatherResponse(
-            dt = firstDate,
-            icon = firstIcon
+        val listToReturn = mutableListOf<SimpleWeatherResponse>()
+
+        val currentWeather = weatherResponse.current
+        val currentDate = currentWeather.dt
+        val currentIcon = currentWeather.weather.first().icon
+        listToReturn.add(
+            SimpleWeatherResponse(
+                dt = currentDate,
+                icon = currentIcon
+            )
         )
+
+        val forecast = weatherResponse.daily.map {
+            val date = it.dt
+            val icon = it.weather.first().icon
+            listToReturn.add(
+                SimpleWeatherResponse(
+                    dt = date,
+                    icon = icon
+                )
+            )
+        }
+
+        return listToReturn
     }
 
     /*
