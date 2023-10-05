@@ -109,6 +109,7 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
     val floraFaunaViewModel = hiltViewModel<FloraFaunaViewModel>()
     val weatherViewModel = hiltViewModel<WeatherViewModel>()
 
+    // CustomTabsBar Composables are assigned to functions here and injected in NavHost below.
     val tripsTabsBar : @Composable () -> Unit = {CustomTabsBar(tripsViewModel,  navController)}
     val floraFaunaTabsBar : @Composable () -> Unit = {CustomTabsBar(floraFaunaViewModel,  navController)}
     val weatherTabsBar : @Composable () -> Unit = {CustomTabsBar(weatherViewModel,  navController)}
