@@ -14,7 +14,7 @@ import java.time.temporal.ChronoUnit
  * It is responsible for invoking methods from the data layer to fetch data, which then
  * can be passed to the presentation layer.
  *
- * To get an instance of this class, use the `getInstance` method with the required `languageCode`.
+ * To get an instance of this class, use the `getInstance` method`.
  */
 class BirdObservations private constructor() {
 
