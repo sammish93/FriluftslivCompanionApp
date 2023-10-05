@@ -25,11 +25,12 @@ class WeatherApi {
     suspend fun getWeatherInfo(
         lat: Double,
         lon: Double,
+        exclude: String = "current,minutely,hourly",
         apiKey: String = BuildConfig.WEATHER_API_KEY
     ): Result<SimpleWeatherResponse?> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = weatherApiService.getWeatherToday(lat, lon, apiKey)
+                val response = weatherApiService.getWeatherToday(lat, lon, exclude, apiKey)
                 handleResponse(response)
             } catch (e: Exception) {
                 Result.Failure(e.message ?: "Unknown failure")
@@ -52,10 +53,13 @@ class WeatherApi {
     // This method maps a WikipediaResponse object to a SimpleWikipediaResponse object.
     private fun mapToSimpleResponse(weatherResponse: WeatherResponse): SimpleWeatherResponse? {
 
-        val icons = weatherResponse.daily.map { it.weather.first().icon }
-        val firstIcon = icons.first()
+        val firstDay = weatherResponse.daily.map { it.weather.first().icon }
+        val firstDate = weatherResponse.daily.first().dt
+        val firstIcon = firstDay.first()
+
 
         return SimpleWeatherResponse(
+            dt = firstDate,
             icon = firstIcon
         )
     }
