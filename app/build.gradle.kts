@@ -10,14 +10,13 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 
 }
-// Create a variable called keystorePropertiesFile and initialize it to your
-// keystore.properties file in the rootProject folder.
+
 val keystorePropertiesFile = rootProject.file("keystore.properties")
 
-// Initialize a new Properties() object called keystoreProperties.
+
 val keystoreProperties = Properties()
 
-// Load your keystore.properties file into the keystoreProperties object.
+
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
 
