@@ -46,7 +46,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import no.hiof.friluftslivcompanionapp.ui.components.CustomNavigationBar
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
-import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapView
+//import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapView
 import no.hiof.friluftslivcompanionapp.ui.screens.AddScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.FloraFaunaSearchScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.TripsAddScreen

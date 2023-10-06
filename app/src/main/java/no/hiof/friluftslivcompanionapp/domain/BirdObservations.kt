@@ -6,6 +6,7 @@ import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import javax.inject.Inject
 
 /**
  * The `BirdObservations` class serves as a domain layer in the application architecture,
@@ -16,7 +17,9 @@ import java.time.temporal.ChronoUnit
  *
  * To get an instance of this class, use the `getInstance` method with the required `languageCode`.
  */
-class BirdObservations private constructor() {
+
+//class BirdObservations private constructor()
+class BirdObservations @Inject constructor() {
 
     private val eBirdApi = EBirdApi()
     companion object {
