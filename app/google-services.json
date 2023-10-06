@@ -14,27 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "249214876391-02dqg7skl6ssgf65g126ttdmq37u8dt7.apps.googleusercontent.com",
+          "client_id": "249214876391-q550nshov9th5q2t950iqt4iersmbpu8.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "no.hiof.friluftslivcompanionapp",
-            "certificate_hash": "3a3e08d7daa231c0f7f92147641150d7f4fd040d"
-          }
-        },
-        {
-          "client_id": "249214876391-f2vio7mnfkk2s323vts0eq44ape8fncb.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "no.hiof.friluftslivcompanionapp",
-            "certificate_hash": "cf2f7a8ddcc4c3dbc1076cf44d14d5fe448ebada"
-          }
-        },
-        {
-          "client_id": "249214876391-j1amn6lr9l41csa9bn7rhthbb1c7nhhg.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "no.hiof.friluftslivcompanionapp",
-            "certificate_hash": "dafb710fdd2993542531db15f857d58f204fc165"
+            "certificate_hash": "c0a4fa64b2a13c7bb50627f7f08c9dcd5a7ebc34"
           }
         },
         {

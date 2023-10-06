@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -7,8 +10,28 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 
 }
+// Create a variable called keystorePropertiesFile and initialize it to your
+// keystore.properties file in the rootProject folder.
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+
+// Initialize a new Properties() object called keystoreProperties.
+val keystoreProperties = Properties()
+
+// Load your keystore.properties file into the keystoreProperties object.
+keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+
 
 android {
+    signingConfigs {
+        getByName("debug") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+
+
+        }
+    }
     namespace = "no.hiof.friluftslivcompanionapp"
     compileSdk = 34
 
@@ -120,5 +143,7 @@ dependencies {
     // Google Maps
     implementation("com.google.maps.android:maps-compose:2.14.0")
     implementation("com.google.android.gms:play-services-maps:18.1.0")
+
+
 
 }

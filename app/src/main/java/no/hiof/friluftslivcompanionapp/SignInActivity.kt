@@ -50,6 +50,7 @@ class SignInActivity : AppCompatActivity() {
         val signInIntent = AuthUI.getInstance()
             .createSignInIntentBuilder()
             .setAvailableProviders(providers)
+            .setIsSmartLockEnabled(false)
             .setTheme(no.hiof.friluftslivcompanionapp.R.style.Theme_FriluftslivCompanionApp)
             .build()
 

@@ -14,5 +14,7 @@
 .cxx
 local.properties
 secrets.properties
-
 google-services.json
+*.jks
+keystore.properties
+/app/debug/app-debug.aab
