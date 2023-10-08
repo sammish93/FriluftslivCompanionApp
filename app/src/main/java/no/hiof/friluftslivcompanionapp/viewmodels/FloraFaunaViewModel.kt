@@ -1,6 +1,8 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,20 +40,11 @@ class FloraFaunaViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(TabsUiState())
     override val uiState: StateFlow<TabsUiState> = _uiState.asStateFlow()
 
-    private val _birdResults = MutableStateFlow<List<String>>(emptyList())
-    val birdResults: StateFlow<List<String>> = _birdResults
-
-    fun updateBirdResults(results: List<String>) {
-        _birdResults.value=results
-    }
-    private val api = BirdObservations.getInstance()
-
     override var tabDestinations = mapOf(
         Screen.FLORA_FAUNA to "Lifelist",
         Screen.FLORA_FAUNA_SEARCH_LOCATION to "Search (By Location)",
         Screen.FLORA_FAUNA_SEARCH_SPECIES to "Search (By Species)"
     )
-
     override fun changeHighlightedTab(index: Int) {
         _uiState.update { currentState ->
             currentState.copy(
@@ -60,9 +53,20 @@ class FloraFaunaViewModel @Inject constructor(
         }
     }
 
-    fun searchBirds(location: String) {
+
+
+    private val _birdResults = MutableStateFlow<List<String>>(emptyList())
+    val birdResults: StateFlow<List<String>> = _birdResults
+
+    fun updateBirdResults(results: List<String>) {
+        _birdResults.value=results
+    }
+    private val api = BirdObservations.getInstance()
+
+    suspend fun searchBirdsByLocation(location: String) {
         viewModelScope.launch {
             try {
+                setLocation(location)
                 val result = repository.getBirdsByLocation(location)
                 if (result is Result.Success ) {
                     val birdList = result.value
@@ -77,5 +81,12 @@ class FloraFaunaViewModel @Inject constructor(
                 println("Error: ${e.message}")
             }
         }
+    }
+
+    private val _location = MutableStateFlow<String>("")
+    val location: StateFlow<String> get() = _location
+
+    fun setLocation(location: String) {
+        _location.value = location
     }
 }
