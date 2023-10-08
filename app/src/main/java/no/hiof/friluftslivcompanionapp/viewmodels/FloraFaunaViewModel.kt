@@ -1,15 +1,23 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
+
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
+import kotlinx.coroutines.launch
+import no.hiof.friluftslivcompanionapp.data.TabsUiState
+import no.hiof.friluftslivcompanionapp.data.repositories.FloraFaunaRepository
+import no.hiof.friluftslivcompanionapp.domain.BirdObservations
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
 import javax.inject.Inject
+import no.hiof.friluftslivcompanionapp.data.network.Result
 
 // NOTE: Composable Screens in app/ui/screens can communicate with this viewmodel (and thus the data
 // layer via 'import androidx.lifecycle.viewmodel.compose.viewModel' at the top of the file, and
@@ -25,6 +33,8 @@ import javax.inject.Inject
 class FloraFaunaViewModel @Inject constructor(
     // Communication with the data layer can be injected as dependencies here.
     // private val repository: TripsRepository
+    private val repository: FloraFaunaRepository
+
 ) : ViewModel(), TabNavigation {
 
     private val _uiState = MutableStateFlow(TabsUiState())
@@ -35,12 +45,48 @@ class FloraFaunaViewModel @Inject constructor(
         Screen.FLORA_FAUNA_SEARCH_LOCATION to "Search (By Location)",
         Screen.FLORA_FAUNA_SEARCH_SPECIES to "Search (By Species)"
     )
-
     override fun changeHighlightedTab(index: Int) {
         _uiState.update { currentState ->
             currentState.copy(
                 currentTabIndex = index
             )
         }
+    }
+
+
+
+    private val _birdResults = MutableStateFlow<List<String>>(emptyList())
+    val birdResults: StateFlow<List<String>> = _birdResults
+
+    fun updateBirdResults(results: List<String>) {
+        _birdResults.value=results
+    }
+    private val api = BirdObservations.getInstance()
+
+    suspend fun searchBirdsByLocation(location: String) {
+        viewModelScope.launch {
+            try {
+                setLocation(location)
+                val result = repository.getBirdsByLocation(location)
+                if (result is Result.Success ) {
+                    val birdList = result.value
+                    val processedList = api.processBirdList(birdList) { bird ->
+                        bird.speciesName ?: "Unknown species"
+                    }
+                    updateBirdResults(processedList)
+                } else if (result is Result.Failure) {
+                    println("API call failed: ${result.message}")
+                }
+            } catch (e: Exception) {
+                println("Error: ${e.message}")
+            }
+        }
+    }
+
+    private val _location = MutableStateFlow<String>("")
+    val location: StateFlow<String> get() = _location
+
+    fun setLocation(location: String) {
+        _location.value = location
     }
 }
