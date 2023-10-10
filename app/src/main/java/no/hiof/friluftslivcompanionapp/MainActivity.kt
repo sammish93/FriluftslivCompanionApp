@@ -7,6 +7,8 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -126,31 +128,80 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
             modifier = modifier.fillMaxSize()
         ) {
             // Routes go here.
-            composable(Screen.HOME.name) {
+            composable(Screen.HOME.name, enterTransition = {
+                // Transition animation from every page.
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Down,
+                    animationSpec = tween(500)
+                )
+            }) {
                 HomeScreen(modifier.padding(innerPadding))
             }
-            composable(Screen.TRIPS.name) {
+            composable(Screen.TRIPS.name,
+                enterTransition = {
+                when (initialState.destination.route) {
+                    // No transition animation from the following pages.
+                    Screen.TRIPS_RECENT_ACTIVITY.name -> null
+                    Screen.TRIPS_CREATE.name -> null
+
+                    // Transition animation from every other page.
+                    else -> slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Up,
+                        animationSpec = tween(500)
+                    )
+                }
+            }) {
                 Scaffold(
                     topBar = tripsTabsBar
                 ) { innerPadding ->
                     TripsScreen(navController, modifier.padding(innerPadding), tripsViewModel)
                 }
             }
-            composable(Screen.WEATHER.name) {
+            composable(Screen.WEATHER.name,
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        // No transition animation from the following pages.
+                        Screen.WEATHER_SEARCH.name -> null
+
+                        // Transition animation from every other page.
+                        else -> slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            animationSpec = tween(500)
+                        )
+                    }
+                }) {
                 Scaffold(
                     topBar = weatherTabsBar
                 ) { innerPadding ->
                     WeatherScreen(navController, modifier.padding(innerPadding), weatherViewModel)
                 }
             }
-            composable(Screen.FLORA_FAUNA.name) {
+            composable(Screen.FLORA_FAUNA.name,
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        // No transition animation from the following pages.
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> null
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> null
+
+                        // Transition animation from every other page.
+                        else -> slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            animationSpec = tween(500)
+                        )
+                    }
+                }) {
                 Scaffold(
                     topBar = floraFaunaTabsBar
                 ) { innerPadding ->
                     FloraFaunaScreen(navController, modifier.padding(innerPadding), floraFaunaViewModel)
                 }
             }
-            composable(Screen.PROFILE.name) {
+            composable(Screen.PROFILE.name, enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up,
+                    animationSpec = tween(500)
+                )
+            }) {
                 ProfileScreen(modifier.padding(innerPadding))
             }
             composable(Screen.TRIPS_RECENT_ACTIVITY.name) {
