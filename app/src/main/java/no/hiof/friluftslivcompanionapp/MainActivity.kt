@@ -113,11 +113,28 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
     val weatherViewModel = hiltViewModel<WeatherViewModel>()
 
     // CustomTabsBar Composables are assigned to functions here and injected in NavHost below.
-    val tripsTabsBar : @Composable () -> Unit = {CustomTabsBar(tripsViewModel,  navController)}
-    val floraFaunaTabsBar : @Composable () -> Unit = {CustomTabsBar(floraFaunaViewModel,  navController)}
-    val weatherTabsBar : @Composable () -> Unit = {CustomTabsBar(weatherViewModel,  navController)}
+    val tripsTabsBar: @Composable () -> Unit = { CustomTabsBar(tripsViewModel, navController) }
+    val floraFaunaTabsBar: @Composable () -> Unit =
+        { CustomTabsBar(floraFaunaViewModel, navController) }
+    val weatherTabsBar: @Composable () -> Unit = { CustomTabsBar(weatherViewModel, navController) }
 
     Scaffold(
+        topBar = {
+            when (currentRoute) {
+                // No transition animation from the following pages.
+                Screen.TRIPS.name -> tripsTabsBar()
+                Screen.TRIPS_RECENT_ACTIVITY.name -> tripsTabsBar()
+                Screen.TRIPS_CREATE.name -> tripsTabsBar()
+                Screen.WEATHER.name -> weatherTabsBar()
+                Screen.WEATHER_SEARCH.name -> weatherTabsBar()
+                Screen.FLORA_FAUNA.name -> floraFaunaTabsBar()
+                Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> floraFaunaTabsBar()
+                Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> floraFaunaTabsBar()
+
+                // Transition animation from every other page.
+                else -> null
+            }
+        },
         bottomBar = {
             CustomNavigationBar(navController)
         }
@@ -139,29 +156,30 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
             }
             composable(Screen.TRIPS.name,
                 enterTransition = {
-                when (initialState.destination.route) {
-                    // No transition animation from the following pages.
-                    Screen.TRIPS_RECENT_ACTIVITY.name -> null
-                    Screen.TRIPS_CREATE.name -> null
+                    when (initialState.destination.route) {
+                        // No transition animation from the following pages.
+                        Screen.TRIPS_RECENT_ACTIVITY.name, Screen.TRIPS_CREATE.name -> slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(500)
+                        )
 
-                    // Transition animation from every other page.
-                    else -> slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Up,
-                        animationSpec = tween(500)
-                    )
-                }
-            }) {
-                Scaffold(
-                    topBar = tripsTabsBar
-                ) { innerPadding ->
-                    TripsScreen(navController, modifier.padding(innerPadding), tripsViewModel)
-                }
+                        // Transition animation from every other page.
+                        else -> slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            animationSpec = tween(500)
+                        )
+                    }
+                }) {
+                TripsScreen(navController, modifier.padding(innerPadding), tripsViewModel)
             }
             composable(Screen.WEATHER.name,
                 enterTransition = {
                     when (initialState.destination.route) {
                         // No transition animation from the following pages.
-                        Screen.WEATHER_SEARCH.name -> null
+                        Screen.WEATHER_SEARCH.name -> slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(500)
+                        )
 
                         // Transition animation from every other page.
                         else -> slideIntoContainer(
@@ -170,18 +188,16 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
                         )
                     }
                 }) {
-                Scaffold(
-                    topBar = weatherTabsBar
-                ) { innerPadding ->
-                    WeatherScreen(navController, modifier.padding(innerPadding), weatherViewModel)
-                }
+                WeatherScreen(navController, modifier.padding(innerPadding), weatherViewModel)
             }
             composable(Screen.FLORA_FAUNA.name,
                 enterTransition = {
                     when (initialState.destination.route) {
                         // No transition animation from the following pages.
-                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> null
-                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> null
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name, Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(500)
+                        )
 
                         // Transition animation from every other page.
                         else -> slideIntoContainer(
@@ -190,11 +206,7 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
                         )
                     }
                 }) {
-                Scaffold(
-                    topBar = floraFaunaTabsBar
-                ) { innerPadding ->
-                    FloraFaunaScreen(navController, modifier.padding(innerPadding), floraFaunaViewModel)
-                }
+                FloraFaunaScreen(navController, modifier.padding(innerPadding), floraFaunaViewModel)
             }
             composable(Screen.PROFILE.name, enterTransition = {
                 slideIntoContainer(
@@ -204,40 +216,100 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
             }) {
                 ProfileScreen(modifier.padding(innerPadding))
             }
-            composable(Screen.TRIPS_RECENT_ACTIVITY.name) {
-                Scaffold(
-                    topBar = tripsTabsBar
-                ) { innerPadding ->
-                    TripsRecentActivityScreen(navController, modifier.padding(innerPadding), tripsViewModel)
+            composable(Screen.TRIPS_RECENT_ACTIVITY.name, enterTransition = {
+                when (initialState.destination.route) {
+                    // Transition animation from the following pages.
+                    Screen.TRIPS.name -> slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(500)
+                    )
+
+                    Screen.TRIPS_CREATE.name -> slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(500)
+                    )
+
+                    // No transition animation from other pages.
+                    else -> null
                 }
+            }) {
+                TripsRecentActivityScreen(
+                    navController,
+                    modifier.padding(innerPadding),
+                    tripsViewModel
+                )
             }
-            composable(Screen.TRIPS_CREATE.name) {
-                Scaffold(
-                    topBar = tripsTabsBar
-                ) { innerPadding ->
-                    TripsCreateScreen(navController, modifier.padding(innerPadding), tripsViewModel)
+            composable(Screen.TRIPS_CREATE.name, enterTransition = {
+                when (initialState.destination.route) {
+                    // Transition animation from the following pages.
+                    Screen.TRIPS.name, Screen.TRIPS_RECENT_ACTIVITY.name -> slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(500)
+                    )
+
+                    // No transition animation from other pages.
+                    else -> null
                 }
+            }) {
+                TripsCreateScreen(navController, modifier.padding(innerPadding), tripsViewModel)
             }
-            composable(Screen.FLORA_FAUNA_SEARCH_LOCATION.name) {
-                Scaffold(
-                    topBar = floraFaunaTabsBar
-                ) { innerPadding ->
-                    FloraFaunaSearchScreen("Location", navController, modifier.padding(innerPadding), floraFaunaViewModel)
+            composable(Screen.FLORA_FAUNA_SEARCH_LOCATION.name, enterTransition = {
+                when (initialState.destination.route) {
+                    // Transition animation from the following pages.
+                    Screen.FLORA_FAUNA.name -> slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(500)
+                    )
+
+                    Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(500)
+                    )
+
+                    // No transition animation from other pages.
+                    else -> null
                 }
+            }) {
+                FloraFaunaSearchScreen(
+                    "Location",
+                    navController,
+                    modifier.padding(innerPadding),
+                    floraFaunaViewModel
+                )
             }
-            composable(Screen.FLORA_FAUNA_SEARCH_SPECIES.name) {
-                Scaffold(
-                    topBar = floraFaunaTabsBar
-                ) { innerPadding ->
-                    FloraFaunaSearchScreen("Species", navController, modifier.padding(innerPadding), floraFaunaViewModel)
+            composable(Screen.FLORA_FAUNA_SEARCH_SPECIES.name, enterTransition = {
+                when (initialState.destination.route) {
+                    // Transition animation from the following pages.
+                    Screen.FLORA_FAUNA.name, Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(500)
+                    )
+
+                    // No transition animation from other pages.
+                    else -> null
                 }
+            }) {
+                FloraFaunaSearchScreen(
+                    "Species",
+                    navController,
+                    modifier.padding(innerPadding),
+                    floraFaunaViewModel
+                )
             }
-            composable(Screen.WEATHER_SEARCH.name) {
-                Scaffold(
-                    topBar = weatherTabsBar
-                ) { innerPadding ->
-                    WeatherSearchScreen(navController, modifier.padding(innerPadding), weatherViewModel)
-                }
+            composable(Screen.WEATHER_SEARCH.name,
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        // Transition animation from the following pages.
+                        Screen.WEATHER.name -> slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            animationSpec = tween(500)
+                        )
+
+                        // No transition animation from other pages.
+                        else -> null
+                    }
+                }) {
+                WeatherSearchScreen(navController, modifier.padding(innerPadding), weatherViewModel)
             }
         }
     }
