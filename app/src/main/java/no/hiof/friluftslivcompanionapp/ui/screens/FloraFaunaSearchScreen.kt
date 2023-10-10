@@ -35,33 +35,32 @@ fun FloraFaunaSearchScreen(
             .fillMaxSize()
             .padding(16.dp),
 
-    ) {
+        ) {
 
-            TextField(
-                value = locationName,
-                onValueChange = { locationName = it },
-                placeholder = { Text(text = "Enter your location to search") },
-                modifier = Modifier
-                    .padding(top = 10.dp)
-                    .fillMaxWidth(),
-                singleLine = true
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+        TextField(
+            value = locationName,
+            onValueChange = { locationName = it },
+            placeholder = { Text(text = "Enter your location to search") },
+            modifier = Modifier
+                .padding(top = 10.dp)
+                .fillMaxWidth(),
+            singleLine = true
+        )
+        Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = {
-                    viewModel.setLocation(locationName)
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(imageVector = Icons.Default.Search, contentDescription = "Search",
-                    modifier=Modifier .height(40.dp) .width(40.dp))
-            }
+        Button(
+            onClick = {
+                viewModel.setLocation(locationName)
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(imageVector = Icons.Default.Search, contentDescription = "Search",
+                modifier= Modifier
+                    .height(40.dp)
+                    .width(40.dp))
         }
+    }
     Spacer(modifier = Modifier.height(16.dp))
-    GoogleMapsView(locationName, viewModel)
+    //GoogleMapsView(locationName, viewModel)
+
 }
-
-
-
-
