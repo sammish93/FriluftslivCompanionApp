@@ -17,6 +17,11 @@ import androidx.compose.ui.unit.dp
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.ui.components.items.CardItem
 
+/**
+ * Composable function to display a card with image, title, and an info icon.
+ *
+ * @param cardItem The [CardItem] containing data for the card.
+ */
 @Composable
 fun CardComponent(cardItem: CardItem) {
     val paddingValue = 10.dp

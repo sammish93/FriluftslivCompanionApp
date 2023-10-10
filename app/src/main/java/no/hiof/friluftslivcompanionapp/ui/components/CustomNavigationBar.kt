@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
@@ -49,8 +50,7 @@ fun CustomNavigationBar(navController: NavController) {
             }
             NavigationBarItem(
                 icon = { Icon(icon, contentDescription = contentDescription) },
-                // Displays text if desired.
-                // label = { Text(screen.name) },
+                label = { Text(screenPage.name) },
                 selected = currentDestination?.hierarchy?.any { it.route == screenPage.name } == true,
                 onClick = {
                     navController.navigate(screenPage.name) {
