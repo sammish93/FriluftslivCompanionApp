@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.components
 
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -43,7 +44,7 @@ fun CustomTabsBar(viewModel: TabNavigation, navController: NavController) {
 
     val tabsUiState by viewModel.uiState.collectAsState()
 
-    TabRow(selectedTabIndex = tabsUiState.currentTabIndex) {
+    SecondaryTabRow(selectedTabIndex = tabsUiState.currentTabIndex) {
         viewModel.tabDestinations.onEachIndexed { index, (destination, title) ->
             Tab(
                 text = { Text(title) },
