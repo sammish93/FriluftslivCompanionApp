@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
-import no.hiof.friluftslivcompanionapp.data.repositories.FloraFaunaRepository
+//import no.hiof.friluftslivcompanionapp.data.repositories.FloraFaunaRepository
 import no.hiof.friluftslivcompanionapp.domain.BirdObservations
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
@@ -34,7 +34,7 @@ import no.hiof.friluftslivcompanionapp.models.Bird
 class FloraFaunaViewModel @Inject constructor(
     // Communication with the data layer can be injected as dependencies here.
     // private val repository: TripsRepository
-    private val repository: FloraFaunaRepository
+   // private val repository: FloraFaunaRepository
 
 ) : ViewModel(), TabNavigation {
 

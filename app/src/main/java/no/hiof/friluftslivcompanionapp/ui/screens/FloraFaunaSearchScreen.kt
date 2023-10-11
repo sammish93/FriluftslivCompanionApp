@@ -40,6 +40,10 @@ fun FloraFaunaSearchScreen(
     var birds by remember {
         mutableStateOf(emptyList<Bird>())
     }
+
+    //  var locationName by remember {
+    //        mutableStateOf("")
+    
     Box {
         LaunchedEffect(Unit) {
             val api = BirdObservations.getInstance()
