@@ -121,17 +121,12 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
     Scaffold(
         topBar = {
             when (currentRoute) {
-                // No transition animation from the following pages.
-                Screen.TRIPS.name -> tripsTabsBar()
-                Screen.TRIPS_RECENT_ACTIVITY.name -> tripsTabsBar()
-                Screen.TRIPS_CREATE.name -> tripsTabsBar()
-                Screen.WEATHER.name -> weatherTabsBar()
-                Screen.WEATHER_SEARCH.name -> weatherTabsBar()
-                Screen.FLORA_FAUNA.name -> floraFaunaTabsBar()
-                Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> floraFaunaTabsBar()
-                Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> floraFaunaTabsBar()
+                // The following pages cause a tab bar to appear.
+                Screen.TRIPS.name, Screen.TRIPS_RECENT_ACTIVITY.name, Screen.TRIPS_CREATE.name -> tripsTabsBar()
+                Screen.WEATHER.name, Screen.WEATHER_SEARCH.name -> weatherTabsBar()
+                Screen.FLORA_FAUNA.name, Screen.FLORA_FAUNA_SEARCH_LOCATION.name, Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> floraFaunaTabsBar()
 
-                // Transition animation from every other page.
+                // No tab bars for every other page.
                 else -> null
             }
         },
@@ -157,7 +152,7 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
             composable(Screen.TRIPS.name,
                 enterTransition = {
                     when (initialState.destination.route) {
-                        // No transition animation from the following pages.
+                        // Transition animation from the following pages.
                         Screen.TRIPS_RECENT_ACTIVITY.name, Screen.TRIPS_CREATE.name -> slideIntoContainer(
                             AnimatedContentTransitionScope.SlideDirection.Right,
                             animationSpec = tween(500)
@@ -175,7 +170,7 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
             composable(Screen.WEATHER.name,
                 enterTransition = {
                     when (initialState.destination.route) {
-                        // No transition animation from the following pages.
+                        // Transition animation from the following pages.
                         Screen.WEATHER_SEARCH.name -> slideIntoContainer(
                             AnimatedContentTransitionScope.SlideDirection.Right,
                             animationSpec = tween(500)
@@ -193,7 +188,7 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
             composable(Screen.FLORA_FAUNA.name,
                 enterTransition = {
                     when (initialState.destination.route) {
-                        // No transition animation from the following pages.
+                        // Transition animation from the following pages.
                         Screen.FLORA_FAUNA_SEARCH_SPECIES.name, Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> slideIntoContainer(
                             AnimatedContentTransitionScope.SlideDirection.Right,
                             animationSpec = tween(500)
@@ -209,6 +204,7 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
                 FloraFaunaScreen(navController, modifier.padding(innerPadding), floraFaunaViewModel)
             }
             composable(Screen.PROFILE.name, enterTransition = {
+                // Transition animation from every page.
                 slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Up,
                     animationSpec = tween(500)
@@ -223,7 +219,6 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
                         AnimatedContentTransitionScope.SlideDirection.Left,
                         animationSpec = tween(500)
                     )
-
                     Screen.TRIPS_CREATE.name -> slideIntoContainer(
                         AnimatedContentTransitionScope.SlideDirection.Right,
                         animationSpec = tween(500)
@@ -260,7 +255,6 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
                         AnimatedContentTransitionScope.SlideDirection.Left,
                         animationSpec = tween(500)
                     )
-
                     Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> slideIntoContainer(
                         AnimatedContentTransitionScope.SlideDirection.Right,
                         animationSpec = tween(500)
