@@ -53,140 +53,154 @@ object CustomNavGraph {
         innerPadding: PaddingValues,
         modifier: Modifier
     ) {
-        // Routes go here.
-        composable(
-            Screen.TRIPS.name,
-            enterTransition = {
-                when (initialState.destination.route) {
-                    // Transition animation from the following pages.
-                    Screen.TRIPS_RECENT_ACTIVITY.name,
-                    Screen.TRIPS_CREATE.name -> enterTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Right,
-                        500
-                    )
+        navigation(startDestination = Screen.TRIPS.name, route = Screen.TRIPS.route) {
+            // Routes go here.
+            composable(
+                Screen.TRIPS.name,
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        // Transition animation from the following pages.
+                        Screen.TRIPS_RECENT_ACTIVITY.name,
+                        Screen.TRIPS_CREATE.name -> enterTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            500
+                        )
 
-                    // Transition animation from every other page.
-                    else -> enterTransition(AnimatedContentTransitionScope.SlideDirection.Up, 500)
-                }
-            },
-            exitTransition = {
-                when (navController.currentBackStackEntry?.destination?.route) {
-                    // Transition animation from the following pages.
-                    Screen.TRIPS_RECENT_ACTIVITY.name,
-                    Screen.TRIPS_CREATE.name -> exitTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Left,
-                        500
-                    )
+                        // Transition animation from every other page.
+                        else -> enterTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            500
+                        )
+                    }
+                },
+                exitTransition = {
+                    when (navController.currentBackStackEntry?.destination?.route) {
+                        // Transition animation from the following pages.
+                        Screen.TRIPS_RECENT_ACTIVITY.name,
+                        Screen.TRIPS_CREATE.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            500
+                        )
 
-                    Screen.FLORA_FAUNA.name,
-                    Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
-                    Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
-                    Screen.WEATHER.name,
-                    Screen.WEATHER_SEARCH.name,
-                    Screen.PROFILE.name -> exitTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Up,
-                        500
-                    )
+                        Screen.FLORA_FAUNA.name,
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
+                        Screen.WEATHER.name,
+                        Screen.WEATHER_SEARCH.name,
+                        Screen.PROFILE.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            500
+                        )
 
-                    // Transition animation from every other page.
-                    else -> exitTransition(AnimatedContentTransitionScope.SlideDirection.Down, 500)
-                }
-            }) {
-            TripsScreen(navController, modifier.padding(innerPadding), tripsViewModel)
-        }
+                        // Transition animation from every other page.
+                        else -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
+                            500
+                        )
+                    }
+                }) {
+                TripsScreen(navController, modifier.padding(innerPadding), tripsViewModel)
+            }
 
-        composable(
-            Screen.TRIPS_RECENT_ACTIVITY.name,
-            enterTransition = {
-                when (initialState.destination.route) {
-                    // Transition animation from the following pages.
-                    Screen.TRIPS.name -> enterTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Left,
-                        500
-                    )
+            composable(
+                Screen.TRIPS_RECENT_ACTIVITY.name,
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        // Transition animation from the following pages.
+                        Screen.TRIPS.name -> enterTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            500
+                        )
 
-                    Screen.TRIPS_CREATE.name -> enterTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Right,
-                        500
-                    )
+                        Screen.TRIPS_CREATE.name -> enterTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            500
+                        )
 
-                    // No transition animation from other pages.
-                    else -> null
-                }
-            },
-            exitTransition = {
-                when (navController.currentBackStackEntry?.destination?.route) {
-                    // Transition animation from the following pages.
-                    Screen.TRIPS.name -> exitTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Right,
-                        500
-                    )
+                        // No transition animation from other pages.
+                        else -> null
+                    }
+                },
+                exitTransition = {
+                    when (navController.currentBackStackEntry?.destination?.route) {
+                        // Transition animation from the following pages.
+                        Screen.TRIPS.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            500
+                        )
 
-                    Screen.TRIPS_CREATE.name -> exitTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Left,
-                        500
-                    )
+                        Screen.TRIPS_CREATE.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            500
+                        )
 
-                    Screen.FLORA_FAUNA.name,
-                    Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
-                    Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
-                    Screen.WEATHER.name,
-                    Screen.WEATHER_SEARCH.name,
-                    Screen.PROFILE.name -> exitTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Up,
-                        500
-                    )
+                        Screen.FLORA_FAUNA.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
+                        Screen.WEATHER.name,
+                        Screen.WEATHER_SEARCH.name,
+                        Screen.PROFILE.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            500
+                        )
 
-                    // Transition animation from every other page.
-                    else -> exitTransition(AnimatedContentTransitionScope.SlideDirection.Down, 500)
-                }
-            }) {
-            TripsRecentActivityScreen(
-                navController,
-                modifier.padding(innerPadding),
-                tripsViewModel
-            )
-        }
+                        // Transition animation from every other page.
+                        else -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
+                            500
+                        )
+                    }
+                }) {
+                TripsRecentActivityScreen(
+                    navController,
+                    modifier.padding(innerPadding),
+                    tripsViewModel
+                )
+            }
 
-        composable(
-            Screen.TRIPS_CREATE.name,
-            enterTransition = {
-                when (initialState.destination.route) {
-                    // Transition animation from the following pages.
-                    Screen.TRIPS.name,
-                    Screen.TRIPS_RECENT_ACTIVITY.name -> enterTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Left,
-                        500
-                    )
+            composable(
+                Screen.TRIPS_CREATE.name,
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        // Transition animation from the following pages.
+                        Screen.TRIPS.name,
+                        Screen.TRIPS_RECENT_ACTIVITY.name -> enterTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            500
+                        )
 
-                    // No transition animation from other pages.
-                    else -> null
-                }
-            },
-            exitTransition = {
-                when (navController.currentBackStackEntry?.destination?.route) {
-                    // Transition animation from the following pages.
-                    Screen.TRIPS.name,
-                    Screen.TRIPS_RECENT_ACTIVITY.name -> exitTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Right,
-                        500
-                    )
+                        // No transition animation from other pages.
+                        else -> null
+                    }
+                },
+                exitTransition = {
+                    when (navController.currentBackStackEntry?.destination?.route) {
+                        // Transition animation from the following pages.
+                        Screen.TRIPS.name,
+                        Screen.TRIPS_RECENT_ACTIVITY.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            500
+                        )
 
-                    Screen.FLORA_FAUNA.name,
-                    Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
-                    Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
-                    Screen.WEATHER.name,
-                    Screen.WEATHER_SEARCH.name,
-                    Screen.PROFILE.name -> exitTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Up,
-                        500
-                    )
+                        Screen.FLORA_FAUNA.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
+                        Screen.WEATHER.name,
+                        Screen.WEATHER_SEARCH.name,
+                        Screen.PROFILE.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            500
+                        )
 
-                    // Transition animation from every other page.
-                    else -> exitTransition(AnimatedContentTransitionScope.SlideDirection.Down, 500)
-                }
-            }) {
-            TripsCreateScreen(navController, modifier.padding(innerPadding), tripsViewModel)
+                        // Transition animation from every other page.
+                        else -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
+                            500
+                        )
+                    }
+                }) {
+                TripsCreateScreen(navController, modifier.padding(innerPadding), tripsViewModel)
+            }
         }
     }
 
@@ -197,145 +211,159 @@ object CustomNavGraph {
         innerPadding: PaddingValues,
         modifier: Modifier
     ) {
-        // Routes go here.
-        composable(
-            Screen.FLORA_FAUNA.name,
-            enterTransition = {
-                when (initialState.destination.route) {
-                    // Transition animation from the following pages.
-                    Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
-                    Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> enterTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Right,
-                        500
-                    )
+        navigation(startDestination = Screen.FLORA_FAUNA.name, route = Screen.FLORA_FAUNA.route) {
+            // Routes go here.
+            composable(
+                Screen.FLORA_FAUNA.name,
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        // Transition animation from the following pages.
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> enterTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            500
+                        )
 
-                    // Transition animation from every other page.
-                    else -> enterTransition(AnimatedContentTransitionScope.SlideDirection.Up, 500)
-                }
-            },
-            exitTransition = {
-                when (navController.currentBackStackEntry?.destination?.route) {
-                    // Transition animation from the following pages.
-                    Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
-                    Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> exitTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Left,
-                        500
-                    )
+                        // Transition animation from every other page.
+                        else -> enterTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            500
+                        )
+                    }
+                },
+                exitTransition = {
+                    when (navController.currentBackStackEntry?.destination?.route) {
+                        // Transition animation from the following pages.
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            500
+                        )
 
-                    Screen.TRIPS.name,
-                    Screen.TRIPS_RECENT_ACTIVITY.name,
-                    Screen.TRIPS_CREATE.name,
-                    Screen.WEATHER.name,
-                    Screen.WEATHER_SEARCH.name,
-                    Screen.PROFILE.name -> slideOutOfContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Up,
-                        animationSpec = tween(500)
-                    )
+                        Screen.TRIPS.name,
+                        Screen.TRIPS_RECENT_ACTIVITY.name,
+                        Screen.TRIPS_CREATE.name,
+                        Screen.WEATHER.name,
+                        Screen.WEATHER_SEARCH.name,
+                        Screen.PROFILE.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            animationSpec = tween(500)
+                        )
 
-                    // Transition animation from every other page.
-                    else -> exitTransition(AnimatedContentTransitionScope.SlideDirection.Down, 500)
-                }
-            }) {
-            FloraFaunaScreen(navController, modifier.padding(innerPadding), floraFaunaViewModel)
-        }
+                        // Transition animation from every other page.
+                        else -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
+                            500
+                        )
+                    }
+                }) {
+                FloraFaunaScreen(navController, modifier.padding(innerPadding), floraFaunaViewModel)
+            }
 
-        composable(
-            Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
-            enterTransition = {
-                when (initialState.destination.route) {
-                    // Transition animation from the following pages.
-                    Screen.FLORA_FAUNA.name -> enterTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Left,
-                        500
-                    )
+            composable(
+                Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        // Transition animation from the following pages.
+                        Screen.FLORA_FAUNA.name -> enterTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            500
+                        )
 
-                    Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> enterTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Right,
-                        500
-                    )
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> enterTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            500
+                        )
 
-                    // No transition animation from other pages.
-                    else -> null
-                }
-            },
-            exitTransition = {
-                when (navController.currentBackStackEntry?.destination?.route) {
-                    // Transition animation from the following pages.
-                    Screen.FLORA_FAUNA.name -> exitTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Right,
-                        500
-                    )
+                        // No transition animation from other pages.
+                        else -> null
+                    }
+                },
+                exitTransition = {
+                    when (navController.currentBackStackEntry?.destination?.route) {
+                        // Transition animation from the following pages.
+                        Screen.FLORA_FAUNA.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            500
+                        )
 
-                    Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> exitTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Left,
-                        500
-                    )
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            500
+                        )
 
-                    Screen.TRIPS.name,
-                    Screen.TRIPS_RECENT_ACTIVITY.name,
-                    Screen.TRIPS_CREATE.name,
-                    Screen.WEATHER.name,
-                    Screen.WEATHER_SEARCH.name,
-                    Screen.PROFILE.name -> exitTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Up,
-                        500
-                    )
-                    // Transition animation from every other page.
-                    else -> exitTransition(AnimatedContentTransitionScope.SlideDirection.Down, 500)
-                }
-            }) {
-            FloraFaunaSearchScreen(
-                "Location",
-                navController,
-                modifier.padding(innerPadding),
-                floraFaunaViewModel
-            )
-        }
+                        Screen.TRIPS.name,
+                        Screen.TRIPS_RECENT_ACTIVITY.name,
+                        Screen.TRIPS_CREATE.name,
+                        Screen.WEATHER.name,
+                        Screen.WEATHER_SEARCH.name,
+                        Screen.PROFILE.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            500
+                        )
+                        // Transition animation from every other page.
+                        else -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
+                            500
+                        )
+                    }
+                }) {
+                FloraFaunaSearchScreen(
+                    "Location",
+                    navController,
+                    modifier.padding(innerPadding),
+                    floraFaunaViewModel
+                )
+            }
 
-        composable(
-            Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
-            enterTransition = {
-                when (initialState.destination.route) {
-                    // Transition animation from the following pages.
-                    Screen.FLORA_FAUNA.name,
-                    Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> enterTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Left,
-                        500
-                    )
+            composable(
+                Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        // Transition animation from the following pages.
+                        Screen.FLORA_FAUNA.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> enterTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            500
+                        )
 
-                    // No transition animation from other pages.
-                    else -> null
-                }
-            },
-            exitTransition = {
-                when (navController.currentBackStackEntry?.destination?.route) {
-                    // Transition animation from the following pages.
-                    Screen.FLORA_FAUNA.name,
-                    Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> exitTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Right,
-                        500
-                    )
+                        // No transition animation from other pages.
+                        else -> null
+                    }
+                },
+                exitTransition = {
+                    when (navController.currentBackStackEntry?.destination?.route) {
+                        // Transition animation from the following pages.
+                        Screen.FLORA_FAUNA.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            500
+                        )
 
-                    Screen.TRIPS.name,
-                    Screen.TRIPS_RECENT_ACTIVITY.name,
-                    Screen.TRIPS_CREATE.name,
-                    Screen.WEATHER.name,
-                    Screen.WEATHER_SEARCH.name,
-                    Screen.PROFILE.name -> exitTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Up,
-                        500
-                    )
+                        Screen.TRIPS.name,
+                        Screen.TRIPS_RECENT_ACTIVITY.name,
+                        Screen.TRIPS_CREATE.name,
+                        Screen.WEATHER.name,
+                        Screen.WEATHER_SEARCH.name,
+                        Screen.PROFILE.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            500
+                        )
 
-                    // Transition animation from every other page.
-                    else -> exitTransition(AnimatedContentTransitionScope.SlideDirection.Down, 500)
-                }
-            }) {
-            FloraFaunaSearchScreen(
-                "Species",
-                navController,
-                modifier.padding(innerPadding),
-                floraFaunaViewModel
-            )
+                        // Transition animation from every other page.
+                        else -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
+                            500
+                        )
+                    }
+                }) {
+                FloraFaunaSearchScreen(
+                    "Species",
+                    navController,
+                    modifier.padding(innerPadding),
+                    floraFaunaViewModel
+                )
+            }
         }
     }
 
@@ -346,84 +374,95 @@ object CustomNavGraph {
         innerPadding: PaddingValues,
         modifier: Modifier
     ) {
-        // Routes go here.
-        composable(
-            Screen.WEATHER.name,
-            enterTransition = {
-                when (initialState.destination.route) {
-                    // Transition animation from the following pages.
-                    Screen.WEATHER_SEARCH.name -> enterTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Right,
-                        500
-                    )
+        navigation(startDestination = Screen.WEATHER.name, route = Screen.WEATHER.route) {
+            // Routes go here.
+            composable(
+                Screen.WEATHER.name,
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        // Transition animation from the following pages.
+                        Screen.WEATHER_SEARCH.name -> enterTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            500
+                        )
 
-                    // Transition animation from every other page.
-                    else -> enterTransition(AnimatedContentTransitionScope.SlideDirection.Up, 500)
-                }
-            },
-            exitTransition = {
-                when (navController.currentBackStackEntry?.destination?.route) {
-                    // Transition animation from the following pages.
-                    Screen.WEATHER_SEARCH.name -> exitTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Left,
-                        500
-                    )
+                        // Transition animation from every other page.
+                        else -> enterTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            500
+                        )
+                    }
+                },
+                exitTransition = {
+                    when (navController.currentBackStackEntry?.destination?.route) {
+                        // Transition animation from the following pages.
+                        Screen.WEATHER_SEARCH.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            500
+                        )
 
-                    Screen.FLORA_FAUNA.name,
-                    Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
-                    Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
-                    Screen.TRIPS.name,
-                    Screen.TRIPS_RECENT_ACTIVITY.name,
-                    Screen.TRIPS_CREATE.name,
-                    Screen.PROFILE.name -> exitTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Up,
-                        500
-                    )
+                        Screen.FLORA_FAUNA.name,
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
+                        Screen.TRIPS.name,
+                        Screen.TRIPS_RECENT_ACTIVITY.name,
+                        Screen.TRIPS_CREATE.name,
+                        Screen.PROFILE.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            500
+                        )
 
-                    // Transition animation from every other page.
-                    else -> exitTransition(AnimatedContentTransitionScope.SlideDirection.Down, 500)
-                }
-            }) {
-            WeatherScreen(navController, modifier.padding(innerPadding), weatherViewModel)
-        }
+                        // Transition animation from every other page.
+                        else -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
+                            500
+                        )
+                    }
+                }) {
+                WeatherScreen(navController, modifier.padding(innerPadding), weatherViewModel)
+            }
 
-        composable(
-            Screen.WEATHER_SEARCH.name,
-            enterTransition = {
-                when (initialState.destination.route) {
-                    // Transition animation from the following pages.
-                    Screen.WEATHER.name -> enterTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Left,
-                        500
-                    )
+            composable(
+                Screen.WEATHER_SEARCH.name,
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        // Transition animation from the following pages.
+                        Screen.WEATHER.name -> enterTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            500
+                        )
 
-                    // No transition animation from other pages.
-                    else -> null
-                }
-            },
-            exitTransition = {
-                when (navController.currentBackStackEntry?.destination?.route) {
-                    // Transition animation from the following pages.
-                    Screen.WEATHER.name -> exitTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Right,
-                        500
-                    )
+                        // No transition animation from other pages.
+                        else -> null
+                    }
+                },
+                exitTransition = {
+                    when (navController.currentBackStackEntry?.destination?.route) {
+                        // Transition animation from the following pages.
+                        Screen.WEATHER.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            500
+                        )
 
-                    Screen.FLORA_FAUNA.name,
-                    Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
-                    Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
-                    Screen.TRIPS.name, Screen.TRIPS_RECENT_ACTIVITY.name,
-                    Screen.TRIPS_CREATE.name,
-                    Screen.PROFILE.name -> exitTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Up,
-                        500
-                    )
+                        Screen.FLORA_FAUNA.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
+                        Screen.TRIPS.name, Screen.TRIPS_RECENT_ACTIVITY.name,
+                        Screen.TRIPS_CREATE.name,
+                        Screen.PROFILE.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            500
+                        )
 
-                    // Transition animation from every other page.
-                    else -> exitTransition(AnimatedContentTransitionScope.SlideDirection.Down, 500)
-                }
-            }) {
-            WeatherSearchScreen(navController, modifier.padding(innerPadding), weatherViewModel)
+                        // Transition animation from every other page.
+                        else -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
+                            500
+                        )
+                    }
+                }) {
+                WeatherSearchScreen(navController, modifier.padding(innerPadding), weatherViewModel)
+            }
         }
     }
 
@@ -433,31 +472,36 @@ object CustomNavGraph {
         innerPadding: PaddingValues,
         modifier: Modifier
     ) {
-        // Routes go here.
-        composable(
-            Screen.PROFILE.name,
-            enterTransition = {
-                // Transition animation from every page.
-                enterTransition(AnimatedContentTransitionScope.SlideDirection.Up, 500)
-            },
-            exitTransition = {
-                when (navController.currentBackStackEntry?.destination?.route) {
-                    Screen.FLORA_FAUNA.name,
-                    Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
-                    Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
-                    Screen.WEATHER.name,
-                    Screen.WEATHER_SEARCH.name,
-                    Screen.TRIPS.name,
-                    Screen.TRIPS_RECENT_ACTIVITY.name,
-                    Screen.TRIPS_CREATE.name -> exitTransition(
-                        AnimatedContentTransitionScope.SlideDirection.Up,
-                        500
-                    )
+        navigation(startDestination = Screen.PROFILE.name, route = Screen.PROFILE.route) {
+            // Routes go here.
+            composable(
+                Screen.PROFILE.name,
+                enterTransition = {
+                    // Transition animation from every page.
+                    enterTransition(AnimatedContentTransitionScope.SlideDirection.Up, 500)
+                },
+                exitTransition = {
+                    when (navController.currentBackStackEntry?.destination?.route) {
+                        Screen.FLORA_FAUNA.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
+                        Screen.WEATHER.name,
+                        Screen.WEATHER_SEARCH.name,
+                        Screen.TRIPS.name,
+                        Screen.TRIPS_RECENT_ACTIVITY.name,
+                        Screen.TRIPS_CREATE.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            500
+                        )
 
-                    else -> exitTransition(AnimatedContentTransitionScope.SlideDirection.Down, 500)
-                }
-            }) {
-            ProfileScreen(modifier.padding(innerPadding))
+                        else -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
+                            500
+                        )
+                    }
+                }) {
+                ProfileScreen(modifier.padding(innerPadding))
+            }
         }
     }
 }

@@ -52,7 +52,7 @@ fun CustomNavigationBar(navController: NavController) {
                 icon = { Icon(icon, contentDescription = contentDescription) },
                 //TODO if test to determine whether to display navbar label in English or Norwegian.
                 label = { Text(screenPage.navBarLabelEn) },
-                selected = currentDestination?.hierarchy?.any { it.route == screenPage.name } == true,
+                selected = currentDestination?.hierarchy?.any { it.route == screenPage.route } == true,
                 onClick = {
                     navController.navigate(screenPage.name) {
                         // Pop up to the start destination of the graph to
