@@ -1,24 +1,21 @@
 package no.hiof.friluftslivcompanionapp
 
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Intent
-import android.content.res.Configuration
+import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
@@ -41,23 +38,20 @@ import no.hiof.friluftslivcompanionapp.ui.theme.FriluftslivCompanionAppTheme
 import javax.inject.Inject
 
 import androidx.compose.material3.Typography
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.core.content.ContextCompat
 import no.hiof.friluftslivcompanionapp.ui.components.CustomNavigationBar
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
-//import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapView
-import no.hiof.friluftslivcompanionapp.ui.screens.AddScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.FloraFaunaSearchScreen
-import no.hiof.friluftslivcompanionapp.ui.screens.TripsAddScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.TripsCreateScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.TripsRecentActivityScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.WeatherSearchScreen
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapState
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
+import no.hiof.friluftslivcompanionapp.viewmodels.MapViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 
@@ -65,8 +59,38 @@ import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 class MainActivity : ComponentActivity() {
     @Inject
     lateinit var auth: FirebaseAuth
+
+
+    // Google Maps
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission())
+        { isGranted: Boolean ->
+
+            if (isGranted) {
+                viewModel.getDeviceLocation(fusedLocationProviderClient)
+            }
+        }
+
+    private fun askPermissions() = when (PackageManager.PERMISSION_GRANTED) {
+        ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION
+        ) -> {
+            viewModel.getDeviceLocation(fusedLocationProviderClient)
+        }
+        else -> {
+            requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
+        }
+    }
+
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private val viewModel: MapViewModel by viewModels()
+    // Google Maps.
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Google Maps.
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        askPermissions()
 
         val currentUser = auth.currentUser
         if (currentUser != null) {
@@ -82,7 +106,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        FriluftslivApp()
+                        FriluftslivApp(state = viewModel.state.value)
                     }
                 }
             }
@@ -93,14 +117,15 @@ class MainActivity : ComponentActivity() {
             finish()
         }
     }
-
-
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FriluftslivApp(modifier: Modifier = Modifier) {
+fun FriluftslivApp(
+    modifier: Modifier = Modifier,
+    state: GoogleMapState
+) {
     val navController = rememberNavController()
     val currentRoute by rememberUpdatedState(
         newValue = navController.currentBackStackEntryAsState().value?.destination?.route
@@ -208,7 +233,7 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
                         )
                     }
                 }) {
-                TripsScreen(navController, modifier.padding(innerPadding), tripsViewModel)
+                TripsScreen(navController, modifier.padding(innerPadding), tripsViewModel, mapState = state)
             }
             composable(Screen.WEATHER.name,
                 enterTransition = {
@@ -588,7 +613,7 @@ private fun ThemePreview(
 fun LightThemePreview() {
     Surface(tonalElevation = 5.dp) {
         ThemePreview(typography = CustomTypography, isDarkTheme = false) {
-            FriluftslivApp()
+            // FriluftslivApp()
         }
     }
 }
@@ -598,7 +623,7 @@ fun LightThemePreview() {
 fun DarkThemePreview() {
     Surface(tonalElevation = 5.dp) {
         ThemePreview(typography = CustomTypography, isDarkTheme = true) {
-            FriluftslivApp()
+            // FriluftslivApp()
         }
     }
 }
