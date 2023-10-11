@@ -113,18 +113,27 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
     val weatherViewModel = hiltViewModel<WeatherViewModel>()
 
     // CustomTabsBar Composables are assigned to functions here and injected in NavHost below.
-    val tripsTabsBar: @Composable () -> Unit = { CustomTabsBar(tripsViewModel, navController) }
+    val tripsTabsBar: @Composable () -> Unit =
+        { CustomTabsBar(tripsViewModel, navController) }
     val floraFaunaTabsBar: @Composable () -> Unit =
         { CustomTabsBar(floraFaunaViewModel, navController) }
-    val weatherTabsBar: @Composable () -> Unit = { CustomTabsBar(weatherViewModel, navController) }
+    val weatherTabsBar: @Composable () -> Unit =
+        { CustomTabsBar(weatherViewModel, navController) }
 
     Scaffold(
         topBar = {
             when (currentRoute) {
                 // The following pages cause a tab bar to appear.
-                Screen.TRIPS.name, Screen.TRIPS_RECENT_ACTIVITY.name, Screen.TRIPS_CREATE.name -> tripsTabsBar()
-                Screen.WEATHER.name, Screen.WEATHER_SEARCH.name -> weatherTabsBar()
-                Screen.FLORA_FAUNA.name, Screen.FLORA_FAUNA_SEARCH_LOCATION.name, Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> floraFaunaTabsBar()
+                Screen.TRIPS.name,
+                Screen.TRIPS_RECENT_ACTIVITY.name,
+                Screen.TRIPS_CREATE.name -> tripsTabsBar()
+
+                Screen.WEATHER.name,
+                Screen.WEATHER_SEARCH.name -> weatherTabsBar()
+
+                Screen.FLORA_FAUNA.name,
+                Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
+                Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> floraFaunaTabsBar()
 
                 // No tab bars for every other page.
                 else -> null
@@ -140,20 +149,28 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
             modifier = modifier.fillMaxSize()
         ) {
             // Routes go here.
-            composable(Screen.HOME.name, enterTransition = {
-                // Transition animation from every page.
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Down,
-                    animationSpec = tween(500)
-                )
-            }) {
+            composable(Screen.HOME.name,
+                enterTransition = {
+                    // Transition animation from every page.
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Down,
+                        animationSpec = tween(500)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Up,
+                        animationSpec = tween(500)
+                    )
+                }) {
                 HomeScreen(modifier.padding(innerPadding))
             }
             composable(Screen.TRIPS.name,
                 enterTransition = {
                     when (initialState.destination.route) {
                         // Transition animation from the following pages.
-                        Screen.TRIPS_RECENT_ACTIVITY.name, Screen.TRIPS_CREATE.name -> slideIntoContainer(
+                        Screen.TRIPS_RECENT_ACTIVITY.name,
+                        Screen.TRIPS_CREATE.name -> slideIntoContainer(
                             AnimatedContentTransitionScope.SlideDirection.Right,
                             animationSpec = tween(500)
                         )
@@ -161,6 +178,32 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
                         // Transition animation from every other page.
                         else -> slideIntoContainer(
                             AnimatedContentTransitionScope.SlideDirection.Up,
+                            animationSpec = tween(500)
+                        )
+                    }
+                },
+                exitTransition = {
+                    when (currentRoute) {
+                        // Transition animation from the following pages.
+                        Screen.TRIPS_RECENT_ACTIVITY.name,
+                        Screen.TRIPS_CREATE.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            animationSpec = tween(500)
+                        )
+
+                        Screen.FLORA_FAUNA.name,
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
+                        Screen.WEATHER.name,
+                        Screen.WEATHER_SEARCH.name,
+                        Screen.PROFILE.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            animationSpec = tween(500)
+                        )
+
+                        // Transition animation from every other page.
+                        else -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
                             animationSpec = tween(500)
                         )
                     }
@@ -182,6 +225,32 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
                             animationSpec = tween(500)
                         )
                     }
+                },
+                exitTransition = {
+                    when (currentRoute) {
+                        // Transition animation from the following pages.
+                        Screen.WEATHER_SEARCH.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            animationSpec = tween(500)
+                        )
+
+                        Screen.FLORA_FAUNA.name,
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
+                        Screen.TRIPS.name,
+                        Screen.TRIPS_RECENT_ACTIVITY.name,
+                        Screen.TRIPS_CREATE.name,
+                        Screen.PROFILE.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            animationSpec = tween(500)
+                        )
+
+                        // Transition animation from every other page.
+                        else -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
+                            animationSpec = tween(500)
+                        )
+                    }
                 }) {
                 WeatherScreen(navController, modifier.padding(innerPadding), weatherViewModel)
             }
@@ -189,7 +258,8 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
                 enterTransition = {
                     when (initialState.destination.route) {
                         // Transition animation from the following pages.
-                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name, Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> slideIntoContainer(
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> slideIntoContainer(
                             AnimatedContentTransitionScope.SlideDirection.Right,
                             animationSpec = tween(500)
                         )
@@ -200,70 +270,209 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
                             animationSpec = tween(500)
                         )
                     }
+                },
+                exitTransition = {
+                    when (currentRoute) {
+                        // Transition animation from the following pages.
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            animationSpec = tween(500)
+                        )
+
+                        Screen.TRIPS.name,
+                        Screen.TRIPS_RECENT_ACTIVITY.name,
+                        Screen.TRIPS_CREATE.name,
+                        Screen.WEATHER.name,
+                        Screen.WEATHER_SEARCH.name,
+                        Screen.PROFILE.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            animationSpec = tween(500)
+                        )
+
+                        // Transition animation from every other page.
+                        else -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
+                            animationSpec = tween(500)
+                        )
+                    }
                 }) {
                 FloraFaunaScreen(navController, modifier.padding(innerPadding), floraFaunaViewModel)
             }
-            composable(Screen.PROFILE.name, enterTransition = {
-                // Transition animation from every page.
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Up,
-                    animationSpec = tween(500)
-                )
-            }) {
+            composable(Screen.PROFILE.name,
+                enterTransition = {
+                    // Transition animation from every page.
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Up,
+                        animationSpec = tween(500)
+                    )
+                },
+                exitTransition = {
+                    when (currentRoute) {
+                        Screen.FLORA_FAUNA.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
+                        Screen.WEATHER.name,
+                        Screen.WEATHER_SEARCH.name,
+                        Screen.TRIPS.name,
+                        Screen.TRIPS_RECENT_ACTIVITY.name,
+                        Screen.TRIPS_CREATE.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            animationSpec = tween(500)
+                        )
+
+                        else -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
+                            animationSpec = tween(500)
+                        )
+                    }
+                }) {
                 ProfileScreen(modifier.padding(innerPadding))
             }
-            composable(Screen.TRIPS_RECENT_ACTIVITY.name, enterTransition = {
-                when (initialState.destination.route) {
-                    // Transition animation from the following pages.
-                    Screen.TRIPS.name -> slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(500)
-                    )
-                    Screen.TRIPS_CREATE.name -> slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(500)
-                    )
+            composable(Screen.TRIPS_RECENT_ACTIVITY.name,
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        // Transition animation from the following pages.
+                        Screen.TRIPS.name -> slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            animationSpec = tween(500)
+                        )
 
-                    // No transition animation from other pages.
-                    else -> null
-                }
-            }) {
+                        Screen.TRIPS_CREATE.name -> slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(500)
+                        )
+
+                        // No transition animation from other pages.
+                        else -> null
+                    }
+                },
+                exitTransition = {
+                    when (currentRoute) {
+                        // Transition animation from the following pages.
+                        Screen.TRIPS.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(500)
+                        )
+
+                        Screen.TRIPS_CREATE.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            animationSpec = tween(500)
+                        )
+
+                        Screen.FLORA_FAUNA.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
+                        Screen.WEATHER.name,
+                        Screen.WEATHER_SEARCH.name,
+                        Screen.PROFILE.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            animationSpec = tween(500)
+                        )
+
+                        // Transition animation from every other page.
+                        else -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
+                            animationSpec = tween(500)
+                        )
+                    }
+                }) {
                 TripsRecentActivityScreen(
                     navController,
                     modifier.padding(innerPadding),
                     tripsViewModel
                 )
             }
-            composable(Screen.TRIPS_CREATE.name, enterTransition = {
-                when (initialState.destination.route) {
-                    // Transition animation from the following pages.
-                    Screen.TRIPS.name, Screen.TRIPS_RECENT_ACTIVITY.name -> slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(500)
-                    )
+            composable(Screen.TRIPS_CREATE.name,
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        // Transition animation from the following pages.
+                        Screen.TRIPS.name,
+                        Screen.TRIPS_RECENT_ACTIVITY.name -> slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            animationSpec = tween(500)
+                        )
 
-                    // No transition animation from other pages.
-                    else -> null
-                }
-            }) {
+                        // No transition animation from other pages.
+                        else -> null
+                    }
+                },
+                exitTransition = {
+                    when (currentRoute) {
+                        // Transition animation from the following pages.
+                        Screen.TRIPS.name,
+                        Screen.TRIPS_RECENT_ACTIVITY.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(500)
+                        )
+
+                        Screen.FLORA_FAUNA.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
+                        Screen.WEATHER.name,
+                        Screen.WEATHER_SEARCH.name,
+                        Screen.PROFILE.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            animationSpec = tween(500)
+                        )
+
+                        // Transition animation from every other page.
+                        else -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
+                            animationSpec = tween(500)
+                        )
+                    }
+                }) {
                 TripsCreateScreen(navController, modifier.padding(innerPadding), tripsViewModel)
             }
-            composable(Screen.FLORA_FAUNA_SEARCH_LOCATION.name, enterTransition = {
-                when (initialState.destination.route) {
-                    // Transition animation from the following pages.
-                    Screen.FLORA_FAUNA.name -> slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(500)
-                    )
-                    Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(500)
-                    )
+            composable(Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        // Transition animation from the following pages.
+                        Screen.FLORA_FAUNA.name -> slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            animationSpec = tween(500)
+                        )
 
-                    // No transition animation from other pages.
-                    else -> null
-                }
-            }) {
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(500)
+                        )
+
+                        // No transition animation from other pages.
+                        else -> null
+                    }
+                },
+                exitTransition = {
+                    when (currentRoute) {
+                        // Transition animation from the following pages.
+                        Screen.FLORA_FAUNA.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(500)
+                        )
+
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            animationSpec = tween(500)
+                        )
+
+                        Screen.TRIPS.name,
+                        Screen.TRIPS_RECENT_ACTIVITY.name,
+                        Screen.TRIPS_CREATE.name,
+                        Screen.WEATHER.name,
+                        Screen.WEATHER_SEARCH.name,
+                        Screen.PROFILE.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            animationSpec = tween(500)
+                        )
+
+                        // Transition animation from every other page.
+                        else -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
+                            animationSpec = tween(500)
+                        )
+                    }
+                }) {
                 FloraFaunaSearchScreen(
                     "Location",
                     navController,
@@ -271,18 +480,46 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
                     floraFaunaViewModel
                 )
             }
-            composable(Screen.FLORA_FAUNA_SEARCH_SPECIES.name, enterTransition = {
-                when (initialState.destination.route) {
-                    // Transition animation from the following pages.
-                    Screen.FLORA_FAUNA.name, Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(500)
-                    )
+            composable(Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        // Transition animation from the following pages.
+                        Screen.FLORA_FAUNA.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            animationSpec = tween(500)
+                        )
 
-                    // No transition animation from other pages.
-                    else -> null
-                }
-            }) {
+                        // No transition animation from other pages.
+                        else -> null
+                    }
+                },
+                exitTransition = {
+                    when (currentRoute) {
+                        // Transition animation from the following pages.
+                        Screen.FLORA_FAUNA.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(500)
+                        )
+
+                        Screen.TRIPS.name,
+                        Screen.TRIPS_RECENT_ACTIVITY.name,
+                        Screen.TRIPS_CREATE.name,
+                        Screen.WEATHER.name,
+                        Screen.WEATHER_SEARCH.name,
+                        Screen.PROFILE.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            animationSpec = tween(500)
+                        )
+
+                        // Transition animation from every other page.
+                        else -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
+                            animationSpec = tween(500)
+                        )
+                    }
+                }) {
                 FloraFaunaSearchScreen(
                     "Species",
                     navController,
@@ -301,6 +538,31 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
 
                         // No transition animation from other pages.
                         else -> null
+                    }
+                },
+                exitTransition = {
+                    when (currentRoute) {
+                        // Transition animation from the following pages.
+                        Screen.WEATHER.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            animationSpec = tween(500)
+                        )
+
+                        Screen.FLORA_FAUNA.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
+                        Screen.TRIPS.name, Screen.TRIPS_RECENT_ACTIVITY.name,
+                        Screen.TRIPS_CREATE.name,
+                        Screen.PROFILE.name -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            animationSpec = tween(500)
+                        )
+
+                        // Transition animation from every other page.
+                        else -> slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
+                            animationSpec = tween(500)
+                        )
                     }
                 }) {
                 WeatherSearchScreen(navController, modifier.padding(innerPadding), weatherViewModel)
