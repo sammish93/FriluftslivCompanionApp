@@ -8,7 +8,10 @@ data class CardItem(
         val title: String )
 
 val cardItems = listOf(
-        CardItem(R.drawable.ic_launcher_foreground, title = "Hike 1",),
-        CardItem(R.drawable.ic_launcher_foreground, title = "Hike 2",)
+        CardItem(R.drawable.ic_launcher_foreground, title = "Hike 1"),
+        CardItem(R.drawable.ic_launcher_foreground, title = "Hike 2"),
+        CardItem(R.drawable.ic_launcher_foreground, title = "Hike 3"),
+        CardItem(R.drawable.ic_launcher_foreground, title = "Hike 4")
 )
+
 

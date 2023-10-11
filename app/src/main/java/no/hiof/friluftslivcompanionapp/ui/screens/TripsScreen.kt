@@ -1,6 +1,5 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
-import ListItemComponent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,27 +10,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.ui.components.items.cardItems
 import no.hiof.friluftslivcompanionapp.ui.components.CardComponent
-import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
 import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
-import no.hiof.friluftslivcompanionapp.ui.components.TopBar
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
-import no.hiof.friluftslivcompanionapp.ui.theme.FriluftslivCompanionAppTheme
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import no.hiof.friluftslivcompanionapp.ui.components.items.StyleListItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,7 +47,7 @@ fun TripsScreen(
         )
 
         ListComponent(items = cardItems) { cardItem, style ->
-            ListItemComponent(cardItem, style) { it.title }
+            StyleListItem(cardItem, style) { it.title }
         }
 
         Spacer(modifier = Modifier.height(16.dp))

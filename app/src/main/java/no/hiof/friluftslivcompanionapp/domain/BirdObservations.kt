@@ -19,7 +19,7 @@ import javax.inject.Inject
  */
 
 //class BirdObservations private constructor()
-class BirdObservations @Inject constructor() {
+class BirdObservations private constructor() {
 
     private val eBirdApi = EBirdApi()
     companion object {
