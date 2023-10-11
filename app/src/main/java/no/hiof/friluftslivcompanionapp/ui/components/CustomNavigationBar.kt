@@ -50,7 +50,8 @@ fun CustomNavigationBar(navController: NavController) {
             }
             NavigationBarItem(
                 icon = { Icon(icon, contentDescription = contentDescription) },
-                label = { Text(screenPage.name) },
+                //TODO if test to determine whether to display navbar label in English or Norwegian.
+                label = { Text(screenPage.navBarLabelEn) },
                 selected = currentDestination?.hierarchy?.any { it.route == screenPage.name } == true,
                 onClick = {
                     navController.navigate(screenPage.name) {
