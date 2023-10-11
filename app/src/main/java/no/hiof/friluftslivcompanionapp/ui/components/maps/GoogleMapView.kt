@@ -20,26 +20,24 @@ import java.io.IOException
 
 
 @Composable
-fun GoogleMapsView(
-    locationName: String,
-    viewModel: FloraFaunaViewModel?=null
-) {
+fun GoogleMapsView(locationName: String, viewModel: FloraFaunaViewModel) {
     val location = getLocationFromName(locationName, LocalContext.current)
     val defaultLocation = LatLng(59.9139, 10.7522)
     val initialLocation = location ?: defaultLocation
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(defaultLocation, 10f)
+        position = CameraPosition.fromLatLngZoom(initialLocation, 10f)
     }
 
     GoogleMap(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(top = 230.dp),
         cameraPositionState = cameraPositionState
 
     ) {
         location?.let {
             Marker(
-                state = MarkerState(position = defaultLocation),
+                state = MarkerState(position = it),
                 title = "Location",
                 snippet = "Marker at specified location"
             )
@@ -47,7 +45,27 @@ fun GoogleMapsView(
     }
 }
 
+// Only for testing purposes.
+@Composable
+fun GoogleMap() {
 
+    val oslo = LatLng(59.9139, 10.7522)
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(oslo, 10f)
+    }
+    GoogleMap(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 70.dp),
+        cameraPositionState = cameraPositionState
+    ) {
+        Marker(
+            state = MarkerState(position = oslo),
+            title = "Oslo",
+            snippet = "Marker in Oslo"
+        )
+    }
+}
 
 private fun getLocationFromName(locationName: String, context: Context): LatLng? {
     val geocoder = Geocoder(context)
