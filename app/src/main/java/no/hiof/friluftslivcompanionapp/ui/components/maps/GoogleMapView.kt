@@ -1,14 +1,20 @@
 package no.hiof.friluftslivcompanionapp.ui.components.maps
 
+import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
+import android.location.Location
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -18,6 +24,9 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import java.io.IOException
 
+// Constant used internally in the app to identify which permission request is
+// yielding a result.
+private const val LOCATION_REQUEST_CODE = 1234;
 
 @Composable
 fun GoogleMapsView(locationName: String, viewModel: FloraFaunaViewModel) {
@@ -65,6 +74,29 @@ fun GoogleMap() {
             snippet = "Marker in Oslo"
         )
     }
+}
+
+// Composable used to get the users current location.
+@Composable
+fun getCurrentLocation(): LatLng? {
+    val context = LocalContext.current
+    var location: LatLng? = null
+
+    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+    val permission = android.Manifest.permission.ACCESS_FINE_LOCATION
+
+    if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+        fusedLocationClient.lastLocation.addOnSuccessListener { loc: Location? ->
+            loc?.let {
+                location = LatLng(it.latitude, it.longitude)
+            }
+        }
+    }
+    else {
+        // Ask for permission
+        ActivityCompat.requestPermissions(context as Activity, arrayOf(permission), LOCATION_REQUEST_CODE)
+    }
+    return location
 }
 
 private fun getLocationFromName(locationName: String, context: Context): LatLng? {
