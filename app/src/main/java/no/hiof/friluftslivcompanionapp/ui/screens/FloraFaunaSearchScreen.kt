@@ -43,12 +43,12 @@ fun FloraFaunaSearchScreen(
 
     //  var locationName by remember {
     //        mutableStateOf("")
-    
+
     Box {
         LaunchedEffect(Unit) {
             val api = BirdObservations.getInstance()
             val defaultRegionCode = "NO-03" // Default region code for Oslo
-
+            
             // Call the suspend function from within a coroutine
             val result = coroutineScope {
                 async {
