@@ -2,6 +2,7 @@ package no.hiof.friluftslivcompanionapp.ui.components.maps
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -15,6 +16,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import no.hiof.friluftslivcompanionapp.models.GoogleMapState
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import java.io.IOException
 
@@ -51,7 +53,7 @@ fun GoogleMap(state: GoogleMapState) {
     val mapProperties = MapProperties(isMyLocationEnabled = state.lastKnownLocation != null)
     val userLocation = state.lastKnownLocation?.let { LatLng(it.latitude, state.lastKnownLocation.longitude) }
 
-    val defaultCameraPosition = CameraPosition.fromLatLngZoom(LatLng(0.0, 0.0), 10f)
+    val defaultCameraPosition = CameraPosition.fromLatLngZoom(LatLng(60.1282, 18.6435), 10f)
     val cameraPosition = userLocation?.let { CameraPosition.fromLatLngZoom(it, 10f) } ?: defaultCameraPosition
 
     val cameraPositionState = rememberCameraPositionState {

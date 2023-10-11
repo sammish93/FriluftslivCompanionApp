@@ -4,6 +4,7 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -48,8 +49,12 @@ import no.hiof.friluftslivcompanionapp.ui.screens.WeatherSearchScreen
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapState
+import com.google.android.gms.location.Priority
+import no.hiof.friluftslivcompanionapp.models.GoogleMapState
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.MapViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
@@ -60,37 +65,47 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var auth: FirebaseAuth
 
-
     // Google Maps
+    @Suppress("MissingPermission")
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission())
         { isGranted: Boolean ->
-
             if (isGranted) {
-                viewModel.getDeviceLocation(fusedLocationProviderClient)
+                // Start location updates if needed
+                if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallBack, Looper.getMainLooper())
+                }
             }
         }
 
-    private fun askPermissions() = when (PackageManager.PERMISSION_GRANTED) {
-        ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION
-        ) -> {
-            viewModel.getDeviceLocation(fusedLocationProviderClient)
-        }
-        else -> {
-            requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
-        }
-    }
-
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private val viewModel: MapViewModel by viewModels()
-    // Google Maps.
+
+
+    private lateinit var locationCallBack: LocationCallback
+    // Initialize LocationRequest and LocationCallback
+    private val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000L)
+        .setIntervalMillis(1000)
+        .setMinUpdateIntervalMillis(5000)
+        .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+        .build()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Google Maps.
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        askPermissions()
+        if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
+        }
+
+        locationCallBack = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                locationResult.lastLocation.let { location ->
+                    viewModel.updateLocation(location)
+                }
+            }
+        }
 
         val currentUser = auth.currentUser
         if (currentUser != null) {
@@ -117,6 +132,18 @@ class MainActivity : ComponentActivity() {
             finish()
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallBack, Looper.getMainLooper())
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        fusedLocationProviderClient.removeLocationUpdates(locationCallBack)
+    }
 }
 
 
@@ -124,7 +151,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun FriluftslivApp(
     modifier: Modifier = Modifier,
-    state: GoogleMapState
+    state: GoogleMapState,
 ) {
     val navController = rememberNavController()
     val currentRoute by rememberUpdatedState(
@@ -233,7 +260,12 @@ fun FriluftslivApp(
                         )
                     }
                 }) {
-                TripsScreen(navController, modifier.padding(innerPadding), tripsViewModel, mapState = state)
+                TripsScreen(
+                    navController,
+                    modifier.padding(innerPadding),
+                    tripsViewModel,
+                    mapState = state,
+                    )
             }
             composable(Screen.WEATHER.name,
                 enterTransition = {
