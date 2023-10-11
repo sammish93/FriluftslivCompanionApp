@@ -23,6 +23,7 @@ import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import no.hiof.friluftslivcompanionapp.ui.components.items.StyleListItem
+import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapsView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,32 +31,5 @@ fun TripsScreen(
     navController: NavController, modifier: Modifier = Modifier,
     viewModel: TripsViewModel = viewModel()
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "This is the Trip screen! When a card is pressed it will navigate the user " +
-                    "to the TRIPS_ADDITIONAL_INFO screen",
-            style = CustomTypography.headlineLarge,
-            textAlign = TextAlign.Center,
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
-
-        ListComponent(items = cardItems) { cardItem, style ->
-            StyleListItem(cardItem, style) { it.title }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            items(cardItems) { cardItem ->
-                CardComponent(cardItem)
-            }
-        }
-    }
+    GoogleMapsView(locationName = "Oslo")
 }
