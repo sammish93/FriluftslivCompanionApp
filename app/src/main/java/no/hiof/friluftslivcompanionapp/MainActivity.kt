@@ -65,26 +65,28 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var auth: FirebaseAuth
 
-    // Google Maps
-    @Suppress("MissingPermission")
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission())
-        { isGranted: Boolean ->
-            if (isGranted) {
-                // Start location updates if needed
-                if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallBack, Looper.getMainLooper())
-                }
-            }
-        }
-
+    // Client to interact with Google's fused location services
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private val viewModel: MapViewModel by viewModels()
 
-
+    // Callback to handle location updates
     private lateinit var locationCallBack: LocationCallback
-    // Initialize LocationRequest and LocationCallback
-    private val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000L)
+
+    // Launcher for requesting location permissions
+    @Suppress("MissingPermission")
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                fusedLocationProviderClient
+                    .requestLocationUpdates(
+                        locationRequest, locationCallBack, Looper.getMainLooper())
+            }
+        }
+
+    // Configuration for location requests
+    private val locationRequest = LocationRequest.Builder(
+        Priority.PRIORITY_HIGH_ACCURACY, 1000L
+    )
         .setIntervalMillis(1000)
         .setMinUpdateIntervalMillis(5000)
         .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
@@ -93,12 +95,16 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Google Maps.
+        // Initialize the fused location provider client
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+        // Check for location permissions and request if not granted
+        if (ContextCompat.checkSelfPermission(
+                this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
         }
 
+        // Define the callback for location updates
         locationCallBack = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult.lastLocation.let { location ->
@@ -109,12 +115,9 @@ class MainActivity : ComponentActivity() {
 
         val currentUser = auth.currentUser
         if (currentUser != null) {
-
-            // User is signed in, shows the main content
             setContent {
                 FriluftslivCompanionAppTheme(
                     typography = CustomTypography,
-                    //useDarkTheme = true
                 ) {
                     Surface(
                         tonalElevation = 5.dp,
@@ -135,13 +138,19 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallBack, Looper.getMainLooper())
+
+        // Start location updates if permission is granted
+        if (ContextCompat.checkSelfPermission(
+                this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient
+                .requestLocationUpdates(locationRequest, locationCallBack, Looper.getMainLooper())
         }
     }
 
     override fun onPause() {
         super.onPause()
+
+        // Stop location updates to save battery
         fusedLocationProviderClient.removeLocationUpdates(locationCallBack)
     }
 }
