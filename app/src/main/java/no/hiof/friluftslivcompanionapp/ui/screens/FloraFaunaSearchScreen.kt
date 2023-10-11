@@ -18,11 +18,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import no.hiof.friluftslivcompanionapp.domain.BirdObservations
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
 import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapsView
 import java.time.LocalDateTime
+import no.hiof.friluftslivcompanionapp.data.network.Result
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,12 +36,51 @@ fun FloraFaunaSearchScreen(
     modifier: Modifier = Modifier,
     viewModel: FloraFaunaViewModel = viewModel()
 ) {
-    val dummyBirds = generateDummyBirds()
+    //val dummyBirds = generateDummyBirds()
+    var birds by remember {
+        mutableStateOf(emptyList<Bird>())
+    }
+    Box {
+        LaunchedEffect(Unit) {
+            val api = BirdObservations.getInstance()
+            val defaultRegionCode = "NO-03" // Default region code for Oslo
 
-    var locationName by remember {
-        mutableStateOf("")
+            // Call the suspend function from within a coroutine
+            val result = coroutineScope {
+                async {
+                    api.getRecentObservations(regionCode = defaultRegionCode, maxResult = 3)
+                }.await()
+            }
+
+            when (result) {
+                is Result.Success -> {
+                    birds = result.value // Update the birds when the API call is successful
+                }
+                is Result.Failure -> {
+                    println("Error fetching bird observations: ${result.message}")
+                }
+            }
+        }
+
+
     }
 
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        ) {
+            birds.forEach { bird ->
+                Text(
+                    text = bird.speciesName ?: "",
+                    style = MaterialTheme.typography.headlineLarge
+                )
+                // Display other bird information as needed
+            }
+        }
+    }
+
+    /*
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -47,7 +90,7 @@ fun FloraFaunaSearchScreen(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
-        ){
+        ) {
             TextField(
                 value = locationName,
                 onValueChange = { locationName = it },
@@ -59,7 +102,9 @@ fun FloraFaunaSearchScreen(
             )
 
         }
-        Row ( modifier = Modifier.fillMaxWidth() .padding(10.dp),
+        Row ( modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp),
             horizontalArrangement = Arrangement.SpaceBetween, ){
             Button(
                 onClick = {
@@ -74,15 +119,25 @@ fun FloraFaunaSearchScreen(
             }
 
         }
-        Row {
+         Row {
             ListComponent(items = dummyBirds) { bird, _ ->
                 // Vis fugledata her
                 Text(text = bird.speciesName ?: "", style = MaterialTheme.typography.headlineLarge)
             }
         }
+            Row {
+                ListComponent(items = birds) { bird, _ ->
+                    // Vis fugledata her
+                    Text(
+                        text = bird.speciesName ?: "",
+                        style = MaterialTheme.typography.headlineLarge
+                    )
+                }
+            }
+        }
     }
 
-}
+//GoogleMapsView(locationName, viewModel)
 
 fun generateDummyBirds(): List<Bird> {
     val dummyBirds = mutableListOf<Bird>()
@@ -123,6 +178,4 @@ fun generateDummyBirds(): List<Bird> {
     )
 
     return dummyBirds
-}
-
-//GoogleMapsView(locationName, viewModel)
+}*/
