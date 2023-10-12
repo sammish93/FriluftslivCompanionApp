@@ -16,6 +16,22 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 
+/**
+ * Manages location-related operations, including requesting location updates and handling permissions.
+ *
+ * This class is lifecycle-aware, meaning it can automatically start and stop location updates
+ * based on the lifecycle state of the associated activity or fragment.
+ *
+ * @param activity The activity used to access context-related functionalities like checking permissions.
+ * @param lifecycle The lifecycle of the activity. This is used to make the manager lifecycle-aware.
+ * @param locationUpdateCallback A callback that gets triggered when a new location is received.
+ *
+ * @property fusedLocationProviderClient A client used to interact with Google's fused location services.
+ * @property locationRequest Configuration for location requests.
+ * @property locationCallback Callback to handle location updates.
+ *
+ * @constructor Initializes the lifecycle observer and adds it to the provided lifecycle.
+ */
 class LocationManager(
     private val activity: Activity,
     lifecycle: Lifecycle,
@@ -68,12 +84,6 @@ class LocationManager(
     override fun onPause(owner: LifecycleOwner) {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
-
-    /*
-    fun stopLocationUpdates() {
-        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
-    }
-     */
 
     fun hasLocationPermission(): Boolean {
         return ContextCompat.checkSelfPermission(

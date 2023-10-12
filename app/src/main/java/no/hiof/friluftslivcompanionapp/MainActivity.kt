@@ -67,7 +67,9 @@ class MainActivity : ComponentActivity() {
         PermissionManager(
             activityResultRegistry,
             onPermissionGranted = { locationManager.startLocationUpdate() },
-            onPermissionDenied = { /* Handle denied permission if needed */ }
+            onPermissionDenied = {
+            /* Can handle denied permission if needed. I don´t know how we will do this yet. */
+            }
         )
     }
 
