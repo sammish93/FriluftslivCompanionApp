@@ -65,7 +65,7 @@ class FloraFaunaViewModel @Inject constructor(
     suspend fun searchBirdsByLocation(location: String) {
         viewModelScope.launch {
             try {
-                val result = api.getRecentObservations(regionCode = location)
+                val result = api.getRecentObservations(regionCode = location, maxResult = 2)
                 if (result is Result.Success) {
                     val birdList = result.value
                     val processedList = api.processBirdList(birdList) { bird ->
@@ -81,4 +81,7 @@ class FloraFaunaViewModel @Inject constructor(
 
         }
     }
+
+
+
 }
