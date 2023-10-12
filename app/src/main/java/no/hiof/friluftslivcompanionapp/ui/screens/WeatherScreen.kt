@@ -9,11 +9,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
@@ -27,6 +33,14 @@ fun WeatherScreen(
     modifier: Modifier = Modifier,
     viewModel: WeatherViewModel = viewModel()
 ) {
+    LaunchedEffect(true) {
+        CoroutineScope(Dispatchers.Default).launch {
+            viewModel.getWeatherForecast()
+        }
+    }
+
+    val weatherState by viewModel.weatherState.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -34,7 +48,7 @@ fun WeatherScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "This is the Weather screen!",
+            text = weatherState.currentWeather.toString(),
             style = CustomTypography.headlineLarge,
             textAlign = TextAlign.Center,
             modifier = modifier.fillMaxSize()
