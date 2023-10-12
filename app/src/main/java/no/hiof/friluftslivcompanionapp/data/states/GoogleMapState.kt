@@ -1,4 +1,4 @@
-package no.hiof.friluftslivcompanionapp.models
+package no.hiof.friluftslivcompanionapp.data.states
 
 import android.location.Location
 
