@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -17,26 +19,31 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-import no.hiof.friluftslivcompanionapp.data.states.GoogleMapState
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
+import no.hiof.friluftslivcompanionapp.viewmodels.MapViewModel
 import java.io.IOException
 
 /**
  * A Composable function that displays a Google Map with a marker indicating the user's location.
  *
- * @param state The [GoogleMapState] which contains information about the last known location of the user.
+ * @param viewModel The [MapViewModel] which contains the state for last known location of the user.
  *
  * The map will default to a view centered on Oslo if the user's location is not available.
  * If the user's location is available, the map will animate and center on the user's location.
  * A marker will be placed on the user's location with a title "Location" and a snippet "You".
  */
 @Composable
-fun GoogleMap(state: GoogleMapState) {
+fun GoogleMap(viewModel: MapViewModel) {
 
+    // Used for default location.
     val oslo = LatLng(59.9139, 10.7522)
-    val mapProperties = MapProperties(isMyLocationEnabled = state.lastKnownLocation != null)
-    val userLocation = state.lastKnownLocation?.let {
-        LatLng(it.latitude, state.lastKnownLocation.longitude)
+
+    val state by viewModel.state.collectAsState()
+    val lastKnownLocation = state.lastKnownLocation
+
+    val mapProperties = MapProperties(isMyLocationEnabled = lastKnownLocation != null)
+    val userLocation = lastKnownLocation?.let {
+        LatLng(it.latitude, lastKnownLocation.longitude)
     }
 
     val defaultPosition = CameraPosition.fromLatLngZoom(oslo, 10f)

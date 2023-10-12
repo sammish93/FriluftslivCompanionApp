@@ -5,14 +5,14 @@ import androidx.navigation.NavController
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMap
-import no.hiof.friluftslivcompanionapp.data.states.GoogleMapState
+import no.hiof.friluftslivcompanionapp.viewmodels.MapViewModel
 
 @Composable
 fun TripsScreen(
     navController: NavController, modifier: Modifier = Modifier,
     viewModel: TripsViewModel = viewModel(),
-    mapState: GoogleMapState
+    mapViewModel: MapViewModel
 ) {
-    GoogleMap(mapState)
+    GoogleMap(mapViewModel)
 }
 

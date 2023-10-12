@@ -1,10 +1,11 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
 import android.location.Location
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import no.hiof.friluftslivcompanionapp.data.states.GoogleMapState
 import javax.inject.Inject
 
@@ -22,12 +23,12 @@ import javax.inject.Inject
 @HiltViewModel
 class MapViewModel @Inject constructor(): ViewModel() {
 
-    val state: MutableState<GoogleMapState> = mutableStateOf(
-        GoogleMapState(lastKnownLocation = null)
-    )
+    private val _state = MutableStateFlow(GoogleMapState(lastKnownLocation = null))
+    val state: StateFlow<GoogleMapState> = _state.asStateFlow()
 
     // Updates the last known location in the map's state.
     fun updateLocation(location: Location?) {
-        state.value = state.value.copy(lastKnownLocation = location)
+        val currentState = _state.value
+        _state.value = currentState.copy(lastKnownLocation = location)
     }
 }

@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
@@ -46,7 +45,6 @@ import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import androidx.hilt.navigation.compose.hiltViewModel
 import no.hiof.friluftslivcompanionapp.data.managers.LocationManager
 import no.hiof.friluftslivcompanionapp.data.managers.PermissionManager
-import no.hiof.friluftslivcompanionapp.data.states.GoogleMapState
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.MapViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
@@ -56,11 +54,11 @@ import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 class MainActivity : ComponentActivity() {
     @Inject
     lateinit var auth: FirebaseAuth
-    private val viewModel: MapViewModel by viewModels()
+    private val mapViewModel: MapViewModel by viewModels()
 
     // Initialize location manager and update viewModel.
     private val locationManager = LocationManager(this, lifecycle) { location ->
-        viewModel.updateLocation(location)
+        mapViewModel.updateLocation(location)
     }
 
     private val permissionManager by lazy {
@@ -94,7 +92,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        FriluftslivApp(state = viewModel.state.value)
+                        FriluftslivApp(mapViewModel = mapViewModel)
                     }
                 }
             }
@@ -111,7 +109,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun FriluftslivApp(
     modifier: Modifier = Modifier,
-    state: GoogleMapState,
+    mapViewModel: MapViewModel,
 ) {
     val navController = rememberNavController()
     val currentRoute by rememberUpdatedState(
@@ -224,7 +222,7 @@ fun FriluftslivApp(
                     navController,
                     modifier.padding(innerPadding),
                     tripsViewModel,
-                    mapState = state,
+                    mapViewModel
                     )
             }
             composable(Screen.WEATHER.name,
