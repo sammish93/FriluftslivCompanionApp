@@ -2,9 +2,7 @@ package no.hiof.friluftslivcompanionapp
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,7 +11,6 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -39,7 +36,6 @@ import no.hiof.friluftslivcompanionapp.ui.theme.FriluftslivCompanionAppTheme
 import javax.inject.Inject
 
 import androidx.compose.material3.Typography
-import androidx.core.content.ContextCompat
 import no.hiof.friluftslivcompanionapp.ui.components.CustomNavigationBar
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
 import no.hiof.friluftslivcompanionapp.ui.screens.FloraFaunaSearchScreen
@@ -48,13 +44,8 @@ import no.hiof.friluftslivcompanionapp.ui.screens.TripsRecentActivityScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.WeatherSearchScreen
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
 import no.hiof.friluftslivcompanionapp.data.managers.LocationManager
+import no.hiof.friluftslivcompanionapp.data.managers.PermissionManager
 import no.hiof.friluftslivcompanionapp.data.states.GoogleMapState
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.MapViewModel
@@ -72,23 +63,22 @@ class MainActivity : ComponentActivity() {
         viewModel.updateLocation(location)
     }
 
-    // Launcher for requesting location permissions
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                locationManager.startLocationUpdate()
-            }
-        }
+    private val permissionManager by lazy {
+        PermissionManager(
+            activityResultRegistry,
+            onPermissionGranted = { locationManager.startLocationUpdate() },
+            onPermissionDenied = { /* Handle denied permission if needed */ }
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Dette løste problemet
         locationManager.initializeFusedLocationProviderClient()
 
         // Check for location permissions and request if not granted.
         if (!locationManager.hasLocationPermission()) {
-            requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
+            permissionManager.requestPermission(ACCESS_FINE_LOCATION)
         }
 
         val currentUser = auth.currentUser
