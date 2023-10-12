@@ -20,6 +20,10 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
+import no.hiof.friluftslivcompanionapp.ui.components.items.StyleListItem
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,9 +68,7 @@ fun FloraFaunaSearchScreen(
             Button(
                 onClick = {
                     viewModel.viewModelScope.launch {
-                        viewModel.viewModelScope.launch{
                         viewModel.searchBirdsByLocation(locationName)
-                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -80,14 +82,12 @@ fun FloraFaunaSearchScreen(
             }
 
         }
-        LazyColumn {
-            items(birdResults) { bird ->
-                // Display information about each bird
-                Text(text = bird.speciesName ?: "Unknown Bird")
-            }
-        }
 
+        ListComponent(birdResults) { bird, textStyle ->
+            StyleListItem(bird, textStyle) { it.speciesName ?: "Unknown Bird" }
+        }
     }
 }
 
 //GoogleMapsView(locationName, viewModel)
+

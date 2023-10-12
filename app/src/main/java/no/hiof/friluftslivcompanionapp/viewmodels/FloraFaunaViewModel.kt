@@ -57,7 +57,7 @@ class FloraFaunaViewModel @Inject constructor(
 
     private val _birdResults = MutableStateFlow<List<Bird>>(emptyList())
     val birdResults: StateFlow<List<Bird>> = _birdResults
-
+    //.asStateFlow?
     private fun updateBirdResults(results: List<Bird>) {
         _birdResults.value=results
     }
