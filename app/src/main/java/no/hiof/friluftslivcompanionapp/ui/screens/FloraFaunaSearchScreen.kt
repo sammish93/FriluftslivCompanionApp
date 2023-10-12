@@ -1,8 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -22,7 +20,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
 import no.hiof.friluftslivcompanionapp.ui.components.items.StyleListItem
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 
@@ -45,7 +42,8 @@ fun FloraFaunaSearchScreen(
 
         ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             TextField(
@@ -65,19 +63,36 @@ fun FloraFaunaSearchScreen(
                 .padding(10.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
+            // New button for "Use my location"
+            Button(
+                onClick = { /* Handle click action for "Use my location" */ },
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .height(40.dp)
+            ) {
+                Text(text = "Use my location")
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
             Button(
                 onClick = {
                     viewModel.viewModelScope.launch {
                         viewModel.searchBirdsByLocation(locationName)
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .height(40.dp)
+
             ) {
                 Icon(
                     imageVector = Icons.Default.Search, contentDescription = "Search",
                     modifier = Modifier
                         .height(40.dp)
                         .width(40.dp)
+
                 )
             }
 
