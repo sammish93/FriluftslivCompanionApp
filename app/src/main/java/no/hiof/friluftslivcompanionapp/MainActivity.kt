@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
     private val viewModel: MapViewModel by viewModels()
 
     // Initialize location manager and update viewModel.
-    private val locationManager = LocationManager(this) { location ->
+    private val locationManager = LocationManager(this, lifecycle) { location ->
         viewModel.updateLocation(location)
     }
 
@@ -102,18 +102,6 @@ class MainActivity : ComponentActivity() {
             startActivity(signInIntent)
             finish()
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (locationManager.hasLocationPermission()) {
-            locationManager.startLocationUpdate()
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        locationManager.stopLocationUpdates()
     }
 }
 
