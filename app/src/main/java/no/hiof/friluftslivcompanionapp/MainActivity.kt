@@ -54,6 +54,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import no.hiof.friluftslivcompanionapp.data.managers.LocationManager
 import no.hiof.friluftslivcompanionapp.data.states.GoogleMapState
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.MapViewModel
@@ -64,53 +65,30 @@ import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 class MainActivity : ComponentActivity() {
     @Inject
     lateinit var auth: FirebaseAuth
-
-    // Client to interact with Google's fused location services
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private val viewModel: MapViewModel by viewModels()
 
-    // Callback to handle location updates
-    private lateinit var locationCallBack: LocationCallback
+    // Initialize location manager and update viewModel.
+    private val locationManager = LocationManager(this) { location ->
+        viewModel.updateLocation(location)
+    }
 
     // Launcher for requesting location permissions
-    @Suppress("MissingPermission")
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                fusedLocationProviderClient
-                    .requestLocationUpdates(
-                        locationRequest, locationCallBack, Looper.getMainLooper())
+                locationManager.startLocationUpdate()
             }
         }
-
-    // Configuration for location requests
-    private val locationRequest = LocationRequest.Builder(
-        Priority.PRIORITY_HIGH_ACCURACY, 1000L
-    )
-        .setIntervalMillis(1000)
-        .setMinUpdateIntervalMillis(5000)
-        .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
-        .build()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize the fused location provider client
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        // Dette løste problemet
+        locationManager.initializeFusedLocationProviderClient()
 
-        // Check for location permissions and request if not granted
-        if (ContextCompat.checkSelfPermission(
-                this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        // Check for location permissions and request if not granted.
+        if (!locationManager.hasLocationPermission()) {
             requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
-        }
-
-        // Define the callback for location updates
-        locationCallBack = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-                locationResult.lastLocation.let { location ->
-                    viewModel.updateLocation(location)
-                }
-            }
         }
 
         val currentUser = auth.currentUser
@@ -138,25 +116,18 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-
-        // Start location updates if permission is granted
-        if (ContextCompat.checkSelfPermission(
-                this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationProviderClient
-                .requestLocationUpdates(locationRequest, locationCallBack, Looper.getMainLooper())
+        if (locationManager.hasLocationPermission()) {
+            locationManager.startLocationUpdate()
         }
     }
 
     override fun onPause() {
         super.onPause()
-
-        // Stop location updates to save battery
-        fusedLocationProviderClient.removeLocationUpdates(locationCallBack)
+        locationManager.stopLocationUpdates()
     }
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FriluftslivApp(
     modifier: Modifier = Modifier,

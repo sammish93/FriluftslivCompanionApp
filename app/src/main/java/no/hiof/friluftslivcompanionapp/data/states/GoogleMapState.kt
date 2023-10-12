@@ -11,5 +11,5 @@ import android.location.Location
  * the Google Map Composable.
  */
 data class GoogleMapState(
-    val lastKnownLocation: Location?
+    val lastKnownLocation: Location? = null
 )
