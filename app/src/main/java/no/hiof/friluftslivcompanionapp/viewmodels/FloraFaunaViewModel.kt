@@ -32,7 +32,7 @@ import no.hiof.friluftslivcompanionapp.models.Bird
 class FloraFaunaViewModel @Inject constructor(
     // Communication with the data layer can be injected as dependencies here.
     // private val repository: TripsRepository
-   //private val repository: FloraFaunaRepository
+    //private val repository: FloraFaunaRepository
 
 ) : ViewModel(), TabNavigation {
 
@@ -66,16 +66,16 @@ class FloraFaunaViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val result = api.getRecentObservations(regionCode = location)
-                    if (result is Result.Success) {
-                        val birdList = result.value
-                        val processedList = api.processBirdList(birdList) { bird ->
-                            bird
-                        }
-                        updateBirdResults(processedList)
-                    } else if (result is Result.Failure) {
-                        println("API call failed: ${result.message}")
+                if (result is Result.Success) {
+                    val birdList = result.value
+                    val processedList = api.processBirdList(birdList) { bird ->
+                        bird
                     }
-                } catch(e: Exception) {
+                    updateBirdResults(processedList)
+                } else if (result is Result.Failure) {
+                    println("API call failed: ${result.message}")
+                }
+            } catch(e: Exception) {
                 println("Error: ${e.message}")
             }
 
