@@ -1,6 +1,7 @@
 package no.hiof.friluftslivcompanionapp.data.states
 
 import no.hiof.friluftslivcompanionapp.models.Weather
+import no.hiof.friluftslivcompanionapp.models.enums.WeatherUnit
 
 data class WeatherState(
     val currentWeather: Weather? = null,
@@ -12,6 +13,7 @@ data class WeatherState(
     val todayPlusFiveWeather: Weather? = null,
     val todayPlusSixWeather: Weather? = null,
     val todayPlusSevenWeather: Weather? = null,
+    val unitChoice: WeatherUnit = WeatherUnit.METRIC,
     val isLoading: Boolean = false,
     val isFailure: Boolean = false
 )

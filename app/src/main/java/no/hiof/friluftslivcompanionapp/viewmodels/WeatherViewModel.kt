@@ -13,6 +13,7 @@ import no.hiof.friluftslivcompanionapp.data.states.WeatherState
 import no.hiof.friluftslivcompanionapp.domain.WeatherDeserialiser
 import no.hiof.friluftslivcompanionapp.models.WeatherForecast
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
+import no.hiof.friluftslivcompanionapp.models.enums.WeatherUnit
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
 import javax.inject.Inject
 
@@ -40,6 +41,19 @@ class WeatherViewModel @Inject constructor(
 
     private val api = WeatherDeserialiser.getInstance()
 
+    // Tab destinations that are accessible in the "weather" route.
+    override var tabDestinations = mapOf(
+        Screen.WEATHER to "Weather",
+        Screen.WEATHER_SEARCH to "Search"
+    )
+
+    // Options available to the Bottom Sheet radio buttons.
+    val radioOptions = mapOf(
+        WeatherUnit.METRIC to "Metric (°C & m/s)",
+        WeatherUnit.IMPERIAL to "Imperial (°F & mi/s)",
+        WeatherUnit.DEFAULT to "Default (K & m/s)"
+    )
+
     // Retrieves a WeatherForecast object composed of a Location and a List<Weather> wrapped by
     // a Result.
     suspend fun getWeatherForecast() {
@@ -49,7 +63,7 @@ class WeatherViewModel @Inject constructor(
         updateLoadingWeatherResponse(true)
 
         // Retrieves API response asynchronously.
-        val result = api.getWeatherForecast(41.389, 2.159)
+        val result = api.getWeatherForecast(41.389, 2.159, units = weatherState.value.unitChoice)
 
         if (result is Result.Success) {
             // Updates individual Weather objects from a single WeatherForecast
@@ -61,12 +75,6 @@ class WeatherViewModel @Inject constructor(
         // Changes loading state to false.
         updateLoadingWeatherResponse(false)
     }
-
-    // Tab destinations that are accessible in the "weather" route.
-    override var tabDestinations = mapOf(
-        Screen.WEATHER to "Weather",
-        Screen.WEATHER_SEARCH to "Search"
-    )
 
     // Updates tab selection visualisation after navigation.
     override fun changeHighlightedTab(index: Int) {
@@ -108,6 +116,15 @@ class WeatherViewModel @Inject constructor(
         _weatherState.update { currentState ->
             currentState.copy(
                 isFailure = isFailure
+            )
+        }
+    }
+
+    // Updates the preferred weather unit format.
+    fun updateWeatherUnit(weatherUnit: WeatherUnit) {
+        _weatherState.update { currentState ->
+            currentState.copy(
+                unitChoice = weatherUnit
             )
         }
     }
