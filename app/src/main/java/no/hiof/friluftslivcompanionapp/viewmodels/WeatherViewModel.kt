@@ -56,6 +56,7 @@ class WeatherViewModel @Inject constructor(
 
     // Retrieves a WeatherForecast object composed of a Location and a List<Weather> wrapped by
     // a Result.
+    //TODO Retrieve the GPS location and enter coordinates here.
     suspend fun getWeatherForecast() {
         // Makes sure to reset failure state to false so request can be retried.
         updateFailureWeatherResponse(false)

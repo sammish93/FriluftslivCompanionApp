@@ -1,23 +1,15 @@
 package no.hiof.friluftslivcompanionapp.ui.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -29,8 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -47,9 +37,10 @@ import java.time.LocalDate
 
 
 @Composable
-fun WeatherCard(
+fun SecondaryWeatherCard(
     weather: Weather,
     units: WeatherUnit = WeatherUnit.METRIC,
+    current: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
@@ -57,7 +48,7 @@ fun WeatherCard(
             defaultElevation = 6.dp
         ),
         modifier = modifier
-            .height(100.dp)
+            .height(75.dp)
             .fillMaxWidth()
     ) {
         Row(
@@ -68,36 +59,35 @@ fun WeatherCard(
                 .padding(end = 12.dp)
                 .weight(1f)) {
                 Text(
-                    text = if (weather.date == LocalDate.now()) "Current Weather" else DateFormatter.formatToPrettyStringWithoutYear(
+                    text = if (weather.date == LocalDate.now() && current) "Current Weather" else DateFormatter.formatToPrettyStringWithoutYear(
                         weather.date
                     ),
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
                 )
                 Row(
                     modifier = modifier.fillMaxHeight(),
                     verticalAlignment = Alignment.Bottom
                 ) {
-                    Column {
                         Text(
                             text = when (units) {
-                                WeatherUnit.DEFAULT -> "Temperature: ${weather.temperature} K"
-                                WeatherUnit.IMPERIAL -> "Temperature: ${weather.temperature} °F"
-                                else -> "Temperature: ${weather.temperature} °C"
+                                WeatherUnit.DEFAULT -> "${weather.temperature} K"
+                                WeatherUnit.IMPERIAL -> "${weather.temperature} °F"
+                                else -> "${weather.temperature} °C"
                             },
                             style = MaterialTheme.typography.bodyMedium,
                             textAlign = TextAlign.Center,
                         )
                         Text(
                             text = when (units) {
-                                WeatherUnit.DEFAULT -> "Wind Speed: ${weather.windSpeed} m/s"
-                                WeatherUnit.IMPERIAL -> "Wind Speed: ${weather.windSpeed} mi/s"
-                                else -> "Wind Speed: ${weather.windSpeed} m/s"
+                                WeatherUnit.DEFAULT -> "${weather.windSpeed} m/s"
+                                WeatherUnit.IMPERIAL -> "${weather.windSpeed} mi/s"
+                                else -> "${weather.windSpeed} m/s"
                             },
+                            modifier = modifier.padding(start = 12.dp),
                             style = MaterialTheme.typography.bodyMedium,
                             textAlign = TextAlign.Center,
                         )
-                    }
                 }
             }
             Box(
@@ -143,7 +133,8 @@ private fun ThemePreview(
 fun LightThemePreview() {
     Surface(tonalElevation = 5.dp) {
         ThemePreview(typography = CustomTypography, isDarkTheme = false) {
-            WeatherCard(weather)
+
+            SecondaryWeatherCard(weather)
         }
     }
 }
@@ -153,7 +144,7 @@ fun LightThemePreview() {
 fun DarkThemePreview() {
     Surface(tonalElevation = 5.dp) {
         ThemePreview(typography = CustomTypography, isDarkTheme = true) {
-            WeatherCard(weather)
+            SecondaryWeatherCard(weather)
         }
     }
 }

@@ -3,6 +3,7 @@ package no.hiof.friluftslivcompanionapp.ui.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -10,8 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
@@ -54,7 +57,8 @@ import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.enums.WeatherUnit
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
-import no.hiof.friluftslivcompanionapp.ui.components.WeatherCard
+import no.hiof.friluftslivcompanionapp.ui.components.PrimaryWeatherCard
+import no.hiof.friluftslivcompanionapp.ui.components.SecondaryWeatherCard
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
@@ -115,14 +119,103 @@ fun WeatherScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(contentPadding),
-                        verticalArrangement = Arrangement.Center
+                            .padding(contentPadding)
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.Top
                     ) {
+                        // This section before the next column remains in position while the rest
+                        // of the list is scrollable.
                         weatherState.currentWeather?.let {
-                            WeatherCard(
+                            PrimaryWeatherCard(
                                 weather = it,
                                 units = weatherState.unitChoice
                             )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        weatherState.todayWeather?.let {
+                            PrimaryWeatherCard(
+                                weather = it,
+                                units = weatherState.unitChoice,
+                                current = false
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        // This column is scrollable.
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState()),
+                            verticalArrangement = Arrangement.Top
+                        ) {
+
+                            weatherState.todayPlusOneWeather?.let {
+                                SecondaryWeatherCard(
+                                    weather = it,
+                                    units = weatherState.unitChoice
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            weatherState.todayPlusTwoWeather?.let {
+                                SecondaryWeatherCard(
+                                    weather = it,
+                                    units = weatherState.unitChoice
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            weatherState.todayPlusThreeWeather?.let {
+                                SecondaryWeatherCard(
+                                    weather = it,
+                                    units = weatherState.unitChoice
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            weatherState.todayPlusFourWeather?.let {
+                                SecondaryWeatherCard(
+                                    weather = it,
+                                    units = weatherState.unitChoice
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            weatherState.todayPlusFiveWeather?.let {
+                                SecondaryWeatherCard(
+                                    weather = it,
+                                    units = weatherState.unitChoice
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            weatherState.todayPlusSixWeather?.let {
+                                SecondaryWeatherCard(
+                                    weather = it,
+                                    units = weatherState.unitChoice
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            weatherState.todayPlusSevenWeather?.let {
+                                SecondaryWeatherCard(
+                                    weather = it,
+                                    units = weatherState.unitChoice
+                                )
+                            }
+
+                            // This spacer is important so that the last item in the scrollable
+                            // list can be viewed (not covered by the floating action button).
+                            Spacer(modifier = Modifier.height(80.dp))
                         }
                     }
                 }
