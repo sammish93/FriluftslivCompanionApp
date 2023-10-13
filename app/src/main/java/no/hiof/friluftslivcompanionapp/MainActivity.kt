@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -148,36 +149,38 @@ fun FriluftslivApp(modifier: Modifier = Modifier) {
             CustomNavigationBar(navController)
         }
     ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = Screen.HOME.name,
-            modifier = modifier.fillMaxSize()
-        ) {
-            composable(
-                Screen.HOME.name,
-                enterTransition = {
-                    // Transition animation from every page.
-                    slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Down,
-                        animationSpec = tween(500)
-                    )
-                },
-                exitTransition = {
-                    slideOutOfContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Up,
-                        animationSpec = tween(500)
-                    )
-                }) {
-                HomeScreen(modifier.padding(innerPadding))
+        Box(modifier = Modifier.padding(innerPadding)) {
+            NavHost(
+                navController = navController,
+                startDestination = Screen.HOME.name,
+                modifier = modifier.fillMaxSize()
+            ) {
+                composable(
+                    Screen.HOME.name,
+                    enterTransition = {
+                        // Transition animation from every page.
+                        slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Down,
+                            animationSpec = tween(500)
+                        )
+                    },
+                    exitTransition = {
+                        slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Up,
+                            animationSpec = tween(500)
+                        )
+                    }) {
+                    HomeScreen(modifier.padding(innerPadding))
+                }
+
+                tripsGraph(navController, tripsViewModel, innerPadding, modifier)
+
+                floraFaunaGraph(navController, floraFaunaViewModel, innerPadding, modifier)
+
+                weatherGraph(navController, weatherViewModel, innerPadding, modifier)
+
+                profileGraph(navController, innerPadding, modifier)
             }
-
-            tripsGraph(navController, tripsViewModel, innerPadding, modifier)
-
-            floraFaunaGraph(navController, floraFaunaViewModel, innerPadding, modifier)
-
-            weatherGraph(navController, weatherViewModel, innerPadding, modifier)
-
-            profileGraph(navController, innerPadding, modifier)
         }
     }
 }
