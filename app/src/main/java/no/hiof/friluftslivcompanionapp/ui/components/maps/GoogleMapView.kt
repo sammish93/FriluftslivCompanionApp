@@ -2,15 +2,20 @@ package no.hiof.friluftslivcompanionapp.ui.components.maps
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
+import android.location.Location
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -20,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -85,13 +92,19 @@ fun GoogleMap(viewModel: MapViewModel) {
                 .fillMaxWidth(),
             properties = mapProperties,
             cameraPositionState = cameraPositionState,
+            onMapLongClick = { latLng ->
+                val closestNode = findClosestNode(latLng, nodes)
+                if (closestNode != null) {
+                    nodes = nodes.filter { it != closestNode }
+                }
+            },
             onMapClick = { latLng ->
 
                 // Add the tapped coordinates to the node list.
                 nodes = nodes + latLng
             }
         ) {
-            // Add red circles representing the nodes.
+            // Add marker representing the nodes.
             nodes.forEach { node ->
                 Marker(
                     MarkerState(position = node),
@@ -128,6 +141,7 @@ fun GoogleMap(viewModel: MapViewModel) {
                 .align(Alignment.BottomStart)
                 .padding(bottom = 16.dp, start = 12.dp)
         )
+
     }
 }
 
@@ -150,7 +164,32 @@ fun InfoButtonWithPopup(modifier: Modifier = Modifier) {
         AlertDialog(
             onDismissRequest = { showPopup = false },
             title = { Text(text = "How to use the map") },
-            text = { Text(text = "Tap the map to add points and draw routes") },
+            text = {
+                Column {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
+                    ) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = null, modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Tap the map to add points and draw routes.",
+                            fontSize = 16.sp
+                        )
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
+                    ) {
+                        Icon(imageVector = Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Hold on point to remove it from the route.",
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+            },
             confirmButton = {
                 Button(onClick = { showPopup = false }) {
                     Text("Got it!")
@@ -209,5 +248,16 @@ private fun getLocationFromName(locationName: String, context: Context): LatLng?
         return LatLng(address.latitude, address.longitude)
     }
     return null
+}
+
+// Help functions:
+fun findClosestNode(target: LatLng, nodes: List<LatLng>): LatLng? {
+    return nodes.minByOrNull { distance(target, it) }
+}
+
+fun distance(from: LatLng, to: LatLng): Float {
+    val results = FloatArray(1)
+    Location.distanceBetween(from.latitude, from.longitude, to.latitude, to.longitude, results)
+    return results[0]
 }
 

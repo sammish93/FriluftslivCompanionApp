@@ -1,6 +1,7 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,6 +32,10 @@ class TripsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(TabsUiState())
     override val uiState: StateFlow<TabsUiState> = _uiState.asStateFlow()
 
+    // State related to google map nodes.
+    private val _nodes = MutableStateFlow<List<LatLng>>(listOf())
+    val nodes: StateFlow<List<LatLng>> = _nodes.asStateFlow()
+
     override var tabDestinations = mapOf(
         Screen.TRIPS to "Trips",
         Screen.TRIPS_RECENT_ACTIVITY to "Recent Activity",
@@ -43,5 +48,15 @@ class TripsViewModel @Inject constructor(
                 currentTabIndex = index
             )
         }
+    }
+
+    // Function to add a node.
+    fun addNode(node: LatLng) {
+        _nodes.value = _nodes.value + node
+    }
+
+    // Function to remove a node.
+    fun removeNode(node: LatLng) {
+        _nodes.value = _nodes.value.filter { it != node }
     }
 }
