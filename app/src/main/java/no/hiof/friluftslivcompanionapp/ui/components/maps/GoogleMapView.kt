@@ -8,13 +8,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,12 +29,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.MapViewModel
@@ -51,6 +53,9 @@ import java.io.IOException
  */
 @Composable
 fun GoogleMap(viewModel: MapViewModel) {
+
+    // State to hold nodes added by user taps.
+    var nodes by remember { mutableStateOf(listOf<LatLng>()) }
 
     // Used for default location.
     val oslo = LatLng(59.9139, 10.7522)
@@ -79,14 +84,35 @@ fun GoogleMap(viewModel: MapViewModel) {
             modifier = Modifier
                 .fillMaxWidth(),
             properties = mapProperties,
-            cameraPositionState = cameraPositionState
+            cameraPositionState = cameraPositionState,
+            onMapClick = { latLng ->
+
+                // Add the tapped coordinates to the node list.
+                nodes = nodes + latLng
+            }
         ) {
-            userLocation?.let { MarkerState(position = it) }?.let {
+            // Add red circles representing the nodes.
+            nodes.forEach { node ->
                 Marker(
-                    state = it,
-                    title = "Location",
-                    snippet = "You"
+                    MarkerState(position = node),
+                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE),
+                    title = "Node",
+                    snippet = "$node"
                 )
+            }
+
+            // Draw polyline if there are at least 2 nodes.
+            if (nodes.size >= 2) {
+                Polyline(
+                    points = nodes,
+                    color = Color.Red,
+                    width = 5f
+                )
+            }
+
+            // Add marker on the users location.
+            userLocation?.let { MarkerState(position = it) }?.let {
+                Marker(state = it, title = "Location", snippet = "You")
             }
 
             // Animation for the camera if user position is changed.
@@ -96,6 +122,7 @@ fun GoogleMap(viewModel: MapViewModel) {
                 }
             }
         }
+
         InfoButtonWithPopup(
             modifier = Modifier
                 .align(Alignment.BottomStart)
@@ -133,6 +160,7 @@ fun InfoButtonWithPopup(modifier: Modifier = Modifier) {
     }
 }
 
+// Lorena´s code.
 @Composable
 fun GoogleMapsView(locationName: String, viewModel: FloraFaunaViewModel) {
     val location = getLocationFromName(locationName, LocalContext.current)
@@ -182,3 +210,4 @@ private fun getLocationFromName(locationName: String, context: Context): LatLng?
     }
     return null
 }
+
