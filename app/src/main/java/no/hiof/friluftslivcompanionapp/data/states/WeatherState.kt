@@ -11,5 +11,7 @@ data class WeatherState(
     val todayPlusFourWeather: Weather? = null,
     val todayPlusFiveWeather: Weather? = null,
     val todayPlusSixWeather: Weather? = null,
-    val todayPlusSevenWeather: Weather? = null
+    val todayPlusSevenWeather: Weather? = null,
+    val isLoading: Boolean = false,
+    val isFailure: Boolean = false
 )

@@ -2,6 +2,7 @@ package no.hiof.friluftslivcompanionapp.viewmodels
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,19 +40,35 @@ class WeatherViewModel @Inject constructor(
 
     private val api = WeatherDeserialiser.getInstance()
 
+    // Retrieves a WeatherForecast object composed of a Location and a List<Weather> wrapped by
+    // a Result.
     suspend fun getWeatherForecast() {
+        // Makes sure to reset failure state to false so request can be retried.
+        updateFailureWeatherResponse(false)
+        // Changes loading state to true - shows progress bar.
+        updateLoadingWeatherResponse(true)
+
+        // Retrieves API response asynchronously.
         val result = api.getWeatherForecast(41.389, 2.159)
 
         if (result is Result.Success) {
-            updateWeatherState(result.value)
-        } else null
+            // Updates individual Weather objects from a single WeatherForecast
+            //updateWeatherState(result.value)
+        } else {
+            updateFailureWeatherResponse(true)
+        }
+        updateFailureWeatherResponse(true)
+        // Changes loading state to false.
+        updateLoadingWeatherResponse(false)
     }
 
+    // Tab destinations that are accessible in the "weather" route.
     override var tabDestinations = mapOf(
         Screen.WEATHER to "Weather",
         Screen.WEATHER_SEARCH to "Search"
     )
 
+    // Updates tab selection visualisation after navigation.
     override fun changeHighlightedTab(index: Int) {
         _uiState.update { currentState ->
             currentState.copy(
@@ -60,6 +77,7 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
+    // Updates each individual daily forecast from a List<Weather> found in a WeatherForecast.
     fun updateWeatherState(weatherForecast: WeatherForecast) {
         _weatherState.update { currentState ->
             currentState.copy(
@@ -72,6 +90,24 @@ class WeatherViewModel @Inject constructor(
                 todayPlusFiveWeather = weatherForecast.forecast[6],
                 todayPlusSixWeather = weatherForecast.forecast[7],
                 todayPlusSevenWeather = weatherForecast.forecast[8]
+            )
+        }
+    }
+
+    // Changes a Boolean value used to show/hide a progress bar.
+    fun updateLoadingWeatherResponse(isLoading: Boolean) {
+        _weatherState.update { currentState ->
+            currentState.copy(
+                isLoading = isLoading
+            )
+        }
+    }
+
+    // Changes a Boolean value used to show/hide error messages.
+    fun updateFailureWeatherResponse(isFailure: Boolean) {
+        _weatherState.update { currentState ->
+            currentState.copy(
+                isFailure = isFailure
             )
         }
     }
