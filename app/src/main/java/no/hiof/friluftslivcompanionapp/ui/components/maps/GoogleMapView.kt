@@ -2,6 +2,7 @@ package no.hiof.friluftslivcompanionapp.ui.components.maps
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -19,6 +21,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,7 +32,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -131,7 +136,7 @@ fun GoogleMap(viewModel: MapViewModel, tripsModel: TripsViewModel) {
         InfoButtonWithPopup(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(bottom = 16.dp, start = 12.dp)
+                .padding(bottom = 8.dp, start = 8.dp)
         )
 
     }
@@ -140,15 +145,26 @@ fun GoogleMap(viewModel: MapViewModel, tripsModel: TripsViewModel) {
 @Composable
 fun InfoButtonWithPopup(modifier: Modifier = Modifier) {
     var showPopup by remember { mutableStateOf(false) }
+
+    val customShape: Shape = RoundedCornerShape(8.dp)
     
     // Info button
-    IconButton(onClick = { showPopup = true }, modifier = modifier) {
-        Icon(
-            imageVector = Icons.Default.Info,
-            contentDescription = "Info",
-            modifier = Modifier.size(26.dp),
-            tint = Color.Black
-        )
+    Box(
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.surface, shape = customShape)
+            .width(55.dp)
+    ) {
+        IconButton(
+            onClick = { showPopup = true },
+            modifier = Modifier.align(Alignment.Center)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = "Info",
+                modifier = Modifier.size(26.dp),
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
 
     // Popup dialog.
