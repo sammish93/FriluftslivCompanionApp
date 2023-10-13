@@ -2,13 +2,30 @@ package no.hiof.friluftslivcompanionapp.ui.components.maps
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -53,27 +70,66 @@ fun GoogleMap(viewModel: MapViewModel) {
     val cameraPositionState = rememberCameraPositionState {
         position = cameraPosition
     }
-    GoogleMap(
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 70.dp),
-        properties = mapProperties,
-        cameraPositionState = cameraPositionState
+            .fillMaxSize()
+            .padding(bottom = 70.dp)
     ) {
-        userLocation?.let { MarkerState(position = it) }?.let {
-            Marker(
-                state = it,
-                title = "Location",
-                snippet = "You"
-            )
-        }
+        GoogleMap(
+            modifier = Modifier
+                .fillMaxWidth(),
+            properties = mapProperties,
+            cameraPositionState = cameraPositionState
+        ) {
+            userLocation?.let { MarkerState(position = it) }?.let {
+                Marker(
+                    state = it,
+                    title = "Location",
+                    snippet = "You"
+                )
+            }
 
-        // Animation for the camera if user position is changed.
-        LaunchedEffect(userLocation) {
-            userLocation?.let {
-                cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(it, 14f))
+            // Animation for the camera if user position is changed.
+            LaunchedEffect(userLocation) {
+                userLocation?.let {
+                    cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(it, 14f))
+                }
             }
         }
+        InfoButtonWithPopup(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(bottom = 16.dp, start = 12.dp)
+        )
+    }
+}
+
+@Composable
+fun InfoButtonWithPopup(modifier: Modifier = Modifier) {
+    var showPopup by remember { mutableStateOf(false) }
+    
+    // Info button
+    IconButton(onClick = { showPopup = true }, modifier = modifier) {
+        Icon(
+            imageVector = Icons.Default.Info,
+            contentDescription = "Info",
+            modifier = Modifier.size(26.dp),
+            tint = Color.Black
+        )
+    }
+
+    // Popup dialog.
+    if (showPopup) {
+        AlertDialog(
+            onDismissRequest = { showPopup = false },
+            title = { Text(text = "How to use the map") },
+            text = { Text(text = "Tap the map to add points and draw routes") },
+            confirmButton = {
+                Button(onClick = { showPopup = false }) {
+                    Text("Got it!")
+                }
+            }
+        )
     }
 }
 
