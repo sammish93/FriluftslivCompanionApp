@@ -1,17 +1,6 @@
 package no.hiof.friluftslivcompanionapp.data.repositories
-import no.hiof.friluftslivcompanionapp.data.network.Result
-import no.hiof.friluftslivcompanionapp.domain.BirdObservations
-import no.hiof.friluftslivcompanionapp.models.Bird
-import javax.inject.Inject
 
-
-/*
-class FloraFaunaRepository @Inject constructor(
-    private val birdObservations: BirdObservations
-
-) {
-    suspend fun getBirdsByLocation(location: String): Result<List<Bird>> {
-        return birdObservations.getRecentObservations(regionCode = location)
-    }
-
-}*/
+class FloraFaunaRepository {
+    // Example of a repository class. This class is used by the ViewModels to retrieve data
+    // from a data source (either through a db or an API request).
+}
