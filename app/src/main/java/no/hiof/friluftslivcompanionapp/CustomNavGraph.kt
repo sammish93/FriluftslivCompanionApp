@@ -22,6 +22,7 @@ import no.hiof.friluftslivcompanionapp.ui.screens.TripsScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.WeatherScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.WeatherSearchScreen
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
+import no.hiof.friluftslivcompanionapp.viewmodels.MapViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 
@@ -50,6 +51,7 @@ object CustomNavGraph {
     fun NavGraphBuilder.tripsGraph(
         navController: NavController,
         tripsViewModel: TripsViewModel,
+        mapViewModel: MapViewModel,
         innerPadding: PaddingValues,
         modifier: Modifier
     ) {
@@ -99,7 +101,7 @@ object CustomNavGraph {
                         )
                     }
                 }) {
-                TripsScreen(navController, modifier.padding(innerPadding), tripsViewModel)
+                TripsScreen(navController, modifier.padding(innerPadding), tripsViewModel, mapViewModel)
             }
 
             composable(

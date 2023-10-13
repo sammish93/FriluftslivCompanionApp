@@ -27,26 +27,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
-import no.hiof.friluftslivcompanionapp.ui.screens.FloraFaunaScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.HomeScreen
-import no.hiof.friluftslivcompanionapp.ui.screens.ProfileScreen
-import no.hiof.friluftslivcompanionapp.ui.screens.TripsScreen
-import no.hiof.friluftslivcompanionapp.ui.screens.WeatherScreen
 import no.hiof.friluftslivcompanionapp.ui.theme.FriluftslivCompanionAppTheme
 import javax.inject.Inject
 
 import androidx.compose.material3.Typography
 import no.hiof.friluftslivcompanionapp.ui.components.CustomNavigationBar
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
-import no.hiof.friluftslivcompanionapp.ui.screens.FloraFaunaSearchScreen
-import no.hiof.friluftslivcompanionapp.ui.screens.TripsCreateScreen
-import no.hiof.friluftslivcompanionapp.ui.screens.TripsRecentActivityScreen
-import no.hiof.friluftslivcompanionapp.ui.screens.WeatherSearchScreen
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import androidx.hilt.navigation.compose.hiltViewModel
 import no.hiof.friluftslivcompanionapp.data.managers.LocationManager
 import no.hiof.friluftslivcompanionapp.data.managers.PermissionManager
-import androidx.navigation.NavGraphBuilder
 import no.hiof.friluftslivcompanionapp.CustomNavGraph.floraFaunaGraph
 import no.hiof.friluftslivcompanionapp.CustomNavGraph.profileGraph
 import no.hiof.friluftslivcompanionapp.CustomNavGraph.tripsGraph
@@ -188,7 +179,7 @@ fun FriluftslivApp(
                     HomeScreen(modifier.padding(innerPadding))
                 }
 
-                tripsGraph(navController, tripsViewModel, innerPadding, modifier)
+                tripsGraph(navController, tripsViewModel, mapViewModel, innerPadding, modifier)
 
                 floraFaunaGraph(navController, floraFaunaViewModel, innerPadding, modifier)
 
@@ -217,7 +208,7 @@ private fun ThemePreview(
 fun LightThemePreview() {
     Surface(tonalElevation = 5.dp) {
         ThemePreview(typography = CustomTypography, isDarkTheme = false) {
-            FriluftslivApp()
+            // FriluftslivApp()
         }
     }
 }
@@ -227,7 +218,7 @@ fun LightThemePreview() {
 fun DarkThemePreview() {
     Surface(tonalElevation = 5.dp) {
         ThemePreview(typography = CustomTypography, isDarkTheme = true) {
-            FriluftslivApp()
+            // FriluftslivApp()
         }
     }
 }

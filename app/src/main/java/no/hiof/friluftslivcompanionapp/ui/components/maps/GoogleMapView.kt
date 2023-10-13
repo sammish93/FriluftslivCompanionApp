@@ -80,7 +80,6 @@ fun GoogleMap(viewModel: MapViewModel, tripsModel: TripsViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 70.dp)
     ) {
         GoogleMap(
             modifier = Modifier
