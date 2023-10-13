@@ -37,6 +37,7 @@ import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
+import no.hiof.friluftslivcompanionapp.ui.components.WeatherCard
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
@@ -76,11 +77,7 @@ fun WeatherScreen(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text = weatherState.currentWeather.toString(),
-                        style = CustomTypography.headlineLarge,
-                        textAlign = TextAlign.Center
-                    )
+                    weatherState.currentWeather?.let { WeatherCard(weather = it) }
                     // Button that launches a coroutine to send an API request to get an updated
                     // weather forecast.
                     IconButton(onClick = {
@@ -97,7 +94,8 @@ fun WeatherScreen(
             else -> {
                 Column(
                     modifier = Modifier
-                        .fillMaxSize().wrapContentSize(Alignment.Center)
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.Center)
                         .padding(16.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally

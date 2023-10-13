@@ -1,21 +1,11 @@
 package no.hiof.friluftslivcompanionapp.domain
 
 import kotlinx.coroutines.runBlocking
-import no.hiof.friluftslivcompanionapp.data.network.Result
-import no.hiof.friluftslivcompanionapp.domain.BirdObservations
-import no.hiof.friluftslivcompanionapp.models.Bird
-import no.hiof.friluftslivcompanionapp.models.Location
-import no.hiof.friluftslivcompanionapp.models.Weather
-import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.models.enums.WeatherType
 
 
 import org.junit.Assert.*
-import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.*
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 
 class WeatherIconMapperTest {

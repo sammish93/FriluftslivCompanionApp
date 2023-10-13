@@ -6,6 +6,7 @@ import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.Weather
 import no.hiof.friluftslivcompanionapp.models.WeatherForecast
 import no.hiof.friluftslivcompanionapp.models.api.SimpleWeatherResponse
+import no.hiof.friluftslivcompanionapp.models.enums.WeatherUnit
 
 /**
  * The `WeatherDeserialiser` class serves as a domain layer in the application architecture,
@@ -55,10 +56,10 @@ class WeatherDeserialiser private constructor() {
         lat: Double,
         lon: Double,
         exclude: String = "minutely,hourly",
-        units: String = "metric"
+        units: WeatherUnit = WeatherUnit.METRIC
     ): Result<WeatherForecast> {
 
-        val result = weatherApi.getWeatherInfo(lat, lon, exclude, units)
+        val result = weatherApi.getWeatherInfo(lat, lon, exclude, units.apiTerm)
 
         return when (result) {
             is Result.Success -> {
@@ -107,10 +108,10 @@ class WeatherDeserialiser private constructor() {
         lat: Double,
         lon: Double,
         exclude: String = "minutely,hourly",
-        units: String = "metric"
+        units: WeatherUnit = WeatherUnit.METRIC
     ): Result<Weather> {
 
-        val result = weatherApi.getWeatherInfo(lat, lon, exclude, units)
+        val result = weatherApi.getWeatherInfo(lat, lon, exclude, units.apiTerm)
 
         return when (result) {
             is Result.Success -> {
