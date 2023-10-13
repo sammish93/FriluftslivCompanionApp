@@ -1,9 +1,8 @@
 package no.hiof.friluftslivcompanionapp
 
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -12,14 +11,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
@@ -42,28 +36,23 @@ import no.hiof.friluftslivcompanionapp.ui.theme.FriluftslivCompanionAppTheme
 import javax.inject.Inject
 
 import androidx.compose.material3.Typography
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import no.hiof.friluftslivcompanionapp.ui.components.CustomNavigationBar
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
-//import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapView
-import no.hiof.friluftslivcompanionapp.ui.screens.AddScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.FloraFaunaSearchScreen
-import no.hiof.friluftslivcompanionapp.ui.screens.TripsAddScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.TripsCreateScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.TripsRecentActivityScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.WeatherSearchScreen
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import androidx.hilt.navigation.compose.hiltViewModel
+import no.hiof.friluftslivcompanionapp.data.managers.LocationManager
+import no.hiof.friluftslivcompanionapp.data.managers.PermissionManager
 import androidx.navigation.NavGraphBuilder
 import no.hiof.friluftslivcompanionapp.CustomNavGraph.floraFaunaGraph
 import no.hiof.friluftslivcompanionapp.CustomNavGraph.profileGraph
 import no.hiof.friluftslivcompanionapp.CustomNavGraph.tripsGraph
 import no.hiof.friluftslivcompanionapp.CustomNavGraph.weatherGraph
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
+import no.hiof.friluftslivcompanionapp.viewmodels.MapViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 
@@ -71,8 +60,32 @@ import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 class MainActivity : ComponentActivity() {
     @Inject
     lateinit var auth: FirebaseAuth
+    private val mapViewModel: MapViewModel by viewModels()
+
+    // Initialize location manager and update viewModel.
+    private val locationManager = LocationManager(this, lifecycle) { location ->
+        mapViewModel.updateLocation(location)
+    }
+
+    private val permissionManager by lazy {
+        PermissionManager(
+            activityResultRegistry,
+            onPermissionGranted = { locationManager.startLocationUpdate() },
+            onPermissionDenied = {
+            /* Can handle denied permission if needed. I don´t know how we will do this yet. */
+            }
+        )
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        locationManager.initializeFusedLocationProviderClient()
+
+        // Check for location permissions and request if not granted.
+        if (!locationManager.hasLocationPermission()) {
+            permissionManager.requestPermission(ACCESS_FINE_LOCATION)
+        }
 
         val currentUser = auth.currentUser
         if (currentUser != null) {
@@ -88,7 +101,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        FriluftslivApp()
+                        FriluftslivApp(mapViewModel = mapViewModel)
                     }
                 }
             }
@@ -104,9 +117,11 @@ class MainActivity : ComponentActivity() {
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FriluftslivApp(modifier: Modifier = Modifier) {
+fun FriluftslivApp(
+    modifier: Modifier = Modifier,
+    mapViewModel: MapViewModel,
+) {
     val navController = rememberNavController()
     val currentRoute by rememberUpdatedState(
         newValue = navController.currentBackStackEntryAsState().value?.destination?.route
