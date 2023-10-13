@@ -53,11 +53,11 @@ class WeatherViewModel @Inject constructor(
 
         if (result is Result.Success) {
             // Updates individual Weather objects from a single WeatherForecast
-            //updateWeatherState(result.value)
+            updateWeatherState(result.value)
         } else {
             updateFailureWeatherResponse(true)
         }
-        updateFailureWeatherResponse(true)
+
         // Changes loading state to false.
         updateLoadingWeatherResponse(false)
     }
