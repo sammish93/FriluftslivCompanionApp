@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,7 +46,10 @@ import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.MapViewModel
+import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import java.io.IOException
+import no.hiof.friluftslivcompanionapp.utils.findClosestNode
+import no.hiof.friluftslivcompanionapp.utils.getLastKnownLocation
 
 /**
  * A Composable function that displays a Google Map with a marker indicating the user's location.
@@ -59,21 +61,20 @@ import java.io.IOException
  * A marker will be placed on the user's location with a title "Location" and a snippet "You".
  */
 @Composable
-fun GoogleMap(viewModel: MapViewModel) {
+fun GoogleMap(viewModel: MapViewModel, tripsModel: TripsViewModel) {
 
     // State to hold nodes added by user taps.
-    var nodes by remember { mutableStateOf(listOf<LatLng>()) }
+    val nodes by tripsModel.nodes.collectAsState()
 
     // Used for default location.
     val oslo = LatLng(59.9139, 10.7522)
 
+    // State to hold last known user location.
     val state by viewModel.state.collectAsState()
     val lastKnownLocation = state.lastKnownLocation
 
     val mapProperties = MapProperties(isMyLocationEnabled = lastKnownLocation != null)
-    val userLocation = lastKnownLocation?.let {
-        LatLng(it.latitude, lastKnownLocation.longitude)
-    }
+    val userLocation = getLastKnownLocation(lastKnownLocation)
 
     val defaultPosition = CameraPosition.fromLatLngZoom(oslo, 10f)
     val cameraPosition = userLocation?.let {
@@ -95,13 +96,11 @@ fun GoogleMap(viewModel: MapViewModel) {
             onMapLongClick = { latLng ->
                 val closestNode = findClosestNode(latLng, nodes)
                 if (closestNode != null) {
-                    nodes = nodes.filter { it != closestNode }
+                    tripsModel.removeNode(closestNode)
                 }
             },
             onMapClick = { latLng ->
-
-                // Add the tapped coordinates to the node list.
-                nodes = nodes + latLng
+                tripsModel.addNode(latLng)
             }
         ) {
             // Add marker representing the nodes.
@@ -250,14 +249,4 @@ private fun getLocationFromName(locationName: String, context: Context): LatLng?
     return null
 }
 
-// Help functions:
-fun findClosestNode(target: LatLng, nodes: List<LatLng>): LatLng? {
-    return nodes.minByOrNull { distance(target, it) }
-}
-
-fun distance(from: LatLng, to: LatLng): Float {
-    val results = FloatArray(1)
-    Location.distanceBetween(from.latitude, from.longitude, to.latitude, to.longitude, results)
-    return results[0]
-}
 

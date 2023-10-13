@@ -13,6 +13,6 @@ fun TripsScreen(
     viewModel: TripsViewModel = viewModel(),
     mapViewModel: MapViewModel
 ) {
-    GoogleMap(mapViewModel)
+    GoogleMap(mapViewModel, viewModel)
 }
 
