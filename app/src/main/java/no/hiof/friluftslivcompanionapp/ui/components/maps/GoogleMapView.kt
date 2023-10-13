@@ -2,7 +2,6 @@ package no.hiof.friluftslivcompanionapp.ui.components.maps
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
-import android.location.Location
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -49,7 +48,9 @@ import no.hiof.friluftslivcompanionapp.viewmodels.MapViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import java.io.IOException
 import no.hiof.friluftslivcompanionapp.utils.findClosestNode
+import no.hiof.friluftslivcompanionapp.utils.getCameraPosition
 import no.hiof.friluftslivcompanionapp.utils.getLastKnownLocation
+import no.hiof.friluftslivcompanionapp.utils.oslo
 
 /**
  * A Composable function that displays a Google Map with a marker indicating the user's location.
@@ -66,9 +67,6 @@ fun GoogleMap(viewModel: MapViewModel, tripsModel: TripsViewModel) {
     // State to hold nodes added by user taps.
     val nodes by tripsModel.nodes.collectAsState()
 
-    // Used for default location.
-    val oslo = LatLng(59.9139, 10.7522)
-
     // State to hold last known user location.
     val state by viewModel.state.collectAsState()
     val lastKnownLocation = state.lastKnownLocation
@@ -76,13 +74,9 @@ fun GoogleMap(viewModel: MapViewModel, tripsModel: TripsViewModel) {
     val mapProperties = MapProperties(isMyLocationEnabled = lastKnownLocation != null)
     val userLocation = getLastKnownLocation(lastKnownLocation)
 
-    val defaultPosition = CameraPosition.fromLatLngZoom(oslo, 10f)
-    val cameraPosition = userLocation?.let {
-        CameraPosition.fromLatLngZoom(it, 14f) } ?: defaultPosition
+    val cameraPosition = getCameraPosition(userLocation, 14f)
+    val cameraPositionState = rememberCameraPositionState { position = cameraPosition }
 
-    val cameraPositionState = rememberCameraPositionState {
-        position = cameraPosition
-    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -163,38 +157,41 @@ fun InfoButtonWithPopup(modifier: Modifier = Modifier) {
         AlertDialog(
             onDismissRequest = { showPopup = false },
             title = { Text(text = "How to use the map") },
-            text = {
-                Column {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
-                    ) {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = null, modifier = Modifier.size(24.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Tap the map to add points and draw routes.",
-                            fontSize = 16.sp
-                        )
-                    }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
-                    ) {
-                        Icon(imageVector = Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(24.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Hold on point to remove it from the route.",
-                            fontSize = 16.sp
-                        )
-                    }
-                }
-            },
+            text = { CardPopup() },
             confirmButton = {
                 Button(onClick = { showPopup = false }) {
                     Text("Got it!")
                 }
             }
         )
+    }
+}
+
+@Composable
+fun CardPopup() {
+    Column {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
+        ) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = null, modifier = Modifier.size(24.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Tap the map to add points and draw routes.",
+                fontSize = 16.sp
+            )
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
+        ) {
+            Icon(imageVector = Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(24.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Hold on point to remove it from the route.",
+                fontSize = 16.sp
+            )
+        }
     }
 }
 
