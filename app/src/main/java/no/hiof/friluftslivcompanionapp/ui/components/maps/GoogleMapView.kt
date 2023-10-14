@@ -48,6 +48,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.delay
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.MapViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
@@ -126,11 +127,21 @@ fun GoogleMap(viewModel: MapViewModel, tripsModel: TripsViewModel) {
             }
 
             // Animation for the camera if user position is changed.
-            LaunchedEffect(userLocation) {
-                userLocation?.let {
-                    cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(it, 14f))
+            when (state.isInitiallyNavigatedTo) {
+                false -> {
+                    LaunchedEffect(userLocation) {
+                        userLocation?.let {
+                            cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(it, 14f))
+                            // Delay ensures that the animation has time to fire off before the
+                            // initiallyNavigatedTo value is updated.
+                            delay(1000)
+                            viewModel.updateIsInitiallyNavigatedTo(true)
+                        }
+                    }
                 }
+                else -> {}
             }
+
         }
 
         InfoButtonWithPopup(

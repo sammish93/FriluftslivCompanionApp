@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import no.hiof.friluftslivcompanionapp.data.states.GoogleMapState
 import javax.inject.Inject
 
@@ -30,5 +31,13 @@ class MapViewModel @Inject constructor(): ViewModel() {
     fun updateLocation(location: Location?) {
         val currentState = _state.value
         _state.value = currentState.copy(lastKnownLocation = location)
+    }
+
+    fun updateIsInitiallyNavigatedTo(isInitiallyNavigatedTo: Boolean) {
+        _state.update { currentState ->
+            currentState.copy(
+                isInitiallyNavigatedTo = isInitiallyNavigatedTo
+            )
+        }
     }
 }

@@ -11,5 +11,6 @@ import android.location.Location
  * the Google Map Composable.
  */
 data class GoogleMapState(
-    val lastKnownLocation: Location? = null
+    val lastKnownLocation: Location? = null,
+    val isInitiallyNavigatedTo: Boolean = false
 )
