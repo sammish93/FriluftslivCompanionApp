@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
 import no.hiof.friluftslivcompanionapp.ui.components.items.ListItemWithButtonsAndImg
 
@@ -26,10 +27,9 @@ fun FloraFaunaSearchScreen(
     modifier: Modifier = Modifier,
     viewModel: FloraFaunaViewModel = viewModel()
 ) {
-
+    if(searchBy.equals("Location" ,ignoreCase = true)){
     var locationName by remember { mutableStateOf("") }
     val birdResults by viewModel.birdResults.collectAsState()
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -94,11 +94,17 @@ fun FloraFaunaSearchScreen(
         }
         ListComponent(birdResults) { bird, textStyle ->
             ListItemWithButtonsAndImg(bird, textStyle,
-                displayText = { it.speciesName ?: "Unknown Bird" })
-            { it.photoUrl ?: "" }
+                displayText = { it.speciesName ?: "Unknown Bird" },
+                fetchImage = { it.photoUrl ?: "" })
+            }
         }
     }
+    else if (searchBy.equals("Species", ignoreCase = true)) {
+
+        Text(text = "Content for Species Search")
+    }
 }
+
 
 //GoogleMapsView(locationName, viewModel)
 

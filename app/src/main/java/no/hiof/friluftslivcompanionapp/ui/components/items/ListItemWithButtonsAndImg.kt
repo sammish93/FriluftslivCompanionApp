@@ -16,7 +16,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import androidx.compose.ui.layout.ContentScale
+import coil.annotation.ExperimentalCoilApi
 
+
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun <T> ListItemWithButtonsAndImg(
     item: T,
