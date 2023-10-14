@@ -389,7 +389,7 @@ object CustomNavGraph {
             ) {
                 // Innholdet for FLORA_FAUNA_ADDITIONAL_INFO-skjermen
                 FloraFaunaAdditionalInfo(
-                    modifier.padding(innerPadding),
+                    modifier,
                     floraFaunaViewModel
                 )
             }
