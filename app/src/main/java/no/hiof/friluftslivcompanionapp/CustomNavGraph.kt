@@ -52,7 +52,6 @@ object CustomNavGraph {
         navController: NavController,
         tripsViewModel: TripsViewModel,
         mapViewModel: MapViewModel,
-        innerPadding: PaddingValues,
         modifier: Modifier
     ) {
         navigation(startDestination = Screen.TRIPS.name, route = Screen.TRIPS.route) {
@@ -101,7 +100,7 @@ object CustomNavGraph {
                         )
                     }
                 }) {
-                TripsScreen(navController, modifier.padding(innerPadding), tripsViewModel, mapViewModel)
+                TripsScreen(navController, modifier, tripsViewModel, mapViewModel)
             }
 
             composable(
@@ -155,7 +154,7 @@ object CustomNavGraph {
                 }) {
                 TripsRecentActivityScreen(
                     navController,
-                    modifier.padding(innerPadding),
+                    modifier,
                     tripsViewModel
                 )
             }
@@ -201,7 +200,7 @@ object CustomNavGraph {
                         )
                     }
                 }) {
-                TripsCreateScreen(navController, modifier.padding(innerPadding), tripsViewModel)
+                TripsCreateScreen(navController, modifier, tripsViewModel)
             }
         }
     }
@@ -210,7 +209,6 @@ object CustomNavGraph {
     fun NavGraphBuilder.floraFaunaGraph(
         navController: NavController,
         floraFaunaViewModel: FloraFaunaViewModel,
-        innerPadding: PaddingValues,
         modifier: Modifier
     ) {
         navigation(startDestination = Screen.FLORA_FAUNA.name, route = Screen.FLORA_FAUNA.route) {
@@ -259,7 +257,7 @@ object CustomNavGraph {
                         )
                     }
                 }) {
-                FloraFaunaScreen(navController, modifier.padding(innerPadding), floraFaunaViewModel)
+                FloraFaunaScreen(navController, modifier, floraFaunaViewModel)
             }
 
             composable(
@@ -313,7 +311,7 @@ object CustomNavGraph {
                 FloraFaunaSearchScreen(
                     "Location",
                     navController,
-                    modifier.padding(innerPadding),
+                    modifier,
                     floraFaunaViewModel
                 )
             }
@@ -362,7 +360,7 @@ object CustomNavGraph {
                 FloraFaunaSearchScreen(
                     "Species",
                     navController,
-                    modifier.padding(innerPadding),
+                    modifier,
                     floraFaunaViewModel
                 )
             }
@@ -373,7 +371,6 @@ object CustomNavGraph {
     fun NavGraphBuilder.weatherGraph(
         navController: NavController,
         weatherViewModel: WeatherViewModel,
-        innerPadding: PaddingValues,
         modifier: Modifier
     ) {
         navigation(startDestination = Screen.WEATHER.name, route = Screen.WEATHER.route) {
@@ -421,7 +418,7 @@ object CustomNavGraph {
                         )
                     }
                 }) {
-                WeatherScreen(navController, modifier.padding(innerPadding), weatherViewModel)
+                WeatherScreen(navController, modifier, weatherViewModel)
             }
 
             composable(
@@ -463,7 +460,7 @@ object CustomNavGraph {
                         )
                     }
                 }) {
-                WeatherSearchScreen(navController, modifier.padding(innerPadding), weatherViewModel)
+                WeatherSearchScreen(navController, modifier, weatherViewModel)
             }
         }
     }
@@ -471,7 +468,6 @@ object CustomNavGraph {
     // Screens accessible by the profile navigation bar button.
     fun NavGraphBuilder.profileGraph(
         navController: NavController,
-        innerPadding: PaddingValues,
         modifier: Modifier
     ) {
         navigation(startDestination = Screen.PROFILE.name, route = Screen.PROFILE.route) {
@@ -502,7 +498,7 @@ object CustomNavGraph {
                         )
                     }
                 }) {
-                ProfileScreen(modifier.padding(innerPadding))
+                ProfileScreen()
             }
         }
     }

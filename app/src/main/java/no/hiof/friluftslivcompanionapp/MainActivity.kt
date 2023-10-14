@@ -179,13 +179,13 @@ fun FriluftslivApp(
                     HomeScreen(modifier.padding(innerPadding))
                 }
 
-                tripsGraph(navController, tripsViewModel, mapViewModel, innerPadding, modifier)
+                tripsGraph(navController, tripsViewModel, mapViewModel, modifier)
 
-                floraFaunaGraph(navController, floraFaunaViewModel, innerPadding, modifier)
+                floraFaunaGraph(navController, floraFaunaViewModel, modifier)
 
-                weatherGraph(navController, weatherViewModel, innerPadding, modifier)
+                weatherGraph(navController, weatherViewModel, modifier)
 
-                profileGraph(navController, innerPadding, modifier)
+                profileGraph(navController, modifier)
             }
         }
     }
