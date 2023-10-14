@@ -1,4 +1,5 @@
 package no.hiof.friluftslivcompanionapp.ui.components.maps
+
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
@@ -129,19 +130,34 @@ fun GoogleMap(viewModel: MapViewModel, tripsModel: TripsViewModel) {
             // Animation for the camera if user position is changed.
             when (state.isInitiallyNavigatedTo) {
                 false -> {
-                    LaunchedEffect(userLocation) {
-                        userLocation?.let {
-                            cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(it, 14f))
-                            // Delay ensures that the animation has time to fire off before the
-                            // initiallyNavigatedTo value is updated.
-                            delay(1000)
+                    when (userLocation) {
+                        null -> {
+                            // Updates the state so the when loop doesn't constantly fire.
                             viewModel.updateIsInitiallyNavigatedTo(true)
+                        }
+
+                        else -> {
+                            LaunchedEffect(userLocation) {
+                                userLocation.let {
+                                    cameraPositionState.animate(
+                                        CameraUpdateFactory.newLatLngZoom(
+                                            it,
+                                            14f
+                                        )
+                                    )
+                                }
+                                // Updates state so that the map isn't constantly repositioned to
+                                // a user's location.
+                                viewModel.updateIsInitiallyNavigatedTo(true)
+                            }
                         }
                     }
                 }
-                else -> {}
+                else -> {
+                    // Let it be, let it be.. Let it be, let it be.
+                    // Speaking words of wisdom. Let it beeEEeEEEEE.
+                }
             }
-
         }
 
         InfoButtonWithPopup(
@@ -158,7 +174,7 @@ fun InfoButtonWithPopup(modifier: Modifier = Modifier) {
     var showPopup by remember { mutableStateOf(false) }
 
     val customShape: Shape = RoundedCornerShape(8.dp)
-    
+
     // Info button
     Box(
         modifier = modifier
@@ -200,7 +216,11 @@ fun CardPopup() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
         ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = null, modifier = Modifier.size(24.dp))
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "Tap the map to add points and draw routes.",
@@ -211,7 +231,11 @@ fun CardPopup() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
         ) {
-            Icon(imageVector = Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(24.dp))
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "Hold on point to remove it from the route.",
