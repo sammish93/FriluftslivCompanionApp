@@ -33,7 +33,7 @@ fun FloraFaunaSearchScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(8.dp)
 
         ) {
         Row(
@@ -46,8 +46,8 @@ fun FloraFaunaSearchScreen(
                 onValueChange = { locationName = it },
                 placeholder = { Text(text = "Enter your region code") },
                 modifier = Modifier
-                    .padding(top = 10.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
                 singleLine = true
             )
 
@@ -92,13 +92,11 @@ fun FloraFaunaSearchScreen(
             }
 
         }
-
         ListComponent(birdResults) { bird, textStyle ->
             ListItemWithButtonsAndImg(bird, textStyle,
                 displayText = { it.speciesName ?: "Unknown Bird" })
             { it.photoUrl ?: "" }
         }
-
     }
 }
 
