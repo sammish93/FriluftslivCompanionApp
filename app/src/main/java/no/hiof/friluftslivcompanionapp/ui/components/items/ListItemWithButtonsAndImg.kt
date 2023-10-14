@@ -25,7 +25,8 @@ fun <T> ListItemWithButtonsAndImg(
     item: T,
     textStyle: TextStyle,
     displayText: (T) -> String,
-    fetchImage: (T) -> String
+    fetchImage: (T) -> String,
+    onMoreInfoClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -55,7 +56,7 @@ fun <T> ListItemWithButtonsAndImg(
 
         // Additional details button
         Button(
-            onClick = { /* TODO: Handle click action for "details button */ },
+            onClick = onMoreInfoClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp)

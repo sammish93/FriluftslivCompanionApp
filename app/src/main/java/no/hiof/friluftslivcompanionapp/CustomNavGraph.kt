@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import no.hiof.friluftslivcompanionapp.CustomNavGraph.enterTransition
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
+import no.hiof.friluftslivcompanionapp.ui.screens.FloraFaunaAdditionalInfo
 import no.hiof.friluftslivcompanionapp.ui.screens.FloraFaunaScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.FloraFaunaSearchScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.HomeScreen
@@ -364,6 +365,35 @@ object CustomNavGraph {
                     floraFaunaViewModel
                 )
             }
+            // FLORA_FAUNA_ADDITIONAL_INFO-skjermen
+            composable(
+                Screen.FLORA_FAUNA_ADDITIONAL_INFO.route,
+                enterTransition = {
+                    when (initialState.destination.route) {
+                        Screen.FLORA_FAUNA.name -> enterTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            500
+                        )
+                        else -> null
+                    }
+                },
+                exitTransition = {
+                    when (navController.currentBackStackEntry?.destination?.route) {
+                        Screen.FLORA_FAUNA.name -> exitTransition(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            500
+                        )
+                        else -> null
+                    }
+                }
+            ) {
+                // Innholdet for FLORA_FAUNA_ADDITIONAL_INFO-skjermen
+                FloraFaunaAdditionalInfo(
+                    modifier,
+                    floraFaunaViewModel
+                )
+            }
+
         }
     }
 

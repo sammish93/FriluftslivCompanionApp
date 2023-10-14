@@ -58,9 +58,11 @@ fun FloraFaunaSearchScreen(
                 .padding(10.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            // New button for "Use my location"
             Button(
-                onClick = { /* TODO: Handle click action for "Use my location" */ },
+                onClick = { /* TODO: Handle click action for "Use my location" */
+                    viewModel.viewModelScope.launch {
+                        viewModel.searchBirdsByLocation("NO")
+                    }},
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
@@ -93,9 +95,14 @@ fun FloraFaunaSearchScreen(
 
         }
         ListComponent(birdResults) { bird, textStyle ->
-            ListItemWithButtonsAndImg(bird, textStyle,
+            ListItemWithButtonsAndImg(
+                bird,
+                textStyle,
                 displayText = { it.speciesName ?: "Unknown Bird" },
-                fetchImage = { it.photoUrl ?: "" })
+                fetchImage = { it.photoUrl ?: "" }
+            ){
+                navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
+            }
             }
         }
     }

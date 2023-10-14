@@ -83,5 +83,28 @@ class FloraFaunaViewModel @Inject constructor(
     }
 
 
+    private val _selectedBirdInfo = MutableStateFlow<Bird?>(null)
+    val selectedBirdInfo: StateFlow<Bird?> = _selectedBirdInfo.asStateFlow()
+
+    fun getBirdInfoByScientificName(scientificName: String) {
+        viewModelScope.launch {
+            try {
+                val birdList = _birdResults.value
+                val selectedBird = birdList.firstOrNull { it.speciesNameScientific == scientificName }
+
+                // Process the selected bird
+                val processedBird = selectedBird?.apply {
+                    description = "Updated description: $description"
+                }
+
+                // Print the processed bird
+                processedBird?.let { println("Processed Bird: $it") }
+
+                _selectedBirdInfo.value = processedBird
+            } catch (e: Exception) {
+                println("Error: ${e.message}")
+            }
+        }
+    }
 
 }

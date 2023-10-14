@@ -3,7 +3,7 @@ package no.hiof.friluftslivcompanionapp.models.enums
 enum class Screen(val route: String, val navBarLabelEn: String, val navBarLabelNo: String) {
     HOME ("home", "Home", "Hjem"),
     FLORA_FAUNA ("floraFauna", "Wildlife", "Arter"),
-    FLORA_FAUNA_ADDITIONAL_INFO ("floraFauna", "UNDEFINED", "UNDEFINED"),
+    FLORA_FAUNA_ADDITIONAL_INFO ("floraFaunaAdditionalInfo", "Additional Info", "Tilleggsinformasjon"),
     FLORA_FAUNA_ADD ("floraFauna", "UNDEFINED", "UNDEFINED"),
     FLORA_FAUNA_SEARCH_LOCATION ("floraFauna", "UNDEFINED", "UNDEFINED"),
     FLORA_FAUNA_SEARCH_SPECIES ("floraFauna", "UNDEFINED", "UNDEFINED"),
