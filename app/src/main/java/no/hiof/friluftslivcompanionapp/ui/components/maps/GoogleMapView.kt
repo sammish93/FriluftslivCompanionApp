@@ -45,6 +45,8 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
@@ -78,7 +80,9 @@ fun GoogleMap(viewModel: MapViewModel, tripsModel: TripsViewModel) {
     val state by viewModel.state.collectAsState()
     val lastKnownLocation = state.lastKnownLocation
 
-    val mapProperties = MapProperties(isMyLocationEnabled = lastKnownLocation != null)
+    val mapProperties =
+        MapProperties(isMyLocationEnabled = lastKnownLocation != null, mapType = MapType.TERRAIN)
+    val mapUiSettings = MapUiSettings()
     val userLocation = getLastKnownLocation(lastKnownLocation)
 
     val cameraPosition = getCameraPosition(userLocation, 14f)
@@ -153,6 +157,7 @@ fun GoogleMap(viewModel: MapViewModel, tripsModel: TripsViewModel) {
                         }
                     }
                 }
+
                 else -> {
                     // Let it be, let it be.. Let it be, let it be.
                     // Speaking words of wisdom. Let it beeEEeEEEEE.
