@@ -367,7 +367,7 @@ object CustomNavGraph {
                     floraFaunaViewModel
                 )
             }
-            // Legg til ruten for FLORA_FAUNA_ADDITIONAL_INFO-skjermen
+            // FLORA_FAUNA_ADDITIONAL_INFO-skjermen
             composable(
                 Screen.FLORA_FAUNA_ADDITIONAL_INFO.route,
                 enterTransition = {
@@ -390,7 +390,10 @@ object CustomNavGraph {
                 }
             ) {
                 // Innholdet for FLORA_FAUNA_ADDITIONAL_INFO-skjermen
-                FloraFaunaAdditionalInfo()
+                FloraFaunaAdditionalInfo(
+                    modifier.padding(innerPadding),
+                    floraFaunaViewModel
+                )
             }
 
         }

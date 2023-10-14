@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
 import no.hiof.friluftslivcompanionapp.ui.components.items.ListItemWithButtonsAndImg
 
@@ -94,9 +95,14 @@ fun FloraFaunaSearchScreen(
 
         }
         ListComponent(birdResults) { bird, textStyle ->
-            ListItemWithButtonsAndImg(bird, textStyle,
+            ListItemWithButtonsAndImg(
+                bird,
+                textStyle,
                 displayText = { it.speciesName ?: "Unknown Bird" },
-                fetchImage = { it.photoUrl ?: "" }, navController=navController)
+                fetchImage = { it.photoUrl ?: "" }
+            ){
+                navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
+            }
             }
         }
     }
