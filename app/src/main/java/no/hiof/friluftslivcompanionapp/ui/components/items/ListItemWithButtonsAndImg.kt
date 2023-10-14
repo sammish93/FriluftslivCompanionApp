@@ -16,7 +16,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.navigation.NavController
 import coil.annotation.ExperimentalCoilApi
+import no.hiof.friluftslivcompanionapp.models.enums.Screen
 
 
 @OptIn(ExperimentalCoilApi::class)
@@ -25,7 +27,8 @@ fun <T> ListItemWithButtonsAndImg(
     item: T,
     textStyle: TextStyle,
     displayText: (T) -> String,
-    fetchImage: (T) -> String
+    fetchImage: (T) -> String,
+    navController: NavController,
 ) {
     Column(
         modifier = Modifier
@@ -55,7 +58,7 @@ fun <T> ListItemWithButtonsAndImg(
 
         // Additional details button
         Button(
-            onClick = { /* TODO: Handle click action for "details button */ },
+            onClick = {navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp)
