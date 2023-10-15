@@ -86,6 +86,32 @@ class FloraFaunaViewModel @Inject constructor(
         }
     }
 
+   /* suspend fun searchBirdsByYourLocation(lat: Double?, lon: Double?) {
+        viewModelScope.launch {
+            try {
+                // Check if latitude and longitude are available
+                if (lat != null && lon != null) {
+                    val birdResult = api.getRecentObservations(lat = lat, lon = lon, maxResult = 2)
+
+                    if (birdResult is Result.Success) {
+                        val birdList = birdResult.value
+                        val processedList = api.processBirdList(birdList) { bird ->
+                            bird
+                        }
+
+                        updateBirdResults(processedList)
+                    } else if (birdResult is Result.Failure) {
+                        println("Bird API call failed: ${birdResult.message}")
+                    }
+                } else {
+                    println("Latitude and longitude not available.")
+                }
+            } catch (e: Exception) {
+                println("Error: ${e.message}")
+            }
+        }
+    }*/
+
 
     private val _selectedBirdInfo = MutableStateFlow<Bird?>(null)
     val selectedBirdInfo: StateFlow<Bird?> = _selectedBirdInfo.asStateFlow()
