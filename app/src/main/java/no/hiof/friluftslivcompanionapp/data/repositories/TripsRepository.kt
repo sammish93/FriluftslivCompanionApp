@@ -1,6 +1,40 @@
 package no.hiof.friluftslivcompanionapp.data.repositories
 
-class TripsRepository {
-    // Responsible for retrieving data from the db about all trips that have been defined in
-    // the application (NOT a user's activity).
-}
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.tasks.await
+import no.hiof.friluftslivcompanionapp.models.Hike
+import javax.inject.Inject
+
+class TripsRepository @Inject constructor(
+    private val firestore: FirebaseFirestore,
+    private val auth: FirebaseAuth
+){
+
+    suspend fun saveTrip(hike: Hike) {
+
+        val hikesCollection = firestore.collection("trips")
+
+        val newDocumentRef = hikesCollection.document()
+
+        val hikeWithDocumentId = hike.copy(documentId = newDocumentRef.id)
+
+        try {
+
+            newDocumentRef.set(hikeWithDocumentId).await()
+            println(hikeWithDocumentId)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+
+
+
+    }}
