@@ -12,6 +12,7 @@ import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
 import no.hiof.friluftslivcompanionapp.data.states.WeatherState
 import no.hiof.friluftslivcompanionapp.domain.WeatherDeserialiser
 import no.hiof.friluftslivcompanionapp.models.WeatherForecast
+import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.enums.WeatherUnit
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
@@ -56,21 +57,29 @@ class WeatherViewModel @Inject constructor(
 
     // Retrieves a WeatherForecast object composed of a Location and a List<Weather> wrapped by
     // a Result.
-    //TODO Retrieve the GPS location and enter coordinates here.
-    suspend fun getWeatherForecast() {
+    suspend fun getWeatherForecast(lat: Double?, lon: Double?) {
         // Makes sure to reset failure state to false so request can be retried.
         updateFailureWeatherResponse(false)
+        updateNoGps(false)
         // Changes loading state to true - shows progress bar.
         updateLoadingWeatherResponse(true)
 
-        // Retrieves API response asynchronously.
-        val result = api.getWeatherForecast(41.389, 2.159, units = weatherState.value.unitChoice)
-
-        if (result is Result.Success) {
-            // Updates individual Weather objects from a single WeatherForecast
-            updateWeatherState(result.value)
+        if (lat == null && lon == null) {
+            updateNoGps(true)
         } else {
-            updateFailureWeatherResponse(true)
+            // Retrieves API response asynchronously.
+            val result = api.getWeatherForecast(
+                lat ?: DefaultLocation.OSLO.lat,
+                lon ?: DefaultLocation.OSLO.lon,
+                units = weatherState.value.unitChoice
+            )
+
+            if (result is Result.Success) {
+                // Updates individual Weather objects from a single WeatherForecast
+                updateWeatherState(result.value)
+            } else {
+                updateFailureWeatherResponse(true)
+            }
         }
 
         // Changes loading state to false.
@@ -84,6 +93,11 @@ class WeatherViewModel @Inject constructor(
                 currentTabIndex = index
             )
         }
+    }
+
+    // Function to retrieve the last highlighted tab.
+    override fun getHighlightedTab(): Int {
+        return  _uiState.value.currentTabIndex
     }
 
     // Updates each individual daily forecast from a List<Weather> found in a WeatherForecast.
@@ -117,6 +131,15 @@ class WeatherViewModel @Inject constructor(
         _weatherState.update { currentState ->
             currentState.copy(
                 isFailure = isFailure
+            )
+        }
+    }
+
+    // Changes a Boolean value used to show/hide error messages.
+    fun updateNoGps(isNoGps: Boolean) {
+        _weatherState.update { currentState ->
+            currentState.copy(
+                isNoGps = isNoGps
             )
         }
     }

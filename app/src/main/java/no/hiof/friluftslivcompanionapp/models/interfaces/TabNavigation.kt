@@ -9,4 +9,5 @@ interface TabNavigation {
     var tabDestinations : Map<Screen, String>
     val uiState: StateFlow<TabsUiState>
     fun changeHighlightedTab(index: Int)
+    fun getHighlightedTab(): Int
 }

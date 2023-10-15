@@ -61,6 +61,7 @@ import no.hiof.friluftslivcompanionapp.ui.components.PrimaryWeatherCard
 import no.hiof.friluftslivcompanionapp.ui.components.SecondaryWeatherCard
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
+import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,21 +69,26 @@ import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 fun WeatherScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: WeatherViewModel = viewModel()
+    viewModel: WeatherViewModel = viewModel(),
+    userViewModel: UserViewModel = viewModel(),
 ) {
-    // On screen creation (first navigation) the following code is executed.
-    LaunchedEffect(true) {
-        CoroutineScope(Dispatchers.Default).launch {
-            viewModel.getWeatherForecast()
-        }
-    }
-
     // Variables for Bottom Sheet - see https://m3.material.io/components/bottom-sheets/overview
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
 
     // Collects a state that can be read from a composable.
     val weatherState by viewModel.weatherState.collectAsState()
+    val userState by userViewModel.state.collectAsState()
+
+    // On screen creation (first navigation) the following code is executed.
+    LaunchedEffect(true) {
+        CoroutineScope(Dispatchers.Default).launch {
+            viewModel.getWeatherForecast(
+                userState.lastKnownLocation?.latitude,
+                userState.lastKnownLocation?.longitude
+            )
+        }
+    }
 
     when (weatherState.isLoading) {
         // When the coroutine handling an API request is still running async then a progress bar
@@ -93,7 +99,7 @@ fun WeatherScreen(
                 .wrapContentSize(Alignment.Center)
         )
 
-        else -> when (weatherState.isFailure) {
+        else -> when (weatherState.isFailure || weatherState.isNoGps) {
             // When a successful reponse has been returned then the following is displayed.
             false -> {
                 Scaffold(
@@ -232,14 +238,17 @@ fun WeatherScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = stringResource(R.string.error_retrieving_api_success_response),
+                        text = if (weatherState.isNoGps) stringResource(R.string.error_no_gps_location_found) else stringResource(R.string.error_retrieving_api_success_response),
                         style = CustomTypography.headlineMedium,
                         textAlign = TextAlign.Center,
                         modifier = modifier.wrapContentSize(Alignment.Center)
                     )
                     IconButton(onClick = {
                         CoroutineScope(Dispatchers.Default).launch {
-                            viewModel.getWeatherForecast()
+                            viewModel.getWeatherForecast(
+                                userState.lastKnownLocation?.latitude,
+                                userState.lastKnownLocation?.longitude
+                            )
                         }
                     }) {
                         Icon(Icons.Default.Refresh, contentDescription = "Refresh")
@@ -260,7 +269,10 @@ fun WeatherScreen(
             sheetState = sheetState
         ) {
             Column(
-                Modifier.selectableGroup().padding(horizontal = 20.dp).padding(bottom = 24.dp)
+                Modifier
+                    .selectableGroup()
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 24.dp)
             ) {
                 viewModel.radioOptions.forEach { option ->
                     val unitEnum = option.key
@@ -275,7 +287,10 @@ fun WeatherScreen(
                                 onClick = {
                                     viewModel.updateWeatherUnit(unitEnum)
                                     CoroutineScope(Dispatchers.Default).launch {
-                                        viewModel.getWeatherForecast()
+                                        viewModel.getWeatherForecast(
+                                            userState.lastKnownLocation?.latitude,
+                                            userState.lastKnownLocation?.longitude
+                                        )
                                     }
                                 },
                                 role = Role.RadioButton
@@ -294,10 +309,15 @@ fun WeatherScreen(
                     }
                 }
                 Button(
-                    modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
+                        .fillMaxWidth(),
                     onClick = {
                         CoroutineScope(Dispatchers.Default).launch {
-                            viewModel.getWeatherForecast()
+                            viewModel.getWeatherForecast(
+                                userState.lastKnownLocation?.latitude,
+                                userState.lastKnownLocation?.longitude
+                            )
                         }
                     }
                 ) {

@@ -43,7 +43,7 @@ import no.hiof.friluftslivcompanionapp.CustomNavGraph.profileGraph
 import no.hiof.friluftslivcompanionapp.CustomNavGraph.tripsGraph
 import no.hiof.friluftslivcompanionapp.CustomNavGraph.weatherGraph
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
-import no.hiof.friluftslivcompanionapp.viewmodels.MapViewModel
+import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 
@@ -51,11 +51,11 @@ import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 class MainActivity : ComponentActivity() {
     @Inject
     lateinit var auth: FirebaseAuth
-    private val mapViewModel: MapViewModel by viewModels()
+    private val userViewModel: UserViewModel by viewModels()
 
     // Initialize location manager and update viewModel.
     private val locationManager = LocationManager(this, lifecycle) { location ->
-        mapViewModel.updateLocation(location)
+        userViewModel.updateLocation(location)
     }
 
     private val permissionManager by lazy {
@@ -81,7 +81,10 @@ class MainActivity : ComponentActivity() {
         val currentUser = auth.currentUser
         if (currentUser != null) {
 
-            // User is signed in, shows the main content
+            // Updates the userViewModel to the current user.
+            userViewModel.updateCurrentUser(currentUser)
+
+            // User is signed in, shows the main content.
             setContent {
                 FriluftslivCompanionAppTheme(
                     typography = CustomTypography,
@@ -92,7 +95,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        FriluftslivApp(mapViewModel = mapViewModel)
+                        FriluftslivApp(userViewModel = userViewModel)
                     }
                 }
             }
@@ -111,7 +114,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun FriluftslivApp(
     modifier: Modifier = Modifier,
-    mapViewModel: MapViewModel,
+    userViewModel: UserViewModel,
 ) {
     val navController = rememberNavController()
     val currentRoute by rememberUpdatedState(
@@ -179,13 +182,13 @@ fun FriluftslivApp(
                     HomeScreen(modifier.padding(innerPadding))
                 }
 
-                tripsGraph(navController, tripsViewModel, mapViewModel, modifier)
+                tripsGraph(navController, tripsViewModel, userViewModel, modifier)
 
-                floraFaunaGraph(navController, floraFaunaViewModel, modifier)
+                floraFaunaGraph(navController, floraFaunaViewModel, userViewModel, modifier)
 
-                weatherGraph(navController, weatherViewModel, modifier)
+                weatherGraph(navController, weatherViewModel, userViewModel, modifier)
 
-                profileGraph(navController, modifier)
+                profileGraph(navController, userViewModel, modifier)
             }
         }
     }

@@ -9,4 +9,5 @@
     <string name="more_info_icon">More Info-Icon</string>
     <string name="completed_hikes">Pictures of your completed hikes</string>
     <string name="error_retrieving_api_success_response">Error retrieving data.</string>
+    <string name="error_no_gps_location_found">Error - No GPS location found.</string>
 </resources>

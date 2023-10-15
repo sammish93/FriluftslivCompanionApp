@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import no.hiof.friluftslivcompanionapp.data.states.GoogleMapState
 import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
+import no.hiof.friluftslivcompanionapp.data.states.TripsState
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
 import javax.inject.Inject
@@ -32,6 +32,9 @@ class TripsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(TabsUiState())
     override val uiState: StateFlow<TabsUiState> = _uiState.asStateFlow()
 
+    private val _tripsState = MutableStateFlow(TripsState())
+    val tripsState: StateFlow<TripsState> = _tripsState.asStateFlow()
+
     // State related to google map nodes.
     private val _nodes = MutableStateFlow<List<LatLng>>(listOf())
     val nodes: StateFlow<List<LatLng>> = _nodes.asStateFlow()
@@ -50,6 +53,11 @@ class TripsViewModel @Inject constructor(
         }
     }
 
+    // Function to retrieve the last highlighted tab.
+    override fun getHighlightedTab(): Int {
+       return  _uiState.value.currentTabIndex
+    }
+
     // Function to add a node.
     fun addNode(node: LatLng) {
         _nodes.value = _nodes.value + node
@@ -58,5 +66,13 @@ class TripsViewModel @Inject constructor(
     // Function to remove a node.
     fun removeNode(node: LatLng) {
         _nodes.value = _nodes.value.filter { it != node }
+    }
+
+    fun updateIsInitiallyNavigatedTo(isInitiallyNavigatedTo: Boolean) {
+        _tripsState.update { currentState ->
+            currentState.copy(
+                isInitiallyNavigatedTo = isInitiallyNavigatedTo
+            )
+        }
     }
 }

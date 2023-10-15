@@ -19,6 +19,7 @@ import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
+import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,7 +27,8 @@ import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 fun FloraFaunaScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: FloraFaunaViewModel = viewModel()
+    viewModel: FloraFaunaViewModel = viewModel(),
+    userViewModel: UserViewModel = viewModel()
 ) {
     Column(
         modifier = Modifier

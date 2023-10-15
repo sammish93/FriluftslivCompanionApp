@@ -2,20 +2,18 @@ package no.hiof.friluftslivcompanionapp
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import no.hiof.friluftslivcompanionapp.CustomNavGraph.enterTransition
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.ui.screens.FloraFaunaAdditionalInfo
 import no.hiof.friluftslivcompanionapp.ui.screens.FloraFaunaScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.FloraFaunaSearchScreen
-import no.hiof.friluftslivcompanionapp.ui.screens.HomeScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.ProfileScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.TripsCreateScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.TripsRecentActivityScreen
@@ -23,7 +21,7 @@ import no.hiof.friluftslivcompanionapp.ui.screens.TripsScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.WeatherScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.WeatherSearchScreen
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
-import no.hiof.friluftslivcompanionapp.viewmodels.MapViewModel
+import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 
@@ -52,7 +50,7 @@ object CustomNavGraph {
     fun NavGraphBuilder.tripsGraph(
         navController: NavController,
         tripsViewModel: TripsViewModel,
-        mapViewModel: MapViewModel,
+        userViewModel: UserViewModel,
         modifier: Modifier
     ) {
         navigation(startDestination = Screen.TRIPS.name, route = Screen.TRIPS.route) {
@@ -101,7 +99,28 @@ object CustomNavGraph {
                         )
                     }
                 }) {
-                TripsScreen(navController, modifier, tripsViewModel, mapViewModel)
+
+                // When loop that allows the user to navigate back to the previously visited tab in
+                // its specific route. E.g. user navigates to 'Trips', then 'Create Trip', then back
+                // to 'Home'. When the user navigates back to 'Trips' they will be navigated to
+                // 'Create Trip' by default.
+                when (tripsViewModel.getHighlightedTab()) {
+                    1 -> {
+                        navController.navigate(Screen.TRIPS_RECENT_ACTIVITY.name)
+                        {
+                            launchSingleTop = true
+                        }
+                    }
+
+                    2 -> {
+                        navController.navigate(Screen.TRIPS_CREATE.name)
+                        {
+                            launchSingleTop = true
+                        }
+                    }
+
+                    else -> TripsScreen(navController, modifier, tripsViewModel, userViewModel)
+                }
             }
 
             composable(
@@ -210,6 +229,7 @@ object CustomNavGraph {
     fun NavGraphBuilder.floraFaunaGraph(
         navController: NavController,
         floraFaunaViewModel: FloraFaunaViewModel,
+        userViewModel: UserViewModel,
         modifier: Modifier
     ) {
         navigation(startDestination = Screen.FLORA_FAUNA.name, route = Screen.FLORA_FAUNA.route) {
@@ -258,7 +278,28 @@ object CustomNavGraph {
                         )
                     }
                 }) {
-                FloraFaunaScreen(navController, modifier, floraFaunaViewModel)
+
+                // When loop that allows the user to navigate back to the previously visited tab in
+                // its specific route. E.g. user navigates to 'Trips', then 'Create Trip', then back
+                // to 'Home'. When the user navigates back to 'Trips' they will be navigated to
+                // 'Create Trip' by default.
+                when (floraFaunaViewModel.getHighlightedTab()) {
+                    1 -> {
+                        navController.navigate(Screen.FLORA_FAUNA_SEARCH_LOCATION.name)
+                        {
+                            launchSingleTop = true
+                        }
+                    }
+
+                    2 -> {
+                        navController.navigate(Screen.FLORA_FAUNA_SEARCH_SPECIES.name)
+                        {
+                            launchSingleTop = true
+                        }
+                    }
+
+                    else -> FloraFaunaScreen(navController, modifier, floraFaunaViewModel, userViewModel)
+                }
             }
 
             composable(
@@ -313,7 +354,8 @@ object CustomNavGraph {
                     "Location",
                     navController,
                     modifier,
-                    floraFaunaViewModel
+                    floraFaunaViewModel,
+                    userViewModel
                 )
             }
 
@@ -362,7 +404,8 @@ object CustomNavGraph {
                     "Species",
                     navController,
                     modifier,
-                    floraFaunaViewModel
+                    floraFaunaViewModel,
+                    userViewModel
                 )
             }
             // FLORA_FAUNA_ADDITIONAL_INFO-skjermen
@@ -374,6 +417,7 @@ object CustomNavGraph {
                             AnimatedContentTransitionScope.SlideDirection.Left,
                             500
                         )
+
                         else -> null
                     }
                 },
@@ -383,6 +427,7 @@ object CustomNavGraph {
                             AnimatedContentTransitionScope.SlideDirection.Right,
                             500
                         )
+
                         else -> null
                     }
                 }
@@ -401,6 +446,7 @@ object CustomNavGraph {
     fun NavGraphBuilder.weatherGraph(
         navController: NavController,
         weatherViewModel: WeatherViewModel,
+        userViewModel: UserViewModel,
         modifier: Modifier
     ) {
         navigation(startDestination = Screen.WEATHER.name, route = Screen.WEATHER.route) {
@@ -448,7 +494,21 @@ object CustomNavGraph {
                         )
                     }
                 }) {
-                WeatherScreen(navController, modifier, weatherViewModel)
+
+                // When loop that allows the user to navigate back to the previously visited tab in
+                // its specific route. E.g. user navigates to 'Trips', then 'Create Trip', then back
+                // to 'Home'. When the user navigates back to 'Trips' they will be navigated to
+                // 'Create Trip' by default.
+                when (weatherViewModel.getHighlightedTab()) {
+                    1 -> {
+                        navController.navigate(Screen.WEATHER_SEARCH.name)
+                        {
+                            launchSingleTop = true
+                        }
+                    }
+
+                    else -> WeatherScreen(navController, modifier, weatherViewModel, userViewModel)
+                }
             }
 
             composable(
@@ -498,6 +558,7 @@ object CustomNavGraph {
     // Screens accessible by the profile navigation bar button.
     fun NavGraphBuilder.profileGraph(
         navController: NavController,
+        userViewModel: UserViewModel,
         modifier: Modifier
     ) {
         navigation(startDestination = Screen.PROFILE.name, route = Screen.PROFILE.route) {

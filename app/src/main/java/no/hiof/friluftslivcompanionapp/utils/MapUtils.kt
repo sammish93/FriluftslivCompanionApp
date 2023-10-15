@@ -2,9 +2,10 @@ package no.hiof.friluftslivcompanionapp.utils
 import android.location.Location
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 
 // Used for default location.
-val oslo = LatLng(59.9139, 10.7522)
+val oslo = LatLng(DefaultLocation.OSLO.lat, DefaultLocation.OSLO.lon)
 
 // Helper functions for the google map composable.
 fun findClosestNode(target: LatLng, nodes: List<LatLng>): LatLng? {

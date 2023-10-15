@@ -33,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
@@ -45,44 +44,42 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapType
-import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
-import kotlinx.coroutines.delay
+import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
-import no.hiof.friluftslivcompanionapp.viewmodels.MapViewModel
+import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import java.io.IOException
 import no.hiof.friluftslivcompanionapp.utils.findClosestNode
 import no.hiof.friluftslivcompanionapp.utils.getCameraPosition
 import no.hiof.friluftslivcompanionapp.utils.getLastKnownLocation
-import no.hiof.friluftslivcompanionapp.utils.oslo
 
 /**
  * A Composable function that displays a Google Map with a marker indicating the user's location.
  *
- * @param viewModel The [MapViewModel] which contains the state for last known location of the user.
+ * @param viewModel The [UserViewModel] which contains the state for last known location of the user.
  *
  * The map will default to a view centered on Oslo if the user's location is not available.
  * If the user's location is available, the map will animate and center on the user's location.
  * A marker will be placed on the user's location with a title "Location" and a snippet "You".
  */
 @Composable
-fun GoogleMap(viewModel: MapViewModel, tripsModel: TripsViewModel) {
+fun GoogleMap(viewModel: UserViewModel, tripsModel: TripsViewModel) {
 
     // State to hold nodes added by user taps.
     val nodes by tripsModel.nodes.collectAsState()
 
-    // State to hold last known user location.
-    val state by viewModel.state.collectAsState()
-    val lastKnownLocation = state.lastKnownLocation
+    // State to hold information relevant to all Trips navigational pages.
+    val tripsState by tripsModel.tripsState.collectAsState()
 
-    val mapProperties =
-        MapProperties(isMyLocationEnabled = lastKnownLocation != null, mapType = MapType.TERRAIN)
-    val mapUiSettings = MapUiSettings()
+    // State to hold last known user location.
+    val userState by viewModel.state.collectAsState()
+    val lastKnownLocation = userState.lastKnownLocation
+
+    val mapProperties = MapProperties(isMyLocationEnabled = lastKnownLocation != null)
     val userLocation = getLastKnownLocation(lastKnownLocation)
 
     val cameraPosition = getCameraPosition(userLocation, 14f)
@@ -132,12 +129,12 @@ fun GoogleMap(viewModel: MapViewModel, tripsModel: TripsViewModel) {
             }
 
             // Animation for the camera if user position is changed.
-            when (state.isInitiallyNavigatedTo) {
+            when (userState.isInitiallyNavigatedTo) {
                 false -> {
                     when (userLocation) {
                         null -> {
                             // Updates the state so the when loop doesn't constantly fire.
-                            viewModel.updateIsInitiallyNavigatedTo(true)
+                            tripsModel.updateIsInitiallyNavigatedTo(true)
                         }
 
                         else -> {
@@ -152,12 +149,11 @@ fun GoogleMap(viewModel: MapViewModel, tripsModel: TripsViewModel) {
                                 }
                                 // Updates state so that the map isn't constantly repositioned to
                                 // a user's location.
-                                viewModel.updateIsInitiallyNavigatedTo(true)
+                                tripsModel.updateIsInitiallyNavigatedTo(true)
                             }
                         }
                     }
                 }
-
                 else -> {
                     // Let it be, let it be.. Let it be, let it be.
                     // Speaking words of wisdom. Let it beeEEeEEEEE.
@@ -254,7 +250,7 @@ fun CardPopup() {
 @Composable
 fun GoogleMapsView(locationName: String, viewModel: FloraFaunaViewModel) {
     val location = getLocationFromName(locationName, LocalContext.current)
-    val defaultLocation = LatLng(59.9139, 10.7522)
+    val defaultLocation = LatLng(DefaultLocation.OSLO.lat, DefaultLocation.OSLO.lon)
     val initialLocation = location ?: defaultLocation
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(initialLocation, 10f)

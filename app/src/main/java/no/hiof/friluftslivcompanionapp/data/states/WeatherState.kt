@@ -15,5 +15,6 @@ data class WeatherState(
     val todayPlusSevenWeather: Weather? = null,
     val unitChoice: WeatherUnit = WeatherUnit.METRIC,
     val isLoading: Boolean = false,
-    val isFailure: Boolean = false
+    val isFailure: Boolean = false,
+    val isNoGps: Boolean = false
 )

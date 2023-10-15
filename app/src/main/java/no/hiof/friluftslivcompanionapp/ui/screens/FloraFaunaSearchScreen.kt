@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
 import no.hiof.friluftslivcompanionapp.ui.components.items.ListItemWithButtonsAndImg
+import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 
 
 @Composable
@@ -25,8 +26,11 @@ fun FloraFaunaSearchScreen(
     searchBy: String,
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: FloraFaunaViewModel = viewModel()
+    viewModel: FloraFaunaViewModel = viewModel(),
+    userViewModel: UserViewModel = viewModel()
 ) {
+    val userState by userViewModel.state.collectAsState()
+
     if(searchBy.equals("Location" ,ignoreCase = true)){
     var locationName by remember { mutableStateOf("") }
     val birdResults by viewModel.birdResults.collectAsState()

@@ -52,6 +52,10 @@ class FloraFaunaViewModel @Inject constructor(
         }
     }
 
+    // Function to retrieve the last highlighted tab.
+    override fun getHighlightedTab(): Int {
+        return  _uiState.value.currentTabIndex
+    }
 
     private val api = BirdObservations.getInstance()
 
