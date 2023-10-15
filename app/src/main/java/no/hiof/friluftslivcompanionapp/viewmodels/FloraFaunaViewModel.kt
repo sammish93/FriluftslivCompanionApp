@@ -1,6 +1,5 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +15,7 @@ import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
 import javax.inject.Inject
 import no.hiof.friluftslivcompanionapp.data.network.Result
 import no.hiof.friluftslivcompanionapp.models.Bird
-//import no.hiof.friluftslivcompanionapp.data.repositories.FloraFaunaRepository
+import no.hiof.friluftslivcompanionapp.models.BirdInfo
 
 // NOTE: Composable Screens in app/ui/screens can communicate with this viewmodel (and thus the data
 // layer via 'import androidx.lifecycle.viewmodel.compose.viewModel' at the top of the file, and
@@ -32,7 +31,6 @@ import no.hiof.friluftslivcompanionapp.models.Bird
 class FloraFaunaViewModel @Inject constructor(
     // Communication with the data layer can be injected as dependencies here.
     // private val repository: TripsRepository
-    //private val repository: FloraFaunaRepository
 
 ) : ViewModel(), TabNavigation {
 
@@ -61,11 +59,28 @@ class FloraFaunaViewModel @Inject constructor(
 
     private val _birdResults = MutableStateFlow<List<Bird>>(emptyList())
     val birdResults: StateFlow<List<Bird>> = _birdResults
-    //.asStateFlow?
+
+    /**
+     * Updates the bird results with the provided list of bird observations.
+     *
+     * This method sets the bird results to the provided list of bird observations,
+     * updating the state to reflect the latest bird data.
+     *
+     * @param results The list of bird observations to update the bird results with.
+     */
     private fun updateBirdResults(results: List<Bird>) {
         _birdResults.value=results
     }
 
+
+    /**
+     * Searches for birds based on the specified location.
+     *
+     * This method makes an asynchronous API call to retrieve recent bird observations
+     * for the given location, processes the results, and updates the bird results.
+     *
+     * @param location The location or region code to search for bird observations.
+     */
     suspend fun searchBirdsByLocation(location: String) {
         viewModelScope.launch {
             try {
@@ -113,28 +128,16 @@ class FloraFaunaViewModel @Inject constructor(
     }*/
 
 
-    private val _selectedBirdInfo = MutableStateFlow<Bird?>(null)
-    val selectedBirdInfo: StateFlow<Bird?> = _selectedBirdInfo.asStateFlow()
+    private val _selectedBirdInfo = MutableStateFlow<BirdInfo?>(null)
+    val selectedBirdInfo: StateFlow<BirdInfo?> = _selectedBirdInfo
 
-    fun getBirdInfoByScientificName(scientificName: String) {
-        viewModelScope.launch {
-            try {
-                val birdList = _birdResults.value
-                val selectedBird = birdList.firstOrNull { it.speciesNameScientific == scientificName }
-
-                // Process the selected bird
-                val processedBird = selectedBird?.apply {
-                    description = "Updated description: $description"
-                }
-
-                // Print the processed bird
-                processedBird?.let { println("Processed Bird: $it") }
-
-                _selectedBirdInfo.value = processedBird
-            } catch (e: Exception) {
-                println("Error: ${e.message}")
-            }
-        }
+    /**
+     * Method to update the information about the selected bird.
+     *
+     * @param bird The bird to update with new information.
+     */
+    fun updateSelectedBirdInfo(bird: Bird) {
+        val birdInfo = bird.getBirdInfo()
+        _selectedBirdInfo.value = birdInfo
     }
-
 }

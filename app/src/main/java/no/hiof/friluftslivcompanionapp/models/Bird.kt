@@ -16,6 +16,13 @@ class Bird(
     description,
     photoUrl
 ) {
+    fun getBirdInfo(): BirdInfo {
+        return BirdInfo(
+            imageUrl = this.photoUrl,
+            speciesName = this.speciesName,
+            description = this.description
+        )
+    }
 
     override fun toString(): String {
         return StringBuilder().apply {

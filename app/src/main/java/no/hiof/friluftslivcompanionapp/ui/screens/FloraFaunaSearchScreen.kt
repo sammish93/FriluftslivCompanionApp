@@ -105,6 +105,7 @@ fun FloraFaunaSearchScreen(
                 displayText = { it.speciesName ?: "Unknown Bird" },
                 fetchImage = { it.photoUrl ?: "" }
             ){
+                viewModel.updateSelectedBirdInfo(bird)
                 navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
             }
             }
