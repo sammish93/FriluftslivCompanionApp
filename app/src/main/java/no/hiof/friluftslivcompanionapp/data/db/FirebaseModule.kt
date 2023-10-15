@@ -9,7 +9,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import no.hiof.friluftslivcompanionapp.data.repositories.UserRepository
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -20,13 +19,6 @@ object FirebaseModule {
     @Provides
     fun firestore(): FirebaseFirestore = Firebase.firestore
 
-    //It is possible this will be deleted later. Adding this right now for
-    //the purpose of seeing if the user repo adds new doc
-    @Provides
-    fun provideUserRepository(
-        firestore: FirebaseFirestore,
-        auth: FirebaseAuth
-    ): UserRepository {
-        return UserRepository(firestore, auth)
-    }
+
+
 }
