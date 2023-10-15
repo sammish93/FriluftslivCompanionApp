@@ -44,6 +44,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polyline
@@ -79,10 +80,17 @@ fun GoogleMap(viewModel: UserViewModel, tripsModel: TripsViewModel) {
     val userState by viewModel.state.collectAsState()
     val lastKnownLocation = userState.lastKnownLocation
 
-    val mapProperties = MapProperties(isMyLocationEnabled = lastKnownLocation != null)
+    val mapProperties =
+        MapProperties(isMyLocationEnabled = lastKnownLocation != null, mapType = MapType.TERRAIN)
     val userLocation = getLastKnownLocation(lastKnownLocation)
 
-    val cameraPosition = getCameraPosition(userLocation, 14f)
+    // Camera position defaults to Oslo if GPS coordinates cannot be retrieved.
+    val cameraPosition = getCameraPosition(
+        userLocation ?: LatLng(
+            DefaultLocation.OSLO.lat,
+            DefaultLocation.OSLO.lon
+        ), 14f
+    )
     val cameraPositionState = rememberCameraPositionState { position = cameraPosition }
 
     Box(
@@ -129,6 +137,9 @@ fun GoogleMap(viewModel: UserViewModel, tripsModel: TripsViewModel) {
             }
 
             // Animation for the camera if user position is changed.
+            // Commented out animation because of a relocation bug which kept centring camera on
+            // GPS coordinates.
+            /*
             when (userState.isInitiallyNavigatedTo) {
                 false -> {
                     when (userLocation) {
@@ -154,11 +165,14 @@ fun GoogleMap(viewModel: UserViewModel, tripsModel: TripsViewModel) {
                         }
                     }
                 }
+
                 else -> {
                     // Let it be, let it be.. Let it be, let it be.
                     // Speaking words of wisdom. Let it beeEEeEEEEE.
                 }
             }
+
+             */
         }
 
         InfoButtonWithPopup(
