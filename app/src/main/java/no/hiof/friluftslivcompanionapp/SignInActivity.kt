@@ -93,23 +93,6 @@ class SignInActivity : AppCompatActivity() {
                 block()
             }
         }
-
-    /*
-    //This code is blocked out for now the above code is making sure the userRepository is working
-    private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
-        val response = result.idpResponse
-        if (result.resultCode == RESULT_OK) {
-            val user = FirebaseAuth.getInstance().currentUser
-            // User signed in successfully, you can handle this if needed
-        } else {
-            /*TODO add error message through pop-up or something*/
-            val errorMessage = "Sign-in failed. Please try again."
-            Log.e("SignInActivity", errorMessage)
-        }
-    }
-
-
-     */
     }
     private fun navigateToMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
