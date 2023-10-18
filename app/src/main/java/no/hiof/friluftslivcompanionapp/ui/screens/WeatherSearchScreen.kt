@@ -56,9 +56,16 @@ fun WeatherSearchScreen(
                     text = result.address,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { userViewModel.clearAutocompleteResults() }
+                        .clickable {
+                            userViewModel.setSelectedLocationValues(
+                                city = result.address,
+                                coordinates = result.placeId,
+                                regionCode = ""
+                            )
+                        }
                         .padding(16.dp)
                 )
+
             }
         }
     }

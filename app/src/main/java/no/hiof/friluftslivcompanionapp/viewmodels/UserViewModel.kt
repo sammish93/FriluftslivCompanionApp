@@ -1,8 +1,12 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
 import android.location.Location
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.auth.FirebaseUser
@@ -12,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import no.hiof.friluftslivcompanionapp.data.states.AutoCompleteState
+import no.hiof.friluftslivcompanionapp.data.states.SelectedLocationState
 import no.hiof.friluftslivcompanionapp.data.states.UserState
 import javax.inject.Inject
 
@@ -33,6 +38,10 @@ class UserViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(UserState(lastKnownLocation = null))
     val state: StateFlow<UserState> = _state.asStateFlow()
+
+    // Used for Places API.
+    val locationAutoFill = mutableStateListOf<AutoCompleteState>()
+    private var selectedLocation by mutableStateOf(SelectedLocationState())
 
     // Updates the last known location in the map's state.
     fun updateLocation(location: Location?) {
@@ -75,9 +84,6 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    // Used for Places API.
-    val locationAutoFill = mutableStateListOf<AutoCompleteState>()
-
     // FUNCTIONS USED FOR PLACES API.
     fun searchPlaces(query: String) {
 
@@ -111,5 +117,9 @@ class UserViewModel @Inject constructor(
         }.addOnFailureListener {
             // Handle errors here.
         }
+    }
+
+    fun setSelectedLocationValues(city: String, coordinates: String, regionCode: String) {
+        selectedLocation = SelectedLocationState(city, coordinates, regionCode)
     }
 }
