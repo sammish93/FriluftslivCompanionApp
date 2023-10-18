@@ -250,6 +250,8 @@ fun WeatherScreen(
                     )
                     IconButton(onClick = {
                         CoroutineScope(Dispatchers.Default).launch {
+                            //TODO Add functionality to prompt the user to share their location if
+                            // it permissions aren't currently given.
                             viewModel.getWeatherForecast(
                                 userState.lastKnownLocation?.latitude,
                                 userState.lastKnownLocation?.longitude
