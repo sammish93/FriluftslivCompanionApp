@@ -19,4 +19,15 @@ data class Hike(
     difficulty
 ) {
 
+    fun toMap(): Map<String, Any?> {
+        return mapOf(
+            "startLocation" to this.startLocation,
+            "endLocation" to this.endLocation,
+            "description" to this.description,
+            "duration" to this.duration,
+            "distanceKm" to this.distanceKm,
+            "difficulty" to this.difficulty
+        )
+    }
+
 }
