@@ -18,23 +18,26 @@ class TripsRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth
 ){
-    suspend fun addHike(hike: Hike) {
-        try {
+    suspend fun addHike(hike: Hike): OperationResult<Unit> {
+        return try {
 
-            val userId = auth.currentUser?.uid ?: throw IllegalStateException("Not logged in")
+            val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
 
 
             val tripDocument = firestore.collection("trips").document()
 
 
             tripDocument.set(hike.toMap()).await()
+
+            OperationResult.Success(Unit)
         } catch (e: Exception) {
-            // TODO Handle exception
 
+            OperationResult.Error(e)
         }
+    }
 
 
-        suspend fun getTripById(tripId: String): OperationResult<Hike> {
+    suspend fun getTripById(tripId: String): OperationResult<Hike> {
             return try {
                 val tripDocumentRef = firestore.collection("trips").document(tripId)
                 val snapshot = tripDocumentRef.get().await()
@@ -58,9 +61,6 @@ class TripsRepository @Inject constructor(
                 OperationResult.Error(e)
             }
         }
-
-
-
 
     }
 }
