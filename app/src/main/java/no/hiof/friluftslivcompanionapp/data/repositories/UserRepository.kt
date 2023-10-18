@@ -31,17 +31,35 @@ class UserRepository @Inject constructor(
                 val userCollection = firestore.collection("users")
                 val userDocument = userCollection.document(userId)
 
-                userDocument.set(user).await()
+
+                val userData = hashMapOf<String, Any?>(
+                    "userId" to user.userId,
+                    "username" to user.username,
+                    "email" to user.email,
+                    "preferences" to user.preferences
+
+                )
+
+
+                user.lifelist?.let {
+                    userData["lifelist"] = it
+                }
+                user.tripActivity?.let {
+                    userData["tripActivity"] = it
+                }
+
+
+                userDocument.set(userData, SetOptions.merge()).await()
 
             } else {
-
                 throw IllegalStateException("No authenticated user found.")
             }
         } catch (e: Exception) {
-
             e.printStackTrace()
+            // TODO logging messages
         }
     }
+
     suspend fun getUser(uid: String): User? {
         return try {
             val userCollection = firestore.collection("users")
