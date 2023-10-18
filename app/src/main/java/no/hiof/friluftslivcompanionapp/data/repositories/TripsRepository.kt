@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.data.repositories
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
@@ -29,26 +30,37 @@ class TripsRepository @Inject constructor(
             tripDocument.set(hike.toMap()).await()
         } catch (e: Exception) {
             // TODO Handle exception
-            // ...
+
         }
 
-        suspend fun getHike(documentId: String): Result<Hike?> {
+
+        suspend fun getTripById(tripId: String): OperationResult<Hike> {
             return try {
-                val hikesCollection = firestore.collection("trips")
-                val documentRef = hikesCollection.document(documentId)
+                val tripDocumentRef = firestore.collection("trips").document(tripId)
+                val snapshot = tripDocumentRef.get().await()
 
-                val documentSnapshot = documentRef.get().await()
+                if (snapshot.exists()) {
+                    val trip = snapshot.toObject(Hike::class.java)
+                    if (trip != null) {
 
-                if (documentSnapshot.exists()) {
-                    val hike = documentSnapshot.toObject(Hike::class.java)
-                    Result.Success(hike)
+                        OperationResult.Success(trip)
+                    } else {
+
+                        OperationResult.Error(Exception("Trip could not be parsed."))
+                    }
                 } else {
-                    Result.Failure("Hike not found")
+
+                    OperationResult.Error(Exception("No trip found with the provided ID."))
                 }
             } catch (e: Exception) {
-                Result.Failure("Error: ${e.message}")
+
+                Log.e("TripsRepository", "Error getting trip with ID: $tripId", e)
+                OperationResult.Error(e)
             }
         }
 
 
-    }}
+
+
+    }
+}
