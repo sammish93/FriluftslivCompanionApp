@@ -20,9 +20,11 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,8 +32,10 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,9 +52,12 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import no.hiof.friluftslivcompanionapp.R
+import no.hiof.friluftslivcompanionapp.domain.DateFormatter
 import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapCreate
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
+import java.time.Duration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,6 +71,8 @@ fun TripsCreateScreen(
     // Variables for Bottom Sheet - see https://m3.material.io/components/bottom-sheets/overview
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
+
+    val tripState by viewModel.tripsState.collectAsState()
 
     Scaffold(
         // A button that allows the user to click and display the Bottom Sheet.
@@ -92,8 +102,84 @@ fun TripsCreateScreen(
             },
             sheetState = sheetState
         ) {
+            //type of trip
+
+            //duration
+            Button(onClick = {
+                viewModel.updateCreateTripDuration(
+                    tripState.createTripDuration.minus(
+                        Duration.ofHours(1)
+                    )
+                )
+            }) {
+                Text(text = "- " + stringResource(R.string.hours))
+            }
+            Button(onClick = {
+                viewModel.updateCreateTripDuration(
+                    tripState.createTripDuration.minus(
+                        Duration.ofMinutes(1)
+                    )
+                )
+            }) {
+                Text(text = "- " + stringResource(R.string.minutes))
+            }
+            Text(
+                DateFormatter.formatDurationToPrettyString(
+                    tripState.createTripDuration,
+                    stringResource(R.string.hours),
+                    stringResource(R.string.minutes)
+                )
+            )
+            Button(onClick = {
+                viewModel.updateCreateTripDuration(
+                    tripState.createTripDuration.plus(
+                        Duration.ofMinutes(1)
+                    )
+                )
+            }) {
+                Text(text = "+ " + stringResource(R.string.minutes))
+            }
+            Button(onClick = {
+                viewModel.updateCreateTripDuration(
+                    tripState.createTripDuration.plus(
+                        Duration.ofHours(1)
+                    )
+                )
+            }) {
+                Text(text = "+ " + stringResource(R.string.hours))
+            }
+
+            //difficulty
+            Button(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty - 1) }) {
+                Text(text = "-")
+            }
+            Text(tripState.createTripDifficulty.toString())
+            Button(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty + 1) }) {
+                Text(text = "+")
+            }
+
+            // Description Field
+            TextField(
+                value = tripState.createTripDescription,
+                onValueChange = { viewModel.updateCreateTripDescription(it) },
+                label = { Text("Description") },
+                singleLine = false
+            )
+
+            // Create trip button.
+            Button(
+                onClick = { },
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add",
+                )
+                Text("Create Trip", modifier = Modifier.padding(start = 4.dp))
+            }
+
+            HorizontalDivider()
+
             InfoButtonWithPopup()
-            Text("Hello", modifier = Modifier.padding(start = 4.dp))
         }
     }
 }

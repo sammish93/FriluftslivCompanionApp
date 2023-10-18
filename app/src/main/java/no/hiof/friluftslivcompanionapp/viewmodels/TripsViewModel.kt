@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.update
 import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
 import no.hiof.friluftslivcompanionapp.data.states.TripsState
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
+import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
+import java.time.Duration
 import javax.inject.Inject
 
 // NOTE: Composable Screens in app/ui/screens can communicate with this viewmodel (and thus the data
@@ -72,6 +74,42 @@ class TripsViewModel @Inject constructor(
         _tripsState.update { currentState ->
             currentState.copy(
                 isInitiallyNavigatedTo = isInitiallyNavigatedTo
+            )
+        }
+    }
+
+    fun updateCreateTripType(tripType: TripType) {
+        _tripsState.update { currentState ->
+            currentState.copy(
+                createTripType = tripType
+            )
+        }
+    }
+
+    fun updateCreateTripDuration(duration: Duration) {
+        if (!duration.isNegative) {
+            _tripsState.update { currentState ->
+                currentState.copy(
+                    createTripDuration = duration
+                )
+            }
+        }
+    }
+
+    fun updateCreateTripDifficulty(difficulty: Int) {
+        if (difficulty in 1..5) {
+            _tripsState.update { currentState ->
+                currentState.copy(
+                    createTripDifficulty = difficulty
+                )
+            }
+        }
+    }
+
+    fun updateCreateTripDescription(description: String) {
+        _tripsState.update { currentState ->
+            currentState.copy(
+                createTripDescription = description
             )
         }
     }
