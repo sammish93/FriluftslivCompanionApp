@@ -63,7 +63,7 @@ fun PrimaryWeatherCard(
                         weather.date
                     ),
                     style = MaterialTheme.typography.headlineSmall,
-                    textAlign = TextAlign.Center,
+                    textAlign = TextAlign.Left,
                 )
                 Row(
                     modifier = modifier.fillMaxHeight(),
