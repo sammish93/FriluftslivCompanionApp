@@ -17,21 +17,19 @@ class TripsRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth
 ){
-    suspend fun saveTrip(hike: Hike) {
-
-        val hikesCollection = firestore.collection("trips")
-
-        val newDocumentRef = hikesCollection.document()
-
-        val hikeWithDocumentId = hike.copy(documentId = newDocumentRef.id)
-
+    suspend fun addHike(hike: Hike) {
         try {
 
-            newDocumentRef.set(hikeWithDocumentId).await()
-            println(hikeWithDocumentId)
+            val userId = auth.currentUser?.uid ?: throw IllegalStateException("Not logged in")
 
+
+            val tripDocument = firestore.collection("trips").document()
+
+
+            tripDocument.set(hike.toMap()).await()
         } catch (e: Exception) {
-            e.printStackTrace()
+            // TODO Handle exception
+            // ...
         }
 
         suspend fun getHike(documentId: String): Result<Hike?> {
