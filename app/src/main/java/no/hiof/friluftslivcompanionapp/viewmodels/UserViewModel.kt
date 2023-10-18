@@ -50,4 +50,13 @@ class UserViewModel @Inject constructor(): ViewModel() {
     fun getCurrentUser(): FirebaseUser? {
         return  _state.value.currentUser
     }
+
+    // Updates the currently logged in user.
+    fun updateLocationManagerCalled(isLocationManagerCalled: Boolean) {
+        _state.update { currentState ->
+            currentState.copy(
+                isLocationManagerCalled = isLocationManagerCalled
+            )
+        }
+    }
 }
