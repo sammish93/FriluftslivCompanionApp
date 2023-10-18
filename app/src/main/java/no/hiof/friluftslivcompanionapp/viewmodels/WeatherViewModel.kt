@@ -2,6 +2,7 @@ package no.hiof.friluftslivcompanionapp.viewmodels
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -35,7 +36,6 @@ import javax.inject.Inject
 class WeatherViewModel @Inject constructor(
     // Communication with the data layer can be injected as dependencies here.
     // private val repository: TripsRepository
-    private val placesClient: PlacesClient
 ) : ViewModel(), TabNavigation {
 
     private val _uiState = MutableStateFlow(TabsUiState())
@@ -45,9 +45,6 @@ class WeatherViewModel @Inject constructor(
     val weatherState: StateFlow<WeatherState> = _weatherState.asStateFlow()
 
     private val api = WeatherDeserialiser.getInstance()
-
-    // Used for Places API.
-    val locationAutoFill = mutableStateListOf<AutoCompleteState>()
 
     // Tab destinations that are accessible in the "weather" route.
     override var tabDestinations = mapOf(

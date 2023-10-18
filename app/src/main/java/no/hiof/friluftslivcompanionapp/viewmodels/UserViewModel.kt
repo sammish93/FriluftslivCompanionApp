@@ -1,13 +1,17 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
 import android.location.Location
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import no.hiof.friluftslivcompanionapp.data.states.AutoCompleteState
 import no.hiof.friluftslivcompanionapp.data.states.UserState
 import javax.inject.Inject
 
@@ -23,7 +27,9 @@ import javax.inject.Inject
  * @constructor Creates a new instance of the MapViewModel. The initial state sets the last known location to null.
  */
 @HiltViewModel
-class UserViewModel @Inject constructor(): ViewModel() {
+class UserViewModel @Inject constructor(
+    private val placesClient: PlacesClient
+): ViewModel() {
 
     private val _state = MutableStateFlow(UserState(lastKnownLocation = null))
     val state: StateFlow<UserState> = _state.asStateFlow()
@@ -66,6 +72,44 @@ class UserViewModel @Inject constructor(): ViewModel() {
             currentState.copy(
                 isLocationPermissionGranted = isLocationPermissionGranted
             )
+        }
+    }
+
+    // Used for Places API.
+    val locationAutoFill = mutableStateListOf<AutoCompleteState>()
+
+    // FUNCTIONS USED FOR PLACES API.
+    fun searchPlaces(query: String) {
+
+        // Empty old result.
+        locationAutoFill.clear()
+
+        val request = getAutocompleteRequester(query)
+        handleAutocompletePrediction(request)
+    }
+
+    fun clearAutocompleteResults() {
+        locationAutoFill.clear()
+    }
+
+    private fun getAutocompleteRequester(query: String): FindAutocompletePredictionsRequest {
+        return FindAutocompletePredictionsRequest.builder()
+            .setQuery(query)
+            .build()
+    }
+
+    private fun handleAutocompletePrediction(request: FindAutocompletePredictionsRequest) {
+        placesClient.findAutocompletePredictions(request).addOnSuccessListener { response ->
+            locationAutoFill.addAll(
+                response.autocompletePredictions.map {
+                    AutoCompleteState(
+                        it.getFullText(null).toString(),
+                        it.placeId
+                    )
+                }
+            )
+        }.addOnFailureListener {
+            // Handle errors here.
         }
     }
 }
