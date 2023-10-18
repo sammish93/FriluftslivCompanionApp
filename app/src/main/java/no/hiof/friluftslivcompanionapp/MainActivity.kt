@@ -204,7 +204,7 @@ fun FriluftslivApp(
                                     animationSpec = tween(500)
                                 )
                             }) {
-                            HomeScreen(modifier.padding(innerPadding))
+                            HomeScreen(userViewModel, modifier.padding(innerPadding))
                         }
 
                         tripsGraph(navController, tripsViewModel, userViewModel, modifier)
