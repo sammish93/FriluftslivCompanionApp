@@ -125,4 +125,69 @@ class UserRepositoryTest {
         assertTrue(result is OperationResult.Error)
         assertEquals("Firestore exception", (result as OperationResult.Error).exception.message)
     }
+
+    @Test
+    fun getUserSuccessfullyWithValidIdShouldReturnSuccess() = runTest {
+        val uid = "t5QORerYOJTfTBECv3oqNBGrRdE2"
+
+        val expectedUser = User(
+            userId = uid,
+            username = "testUser",
+            email = "test@user.come",
+            preferences = UserPreferences()
+        )
+
+        val documentSnapshot: DocumentSnapshot = mock()
+        whenever(documentSnapshot.exists()).thenReturn(true)
+        whenever(documentSnapshot.toObject(User::class.java)).thenReturn(expectedUser)
+        whenever(documentSnapshot.id).thenReturn(uid)
+
+        whenever(mockCollection.document(uid)).thenReturn(mockDocument)
+
+        val successfulTask = Tasks.forResult(documentSnapshot)
+        whenever(mockDocument.get()).thenReturn(successfulTask)
+
+        val result = userRepository.getUser(uid)
+
+        assertTrue(result is OperationResult.Success)
+        assertEquals(expectedUser, (result as OperationResult.Success).data)
+
+    }
+
+    @Test
+    fun getUserNoUserExistsReturnError() = runTest {
+        val uid = "whatever"
+        val exception = Exception("Firestore exception")
+
+        val documentSnapshot: DocumentSnapshot = mock()
+        whenever(documentSnapshot.exists()).thenReturn(false)
+
+        whenever(mockCollection.document(uid)).thenReturn(mockDocument)
+
+        val successfulTask = Tasks.forResult((documentSnapshot))
+        whenever(mockDocument.get()).thenReturn(successfulTask)
+
+        val result = userRepository.getUser(uid)
+
+        assertTrue(result is OperationResult.Error)
+        assertEquals("No User found with the provided UID.", (result as OperationResult.Error).exception.message)
+    }
+
+    @Test
+    fun testErrorOccursDuringGetUserOperation() = runTest {
+        val uid = "validId"
+        val exception = Exception("Firestore exeption")
+
+        whenever(mockCollection.document(uid)).thenReturn(mockDocument)
+
+        val failedTast = Tasks.forException<DocumentSnapshot>(exception)
+        whenever(mockDocument.get()).thenReturn(failedTast)
+
+        val result = userRepository.getUser(uid)
+
+        assertTrue(result is OperationResult.Error)
+        assertEquals(exception, (result as OperationResult.Error).exception)
+
+
+    }
 }
