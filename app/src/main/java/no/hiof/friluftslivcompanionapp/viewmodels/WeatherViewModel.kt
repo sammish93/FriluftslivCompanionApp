@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.google.android.libraries.places.api.net.PlacesClient
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import no.hiof.friluftslivcompanionapp.data.network.Result
+import no.hiof.friluftslivcompanionapp.data.states.AutoCompleteState
 import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
 import no.hiof.friluftslivcompanionapp.data.states.WeatherState
 import no.hiof.friluftslivcompanionapp.domain.WeatherDeserialiser
@@ -43,6 +45,9 @@ class WeatherViewModel @Inject constructor(
     val weatherState: StateFlow<WeatherState> = _weatherState.asStateFlow()
 
     private val api = WeatherDeserialiser.getInstance()
+
+    // Used for Places API.
+    val locationAutoFill = mutableStateListOf<AutoCompleteState>()
 
     // Tab destinations that are accessible in the "weather" route.
     override var tabDestinations = mapOf(
