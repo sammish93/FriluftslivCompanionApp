@@ -2,7 +2,7 @@ package no.hiof.friluftslivcompanionapp.models
 
 import com.google.firebase.firestore.DocumentId
 
-class Hike(
+data class Hike(
     @DocumentId val documentId: String ="",
     val startLocation: Location,
     val endLocation: Location?,
@@ -18,23 +18,5 @@ class Hike(
     distanceKm,
     difficulty
 ) {
-    fun copy(
-        documentId: String = this.documentId,
-        startLocation: Location = this.startLocation,
-        endLocation: Location? = this.endLocation,
-        description: String? = this.description,
-        duration: Long? = this.duration,
-        distanceKm: Double? = this.distanceKm,
-        difficulty: Float? = this.difficulty
-    ): Hike {
-        return Hike(
-            documentId,
-            startLocation,
-            endLocation,
-            description,
-            duration,
-            distanceKm,
-            difficulty
-        )
-    }
+
 }
