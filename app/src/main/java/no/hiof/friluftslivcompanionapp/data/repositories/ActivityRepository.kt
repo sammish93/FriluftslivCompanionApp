@@ -18,7 +18,7 @@ class ActivityRepository @Inject constructor(
     private val auth: FirebaseAuth
 ) {
 
-
+        //Use this to add an activity to recent activity
     suspend fun addHikeActivityToUser(date: Date, hike: Hike): Result<Boolean> = withContext(
         Dispatchers.IO) {
         try {
