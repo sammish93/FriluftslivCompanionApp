@@ -36,7 +36,6 @@ class TripsRepository @Inject constructor(
         }
     }
 
-
     suspend fun getTripById(tripId: String): OperationResult<Hike> {
             return try {
                 val tripDocumentRef = firestore.collection("trips").document(tripId)
@@ -61,6 +60,33 @@ class TripsRepository @Inject constructor(
                 OperationResult.Error(e)
             }
     }
+
+    suspend fun getAllTrips(): OperationResult<List<Hike>> {
+        return try {
+
+            val tripsCollectionRef = firestore.collection("trips")
+
+
+            val querySnapshot = tripsCollectionRef.get().await()
+
+
+            val trips = querySnapshot.documents.mapNotNull { document ->
+                document.toObject(Hike::class.java)?.apply {
+                    //TODO assign the document metadata to what you need
+                    //
+                }
+            }
+
+
+            OperationResult.Success(trips)
+
+        } catch (e: Exception) {
+
+            OperationResult.Error(e)
+        }
+    }
+
+    //TODO get trips based on user location??
 
 
 
