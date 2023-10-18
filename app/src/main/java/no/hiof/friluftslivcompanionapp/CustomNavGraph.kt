@@ -107,16 +107,10 @@ object CustomNavGraph {
                 when (tripsViewModel.getHighlightedTab()) {
                     1 -> {
                         navController.navigate(Screen.TRIPS_RECENT_ACTIVITY.name)
-                        {
-                            launchSingleTop = true
-                        }
                     }
 
                     2 -> {
                         navController.navigate(Screen.TRIPS_CREATE.name)
-                        {
-                            launchSingleTop = true
-                        }
                     }
 
                     else -> TripsScreen(navController, modifier, tripsViewModel, userViewModel)
@@ -286,16 +280,10 @@ object CustomNavGraph {
                 when (floraFaunaViewModel.getHighlightedTab()) {
                     1 -> {
                         navController.navigate(Screen.FLORA_FAUNA_SEARCH_LOCATION.name)
-                        {
-                            launchSingleTop = true
-                        }
                     }
 
                     2 -> {
                         navController.navigate(Screen.FLORA_FAUNA_SEARCH_SPECIES.name)
-                        {
-                            launchSingleTop = true
-                        }
                     }
 
                     else -> FloraFaunaScreen(navController, modifier, floraFaunaViewModel, userViewModel)
@@ -502,9 +490,6 @@ object CustomNavGraph {
                 when (weatherViewModel.getHighlightedTab()) {
                     1 -> {
                         navController.navigate(Screen.WEATHER_SEARCH.name)
-                        {
-                            launchSingleTop = true
-                        }
                     }
 
                     else -> WeatherScreen(navController, modifier, weatherViewModel, userViewModel)
