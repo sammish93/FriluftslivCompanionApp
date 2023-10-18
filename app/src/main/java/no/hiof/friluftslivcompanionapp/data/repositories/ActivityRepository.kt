@@ -9,8 +9,10 @@ import kotlinx.coroutines.withContext
 import no.hiof.friluftslivcompanionapp.models.Hike
 import no.hiof.friluftslivcompanionapp.models.TripActivity
 import no.hiof.friluftslivcompanionapp.models.User
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 class ActivityRepository @Inject constructor(
@@ -27,11 +29,16 @@ class ActivityRepository @Inject constructor(
 
             val userDocumentRef = firestore.collection("users").document(userId)
 
-            val hikeData = hikeToMap(hike)
+            val hikeData = hike.toMap()
+
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val dateString = dateFormat.format(date)
+
 
             val tripActivityUpdate = mapOf(
-                "activity.$date" to hikeData
+                "tripActivity.activity.$dateString" to hikeData
             )
+
 
             userDocumentRef.update(tripActivityUpdate).await()
 
@@ -42,16 +49,6 @@ class ActivityRepository @Inject constructor(
         }
     }
 
-    private fun hikeToMap(hike: Hike): Map<String, Any?> {
-        return mapOf(
-            "documentId" to hike.documentId,
-            "startLocation" to hike.startLocation,
-            "endLocation" to hike.endLocation,
-            "description" to hike.description,
-            "duration" to hike.duration,
-            "distanceKm" to hike.distanceKm,
-            "difficulty" to hike.difficulty
-        )
-    }
+
 
 }
