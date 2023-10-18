@@ -51,11 +51,20 @@ class UserViewModel @Inject constructor(): ViewModel() {
         return  _state.value.currentUser
     }
 
-    // Updates the currently logged in user.
+    // Updates the status of the location manager loading a user's GPS position.
     fun updateLocationManagerCalled(isLocationManagerCalled: Boolean) {
         _state.update { currentState ->
             currentState.copy(
                 isLocationManagerCalled = isLocationManagerCalled
+            )
+        }
+    }
+
+    // Updates whether the user has shared their location.
+    fun updateLocationPermissionGranted(isLocationPermissionGranted: Boolean) {
+        _state.update { currentState ->
+            currentState.copy(
+                isLocationPermissionGranted = isLocationPermissionGranted
             )
         }
     }

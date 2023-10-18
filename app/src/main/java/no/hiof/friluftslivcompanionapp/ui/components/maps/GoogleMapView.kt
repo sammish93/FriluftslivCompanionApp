@@ -83,7 +83,7 @@ fun GoogleMapCreate(
     val lastKnownLocation = userState.lastKnownLocation
 
     val mapProperties =
-        MapProperties(isMyLocationEnabled = lastKnownLocation != null, mapType = MapType.TERRAIN)
+        MapProperties(isMyLocationEnabled = userState.isLocationPermissionGranted, mapType = MapType.TERRAIN)
     val userLocation = getLastKnownLocation(lastKnownLocation)
 
     // Camera position defaults to Oslo if GPS coordinates cannot be retrieved.
@@ -93,6 +93,7 @@ fun GoogleMapCreate(
             DefaultLocation.OSLO.lon
         ), 14f
     )
+
     val cameraPositionState = rememberCameraPositionState { position = cameraPosition }
 
     Box(

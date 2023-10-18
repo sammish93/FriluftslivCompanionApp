@@ -48,6 +48,8 @@ import no.hiof.friluftslivcompanionapp.CustomNavGraph.floraFaunaGraph
 import no.hiof.friluftslivcompanionapp.CustomNavGraph.profileGraph
 import no.hiof.friluftslivcompanionapp.CustomNavGraph.tripsGraph
 import no.hiof.friluftslivcompanionapp.CustomNavGraph.weatherGraph
+import no.hiof.friluftslivcompanionapp.models.Location
+import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
@@ -62,6 +64,7 @@ class MainActivity : ComponentActivity() {
     // Initialize location manager and update viewModel.
     private val locationManager = LocationManager(this, lifecycle) { location ->
         userViewModel.updateLocation(location)
+        userViewModel.updateLocationPermissionGranted(true)
         userViewModel.updateLocationManagerCalled(true)
     }
 
@@ -70,7 +73,13 @@ class MainActivity : ComponentActivity() {
             activityResultRegistry,
             onPermissionGranted = { locationManager.startLocationUpdate() },
             onPermissionDenied = {
-                /* Can handle denied permission if needed. I don´t know how we will do this yet. */
+                /*
+                val defaultLoc = android.location.Location("Permission Manager - Denied")
+                defaultLoc.longitude = DefaultLocation.OSLO.lon
+                defaultLoc.latitude = DefaultLocation.OSLO.lat
+                userViewModel.updateLocation(defaultLoc)
+                 */
+                userViewModel.updateLocationManagerCalled(true)
             }
         )
     }
