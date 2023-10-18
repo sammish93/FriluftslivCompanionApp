@@ -91,7 +91,7 @@ fun GoogleMapCreate(
         userLocation ?: LatLng(
             DefaultLocation.OSLO.lat,
             DefaultLocation.OSLO.lon
-        ), 14f
+        ), if (userState.isLocationPermissionGranted) 14f else 5f
     )
 
     val cameraPositionState = rememberCameraPositionState { position = cameraPosition }
