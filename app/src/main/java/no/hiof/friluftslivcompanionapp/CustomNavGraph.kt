@@ -220,7 +220,7 @@ object CustomNavGraph {
                         )
                     }
                 }) {
-                TripsCreateScreen(navController, modifier, tripsViewModel)
+                TripsCreateScreen(navController, modifier, tripsViewModel, userViewModel)
             }
         }
     }
