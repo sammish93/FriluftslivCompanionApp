@@ -146,6 +146,8 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("androidx.activity:activity-ktx:1.8.0")
 
+    // Google Places
+    implementation("com.google.android.libraries.places:places:3.0.0")
 
 
     // Material Design 3 - extra (e.g. SecondaryTabRow)
