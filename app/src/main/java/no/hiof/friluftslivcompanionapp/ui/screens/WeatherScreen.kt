@@ -59,6 +59,7 @@ import no.hiof.friluftslivcompanionapp.data.states.UserState
 import no.hiof.friluftslivcompanionapp.data.states.WeatherState
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.enums.WeatherUnit
+import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
 import no.hiof.friluftslivcompanionapp.ui.components.PrimaryWeatherCard
 import no.hiof.friluftslivcompanionapp.ui.components.SecondaryWeatherCard
@@ -96,11 +97,7 @@ fun WeatherScreen(
     when (weatherState.isLoading) {
         // When the coroutine handling an API request is still running async then a progress bar
         // is shown.
-        true -> CircularProgressIndicator(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentSize(Alignment.Center)
-        )
+        true -> CustomLoadingScreen()
 
         else -> when (weatherState.isFailure || weatherState.isNoGps) {
             // When a successful reponse has been returned then the following is displayed.
