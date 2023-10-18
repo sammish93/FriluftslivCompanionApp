@@ -1,6 +1,7 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
 import androidx.lifecycle.ViewModel
+import com.google.android.libraries.places.api.net.PlacesClient
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +33,7 @@ import javax.inject.Inject
 class WeatherViewModel @Inject constructor(
     // Communication with the data layer can be injected as dependencies here.
     // private val repository: TripsRepository
+    private val placesClient: PlacesClient
 ) : ViewModel(), TabNavigation {
 
     private val _uiState = MutableStateFlow(TabsUiState())
