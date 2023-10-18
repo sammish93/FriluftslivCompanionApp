@@ -60,7 +60,8 @@ class TripsRepository @Inject constructor(
                 Log.e("TripsRepository", "Error getting trip with ID: $tripId", e)
                 OperationResult.Error(e)
             }
-        }
-
     }
+
+
+
 }
