@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
 import no.hiof.friluftslivcompanionapp.data.states.TripsState
+import no.hiof.friluftslivcompanionapp.domain.TripFactory
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
@@ -69,6 +70,7 @@ class TripsViewModel @Inject constructor(
     // Function to add a node.
     fun addNode(node: LatLng) {
         _nodes.value = _nodes.value + node
+        calculateDistanceKmBetweenTwoNodes()
     }
 
     // Function to remove a node.
@@ -124,23 +126,45 @@ class TripsViewModel @Inject constructor(
         }
     }
 
+    private fun incrementCreateTripDistanceKm(distanceKm: Double) {
+        val previousDistance = _tripsState.value.createTripDistanceKm
+
+        _tripsState.update { currentState ->
+            currentState.copy(
+                createTripDistanceKm = previousDistance + distanceKm
+            )
+        }
+    }
+
+    private fun calculateDistanceKmBetweenTwoNodes() {
+        //TODO calculate between long and lat
+        incrementCreateTripDistanceKm(1.0)
+    }
+
+    // Function to clear all data relating to create trip.
     fun clearTrip() {
         _tripsState.update { currentState ->
             currentState.copy(
-                createTripType = null,
+                createTripType = TripType.HIKE,
                 createTripDuration = Duration.ofHours(1).plus(Duration.ofMinutes(30)),
                 createTripDifficulty = 3,
-                createTripDescription = ""
+                createTripDescription = "",
+                createTripDistanceKm = 1.0
             )
         }
         removeNodes()
     }
 
     fun createTrip() {
-        _tripsState.value.createTripType
-        _tripsState.value.createTripDuration
-        _tripsState.value.createTripDifficulty
-        _tripsState.value.createTripDescription
-        _nodes.value
+        val tripState = _tripsState.value
+        val route = _nodes.value
+        val trip = TripFactory.createTrip(
+            tripState.createTripType,
+            route,
+            tripState.createTripDescription,
+            tripState.createTripDuration,
+            tripState.createTripDistanceKm,
+            tripState.createTripDifficulty
+        )
     }
 }

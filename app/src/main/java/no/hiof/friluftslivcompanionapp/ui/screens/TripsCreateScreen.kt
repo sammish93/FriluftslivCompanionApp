@@ -123,6 +123,8 @@ fun TripsCreateScreen(
                 dropdownExpanded = !dropdownExpanded
             }) {
 
+                Text(text = tripState.toString())
+
                 TextField(
                     modifier = Modifier
                         .menuAnchor(),
