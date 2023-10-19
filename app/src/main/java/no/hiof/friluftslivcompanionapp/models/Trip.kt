@@ -1,6 +1,7 @@
 package no.hiof.friluftslivcompanionapp.models
 
 import com.google.android.gms.maps.model.LatLng
+import java.time.Duration
 
 // The variable 'duration' will be in seconds, with functions in the domain layer to format it to
 // minutes/hours. The variable 'difficulty' will be from 1 to 5.
@@ -10,8 +11,8 @@ import com.google.android.gms.maps.model.LatLng
 abstract class Trip(
     route: List<LatLng>,
     description: String?,
-    duration: Long?,
+    duration: Duration?,
     distanceKm: Double?,
-    difficulty: Float?,
+    difficulty: Int?,
 ) {
 }
