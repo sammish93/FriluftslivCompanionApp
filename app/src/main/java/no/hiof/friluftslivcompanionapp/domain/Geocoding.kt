@@ -56,8 +56,6 @@ object Geocoding {
      */
 
 
-
-    //Denne passerer testen
     fun getRegionCode(latitude: Double?, longitude: Double?): String? {
         val latlng = "$latitude,$longitude"
         val apiKey = BuildConfig.GOOGLE_MAPS_API_KEY
@@ -78,34 +76,6 @@ object Geocoding {
     }
 }
 */
-//Denne returnerer : Region Code is null. I testen laget i testklassen for api.
-/*
-fun getRegionCode(latitude: Double?, longitude: Double?): String? {
-    val latlng = "$latitude,$longitude"
-    val apiKey = BuildConfig.GOOGLE_MAPS_API_KEY
 
-    val componentsFilter = "country:NO"
-    val response = Geocoding.geocodingApiService.getAddressFromCoordinates(latlng, apiKey,componentsFilter).execute()
-    if (response.isSuccessful) {
-        val geocodeResponse = response.body()
-        geocodeResponse?.let { response ->
-            val addressComponents = response.results.firstOrNull()?.address_components
-            val regionCode = addressComponents?.firstOrNull {
-                it.types.contains("administrative_area_level_1")
-            }?.short_name
-            if (regionCode != null) {
-                println("Region Code: NO-$regionCode")
-            } else {
-                println("Region Code is null.")
-            }
-        }
-    } else {
-        println("Response was not successful. Response code: ${response.code()}")
-    }
-
-    return null
-}
-}
-*/
 
 

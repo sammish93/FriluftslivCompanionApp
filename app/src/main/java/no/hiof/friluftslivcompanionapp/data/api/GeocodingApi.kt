@@ -19,7 +19,6 @@ class GeocodingApi {
         return geocodingService
     }
 }
-
 /*
 class GeocodingApi private constructor() {
     private val geocodingService: GeocodingApiService by lazy {
@@ -40,7 +39,7 @@ class GeocodingApi private constructor() {
     fun getApiService(): GeocodingApiService {
         return geocodingService
     }
-}*/
+}
 
-
+*/
 

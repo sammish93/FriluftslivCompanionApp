@@ -18,3 +18,11 @@ suspend fun main() {
     val response = Geocoding.geocodingApiService.getAddressFromCoordinates(latlng, apiKey,componentsFilter).execute()
     System.out.println(response)
 }*/
+import no.hiof.friluftslivcompanionapp.BuildConfig
+
+suspend fun main() {
+    val latitude = 62.6259
+    val longitude = 7.0867
+    val regionCode = Geocoding.getInstance().getRegionCode(latitude, longitude)
+    println(regionCode)
+}
