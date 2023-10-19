@@ -144,9 +144,6 @@ class UserViewModel @Inject constructor(
                 val country = countryComponent?.name
                 val coordinates = response.place.latLng
 
-                Log.i("PlaceInfo",
-                    "City: $city, County: $county, Country: $country, " +
-                            "Coordinates: ${coordinates?.latitude}, ${coordinates?.longitude}")
 
             }
 
