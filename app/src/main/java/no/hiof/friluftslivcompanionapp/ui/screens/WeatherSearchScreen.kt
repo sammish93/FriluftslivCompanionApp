@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -55,9 +53,11 @@ fun WeatherSearchScreen(
                 text = it
                 userViewModel.searchPlaces(it)
             },
-            label = { Text(text = "Search for a place") },
-            modifier = Modifier
-                .fillMaxWidth(),
+            label = { Text(
+                text = "Search for a place",
+                style = TextStyle(fontWeight = FontWeight.Medium)
+            ) },
+            modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.extraLarge,
             colors = TextFieldDefaults.colors(),
             textStyle = TextStyle(
@@ -87,9 +87,13 @@ fun WeatherSearchScreen(
                 text = selectedAddress
             }
         )
-
     }
 }
+
+
+
+
+
 
 
 

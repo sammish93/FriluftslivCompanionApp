@@ -44,14 +44,14 @@ class UserViewModel @Inject constructor(
     val locationAutoFill = mutableStateListOf<AutoCompleteState>()
 
     private val _placeInfoState = MutableStateFlow<PlaceInfoState?>(null)
-    val placeInfoState: StateFlow<PlaceInfoState?> = _placeInfoState
+    private val placeInfoState: StateFlow<PlaceInfoState?> = _placeInfoState
 
     // Used to get city, county, country and coordinates.
     fun fetchPlaceInfo(placeId: String) {
         viewModelScope.launch {
             try {
-                val placeInfoState = placesApi.fetchPlaceInfo(placeId)
-                _placeInfoState.value = placeInfoState
+                val placeInfo = placesApi.fetchPlaceInfo(placeId)
+                _placeInfoState.value = placeInfo
 
                 // Just for testing.
                 logPlaceInformation(placeInfoState)
@@ -136,11 +136,11 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    private fun logPlaceInformation(info: PlaceInfoState) {
-        Log.i("PlaceInfo", "City: ${info.city}")
-        Log.i("PlaceInfo", "County: ${info.county}")
-        Log.i("PlaceInfo", "Country: ${info.country}")
-        Log.i("PlaceInfo", "Coordinates: ${info.coordinates}")
+    private fun logPlaceInformation(info: StateFlow<PlaceInfoState?>) {
+        Log.i("PlaceInfo", "City: ${info.value?.city}")
+        Log.i("PlaceInfo", "County: ${info.value?.county}")
+        Log.i("PlaceInfo", "Country: ${info.value?.country}")
+        Log.i("PlaceInfo", "Coordinates: ${info.value?.coordinates}")
     }
 
 }
