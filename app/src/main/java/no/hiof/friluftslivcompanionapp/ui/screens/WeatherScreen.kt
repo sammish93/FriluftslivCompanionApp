@@ -106,11 +106,11 @@ fun WeatherScreen(
                     // A button that allows the user to click and display the Bottom Sheet.
                     floatingActionButton = {
                         ExtendedFloatingActionButton(
-                            text = { Text("Settings") },
+                            text = { Text(stringResource(R.string.settings)) },
                             icon = {
                                 Icon(
                                     Icons.Filled.Settings,
-                                    contentDescription = "Change Forecast Settings"
+                                    contentDescription = stringResource(R.string.weather_change_forecast_settings)
                                 )
                             },
                             onClick = {
@@ -248,7 +248,7 @@ fun WeatherScreen(
                     IconButton(onClick = {
                         CoroutineScope(Dispatchers.Default).launch {
                             //TODO Add functionality to prompt the user to share their location if
-                            // it permissions aren't currently given.
+                            // permissions aren't currently given.
                             viewModel.getWeatherForecast(
                                 userState.lastKnownLocation?.latitude,
                                 userState.lastKnownLocation?.longitude

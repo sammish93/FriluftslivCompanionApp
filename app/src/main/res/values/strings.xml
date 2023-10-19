@@ -25,4 +25,6 @@
     <string name="trips_create_got_it">Got it!</string>
     <string name="trips_create_tap_the_map">Tap the map to add points and draw routes.</string>
     <string name="trips_create_hold_on_a_point">Hold on a point to remove it from the route.</string>
+    <string name="settings">Settings</string>
+    <string name="weather_change_forecast_settings">Change Forecast Settings</string>
 </resources>
