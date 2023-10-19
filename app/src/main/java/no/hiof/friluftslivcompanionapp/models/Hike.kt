@@ -7,10 +7,10 @@ import java.time.Duration
 data class Hike(
     @DocumentId val documentId: String ="",
     val route: List<LatLng>,
-    val description: String?,
-    val duration: Duration?,
-    val distanceKm: Double?,
-    val difficulty: Int?
+    val description: String? = null,
+    val duration: Duration? = null,
+    val distanceKm: Double? = null,
+    val difficulty: Int? = null
 ) : Trip(
     route,
     description,
@@ -20,14 +20,23 @@ data class Hike(
 ) {
 
     fun toMap(): Map<String, Any?> {
-        return mapOf(
-            "startLocation" to this.startLocation,
-            "endLocation" to this.endLocation,
-            "description" to this.description,
-            "duration" to this.duration,
-            "distanceKm" to this.distanceKm,
-            "difficulty" to this.difficulty
-        )
+
+        val resultMap = mutableMapOf<String, Any?>()
+
+
+        resultMap["documentId"] = this.documentId
+        resultMap["route"] = this.route.map { latLng ->
+
+            mapOf("latitude" to latLng.latitude, "longitude" to latLng.longitude)
+        }
+
+
+        this.description?.let { resultMap["description"] = it }
+        this.duration?.let { resultMap["duration"] = it }
+        this.distanceKm?.let { resultMap["distanceKm"] = it }
+        this.difficulty?.let { resultMap["difficulty"] = it }
+
+        return resultMap
     }
 
 }
