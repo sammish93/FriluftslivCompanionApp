@@ -3,7 +3,6 @@ package no.hiof.friluftslivcompanionapp.data.api
 import android.util.Log
 import com.google.android.gms.common.api.ApiException
 import com.google.android.libraries.places.api.model.AddressComponent
-import com.google.android.libraries.places.api.model.AddressComponents
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FetchPlaceResponse
@@ -18,22 +17,12 @@ class PlacesApi(private val placesClient: PlacesClient) {
     private var addressList: List<AddressComponent>? = null
 
     suspend fun fetchPlaceInfo(placeId: String): PlaceInfoState {
-
-        val placeFields = listOf(Place.Field.ADDRESS_COMPONENTS, Place.Field.LAT_LNG)
-        val request = FetchPlaceRequest.newInstance(placeId, placeFields)
+        val request = buildPlaceRequest(placeId)
 
         return suspendCoroutine { continuation ->
-            placesClient.fetchPlace(request)
-                .addOnSuccessListener { response: FetchPlaceResponse ->
+            placesClient.fetchPlace(request).addOnSuccessListener { response: FetchPlaceResponse ->
                     addressList = response.place.addressComponents?.asList()
-
-                    val city = findSpecificInfo("locality")
-                    val county = findSpecificInfo("administrative_area_level_1")
-                    val country = findSpecificInfo("country")
-                    val coordinates = response.place.latLng
-
-
-                    val placeInfoState = PlaceInfoState(city, county, country, coordinates)
+                    val placeInfoState = buildPlaceInfoState(response)
                     continuation.resume(placeInfoState)
                 }
                 .addOnFailureListener { exception: Exception ->
@@ -43,6 +32,19 @@ class PlacesApi(private val placesClient: PlacesClient) {
                     continuation.resumeWithException(exception)
                 }
         }
+    }
+
+    private fun buildPlaceRequest(placeId: String): FetchPlaceRequest {
+        val placeFields = listOf(Place.Field.ADDRESS_COMPONENTS, Place.Field.LAT_LNG)
+        return FetchPlaceRequest.newInstance(placeId, placeFields)
+    }
+
+    private fun buildPlaceInfoState(response: FetchPlaceResponse): PlaceInfoState {
+        val city = findSpecificInfo("locality")
+        val county = findSpecificInfo("administrative_area_level_1")
+        val country = findSpecificInfo("country")
+        val coordinates = response.place.latLng
+        return PlaceInfoState(city, county, country, coordinates)
     }
 
     private fun findSpecificInfo(type: String): String {
