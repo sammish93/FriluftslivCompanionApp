@@ -151,10 +151,11 @@ class TripsViewModel @Inject constructor(
 
     // Function
     fun createTrip() {
-        val tripState = _tripsState.value
         val route = _nodes.value
 
         updateCreateTripDistanceKm(LocationFormatter.calculateTotalDistanceKilometers(route))
+
+        val tripState = _tripsState.value
 
         val trip = TripFactory.createTrip(
             tripState.createTripType,
