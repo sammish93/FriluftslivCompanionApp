@@ -177,7 +177,7 @@ fun TripsCreateScreen(
                     )
                 )
             }) {
-                Text(text = stringResource(R.string.minutes) + " +")
+                Text(text = "+ " + stringResource(R.string.minutes))
             }
             ElevatedButton(onClick = {
                 viewModel.updateCreateTripDuration(
@@ -186,7 +186,7 @@ fun TripsCreateScreen(
                     )
                 )
             }) {
-                Text(text = stringResource(R.string.hours)  + " +")
+                Text(text = "+ " + stringResource(R.string.hours))
             }
 
             // Difficulty of trip from 1 to 5.

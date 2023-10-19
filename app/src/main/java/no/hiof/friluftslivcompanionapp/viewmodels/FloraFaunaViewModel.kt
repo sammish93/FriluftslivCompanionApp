@@ -38,9 +38,8 @@ class FloraFaunaViewModel @Inject constructor(
     override val uiState: StateFlow<TabsUiState> = _uiState.asStateFlow()
 
     override var tabDestinations = mapOf(
-        Screen.FLORA_FAUNA to "Lifelist",
-        Screen.FLORA_FAUNA_SEARCH_LOCATION to "Search (By Location)",
-        Screen.FLORA_FAUNA_SEARCH_SPECIES to "Search (By Species)"
+        Screen.FLORA_FAUNA to Screen.FLORA_FAUNA.navBarLabel,
+        Screen.FLORA_FAUNA_SEARCH_LOCATION to Screen.FLORA_FAUNA_SEARCH_LOCATION.navBarLabel
     )
     override fun changeHighlightedTab(index: Int) {
         _uiState.update { currentState ->

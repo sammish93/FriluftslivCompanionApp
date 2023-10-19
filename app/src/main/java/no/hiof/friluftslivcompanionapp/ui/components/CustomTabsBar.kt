@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -47,7 +48,7 @@ fun CustomTabsBar(viewModel: TabNavigation, navController: NavController) {
     SecondaryTabRow(selectedTabIndex = tabsUiState.currentTabIndex) {
         viewModel.tabDestinations.onEachIndexed { index, (destination, title) ->
             Tab(
-                text = { Text(title) },
+                text = { Text(stringResource(title)) },
                 selected = tabsUiState.currentTabIndex == index,
                 //selected = tabIndex == index,
                 onClick = {

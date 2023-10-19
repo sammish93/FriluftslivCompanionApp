@@ -42,9 +42,9 @@ class TripsViewModel @Inject constructor(
     val nodes: StateFlow<List<LatLng>> = _nodes.asStateFlow()
 
     override var tabDestinations = mapOf(
-        Screen.TRIPS to "Trips",
-        Screen.TRIPS_RECENT_ACTIVITY to "Recent Activity",
-        Screen.TRIPS_CREATE to "Create Trip"
+        Screen.TRIPS to Screen.TRIPS.navBarLabel,
+        Screen.TRIPS_RECENT_ACTIVITY to Screen.TRIPS_RECENT_ACTIVITY.navBarLabel,
+        Screen.TRIPS_CREATE to Screen.TRIPS_CREATE.navBarLabel
     )
 
     var tripTypes = listOf(

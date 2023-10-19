@@ -27,4 +27,18 @@
     <string name="trips_create_hold_on_a_point">Hold on a point to remove it from the route.</string>
     <string name="settings">Settings</string>
     <string name="weather_change_forecast_settings">Change Forecast Settings</string>
+    <string name="navigation_home">Home</string>
+    <string name="navigation_wildlife">Wildlife</string>
+    <string name="navigation_additional_information">Additional Information</string>
+    <string name="navigation_undefined">UNDEFINED</string>
+    <string name="navigation_profile">Profile</string>
+    <string name="navigation_weather">Weather</string>
+    <string name="navigation_trips">Trips</string>
+    <string name="navigation_search">Search</string>
+    <string name="navigation_create_trip">Create Trip</string>
+    <string name="navigation_recent_activity">Recent Activity</string>
+    <string name="navigation_add_trip">Add Trip</string>
+    <string name="navigation_search_results">Search Results</string>
+    <string name="navigation_settings">Settings</string>
+    <string name="navigation_add_sighting">Add Sighting</string>
 </resources>
