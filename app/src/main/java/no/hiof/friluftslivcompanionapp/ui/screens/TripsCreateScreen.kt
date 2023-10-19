@@ -114,6 +114,10 @@ fun TripsCreateScreen(
             },
             sheetState = sheetState
         ) {
+            InfoButtonWithPopup()
+
+            HorizontalDivider()
+
             // Type of trip.
             ExposedDropdownMenuBox(expanded = dropdownExpanded, onExpandedChange = {
                 dropdownExpanded = !dropdownExpanded
@@ -207,6 +211,8 @@ fun TripsCreateScreen(
                 isError = tripState.createTripDescription.isBlank()
             )
 
+            HorizontalDivider()
+
             // Create trip button.
             Button(
                 onClick = { },
@@ -215,7 +221,10 @@ fun TripsCreateScreen(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add",
                 )
-                Text(stringResource(R.string.trips_create_create_trip), modifier = Modifier.padding(start = 4.dp))
+                Text(
+                    stringResource(R.string.trips_create_create_trip),
+                    modifier = Modifier.padding(start = 4.dp)
+                )
             }
 
             Button(
@@ -229,12 +238,11 @@ fun TripsCreateScreen(
                     imageVector = Icons.Default.Clear,
                     contentDescription = "Clear",
                 )
-                Text(stringResource(R.string.trips_create_clear_trip), modifier = Modifier.padding(start = 4.dp))
+                Text(
+                    stringResource(R.string.trips_create_clear_trip),
+                    modifier = Modifier.padding(start = 4.dp)
+                )
             }
-
-            HorizontalDivider()
-
-            InfoButtonWithPopup()
         }
     }
 }
@@ -253,7 +261,10 @@ fun InfoButtonWithPopup(modifier: Modifier = Modifier) {
             imageVector = Icons.Default.Info,
             contentDescription = "Info",
         )
-        Text(stringResource(R.string.trips_create_how_to_use_the_map), modifier = Modifier.padding(start = 4.dp))
+        Text(
+            stringResource(R.string.trips_create_how_to_use_the_map),
+            modifier = Modifier.padding(start = 4.dp)
+        )
     }
 
 

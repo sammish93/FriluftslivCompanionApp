@@ -135,4 +135,12 @@ class TripsViewModel @Inject constructor(
         }
         removeNodes()
     }
+
+    fun createTrip() {
+        _tripsState.value.createTripType
+        _tripsState.value.createTripDuration
+        _tripsState.value.createTripDifficulty
+        _tripsState.value.createTripDescription
+        _nodes.value
+    }
 }

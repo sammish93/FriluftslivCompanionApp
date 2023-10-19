@@ -1,6 +1,11 @@
 package no.hiof.friluftslivcompanionapp.domain
 
+import com.google.android.gms.maps.model.LatLng
+import no.hiof.friluftslivcompanionapp.models.Hike
+import no.hiof.friluftslivcompanionapp.models.Trip
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
+import no.hiof.friluftslivcompanionapp.models.enums.TripType
+import java.time.Duration
 
 object TripFactory {
 
@@ -46,4 +51,5 @@ object TripFactory {
 
         return stringToReturn
     }
+
 }

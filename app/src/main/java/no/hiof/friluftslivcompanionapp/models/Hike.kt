@@ -1,18 +1,17 @@
 package no.hiof.friluftslivcompanionapp.models
 
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.DocumentId
 
 class Hike(
     @DocumentId val documentId: String ="",
-    val startLocation: Location,
-    val endLocation: Location?,
+    val route: List<LatLng>,
     val description: String?,
     val duration: Long?,
     val distanceKm: Double?,
     val difficulty: Float?
 ) : Trip(
-    startLocation,
-    endLocation,
+    route,
     description,
     duration,
     distanceKm,
@@ -20,8 +19,7 @@ class Hike(
 ) {
     fun copy(
         documentId: String = this.documentId,
-        startLocation: Location = this.startLocation,
-        endLocation: Location? = this.endLocation,
+        route: List<LatLng>,
         description: String? = this.description,
         duration: Long? = this.duration,
         distanceKm: Double? = this.distanceKm,
@@ -29,8 +27,7 @@ class Hike(
     ): Hike {
         return Hike(
             documentId,
-            startLocation,
-            endLocation,
+            route,
             description,
             duration,
             distanceKm,
