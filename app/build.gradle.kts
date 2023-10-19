@@ -105,6 +105,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
