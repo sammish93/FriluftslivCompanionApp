@@ -150,6 +150,8 @@ dependencies {
 
     //GSON
     implementation ("com.google.code.gson:gson:2.10.1")
+    // Google Places
+    implementation("com.google.android.libraries.places:places:3.0.0")
 
 
     // Material Design 3 - extra (e.g. SecondaryTabRow)
