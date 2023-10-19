@@ -4,13 +4,13 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.DocumentId
 import java.time.Duration
 
-class Hike(
+data class Hike(
     @DocumentId val documentId: String ="",
     val route: List<LatLng>,
-    val description: String?,
-    val duration: Duration?,
-    val distanceKm: Double?,
-    val difficulty: Int?
+    val description: String? = null,
+    val duration: Duration? = null,
+    val distanceKm: Double? = null,
+    val difficulty: Int? = null
 ) : Trip(
     route,
     description,
@@ -18,21 +18,25 @@ class Hike(
     distanceKm,
     difficulty
 ) {
-    fun copy(
-        documentId: String = this.documentId,
-        route: List<LatLng>,
-        description: String? = this.description,
-        duration: Duration? = this.duration,
-        distanceKm: Double? = this.distanceKm,
-        difficulty: Int? = this.difficulty
-    ): Hike {
-        return Hike(
-            documentId,
-            route,
-            description,
-            duration,
-            distanceKm,
-            difficulty
-        )
+
+    fun toMap(): Map<String, Any?> {
+
+        val resultMap = mutableMapOf<String, Any?>()
+
+
+        resultMap["documentId"] = this.documentId
+        resultMap["route"] = this.route.map { latLng ->
+
+            mapOf("latitude" to latLng.latitude, "longitude" to latLng.longitude)
+        }
+
+
+        this.description?.let { resultMap["description"] = it }
+        this.duration?.let { resultMap["duration"] = it }
+        this.distanceKm?.let { resultMap["distanceKm"] = it }
+        this.difficulty?.let { resultMap["difficulty"] = it }
+
+        return resultMap
     }
+
 }

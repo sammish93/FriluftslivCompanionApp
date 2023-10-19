@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
+import android.location.Location
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,6 +10,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
 import no.hiof.friluftslivcompanionapp.data.states.TripsState
+import no.hiof.friluftslivcompanionapp.domain.LocationFormatter
+import no.hiof.friluftslivcompanionapp.domain.TripFactory
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
@@ -124,23 +127,45 @@ class TripsViewModel @Inject constructor(
         }
     }
 
+    private fun updateCreateTripDistanceKm(distanceMeters: Double) {
+        _tripsState.update { currentState ->
+            currentState.copy(
+                createTripDistanceKm = distanceMeters
+            )
+        }
+    }
+
+    // Function to clear all data relating to create trip.
     fun clearTrip() {
         _tripsState.update { currentState ->
             currentState.copy(
-                createTripType = null,
+                createTripType = TripType.HIKE,
                 createTripDuration = Duration.ofHours(1).plus(Duration.ofMinutes(30)),
                 createTripDifficulty = 3,
-                createTripDescription = ""
+                createTripDescription = "",
+                createTripDistanceKm = 0.0
             )
         }
         removeNodes()
     }
 
+    // Function
     fun createTrip() {
-        _tripsState.value.createTripType
-        _tripsState.value.createTripDuration
-        _tripsState.value.createTripDifficulty
-        _tripsState.value.createTripDescription
-        _nodes.value
+        val route = _nodes.value
+
+        updateCreateTripDistanceKm(LocationFormatter.calculateTotalDistanceKilometers(route))
+
+        val tripState = _tripsState.value
+
+        val trip = TripFactory.createTrip(
+            tripState.createTripType,
+            route,
+            tripState.createTripDescription,
+            tripState.createTripDuration,
+            tripState.createTripDistanceKm,
+            tripState.createTripDifficulty
+        )
+
+        //TODO Integrate database writing and clear create trip values on successful write.
     }
 }

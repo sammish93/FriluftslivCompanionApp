@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.data.repositories
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
@@ -17,40 +18,76 @@ class TripsRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth
 ){
-    suspend fun saveTrip(hike: Hike) {
+    suspend fun addHike(hike: Hike): OperationResult<Unit> {
+        return try {
 
-        val hikesCollection = firestore.collection("trips")
+            val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
 
-        val newDocumentRef = hikesCollection.document()
 
-        val hikeWithDocumentId = hike.copy(documentId = newDocumentRef.id)
+            val tripDocument = firestore.collection("trips").document()
 
-        try {
 
-            newDocumentRef.set(hikeWithDocumentId).await()
-            println(hikeWithDocumentId)
+            tripDocument.set(hike.toMap()).await()
 
+            OperationResult.Success(Unit)
         } catch (e: Exception) {
-            e.printStackTrace()
+
+            OperationResult.Error(e)
         }
+    }
 
-        suspend fun getHike(documentId: String): Result<Hike?> {
+    suspend fun getTripById(tripId: String): OperationResult<Hike> {
             return try {
-                val hikesCollection = firestore.collection("trips")
-                val documentRef = hikesCollection.document(documentId)
+                val tripDocumentRef = firestore.collection("trips").document(tripId)
+                val snapshot = tripDocumentRef.get().await()
 
-                val documentSnapshot = documentRef.get().await()
+                if (snapshot.exists()) {
+                    val trip = snapshot.toObject(Hike::class.java)
+                    if (trip != null) {
 
-                if (documentSnapshot.exists()) {
-                    val hike = documentSnapshot.toObject(Hike::class.java)
-                    Result.Success(hike)
+                        OperationResult.Success(trip)
+                    } else {
+
+                        OperationResult.Error(Exception("Trip could not be parsed."))
+                    }
                 } else {
-                    Result.Failure("Hike not found")
+
+                    OperationResult.Error(Exception("No trip found with the provided ID."))
                 }
             } catch (e: Exception) {
-                Result.Failure("Error: ${e.message}")
+
+                Log.e("TripsRepository", "Error getting trip with ID: $tripId", e)
+                OperationResult.Error(e)
             }
+    }
+
+    suspend fun getAllTrips(): OperationResult<List<Hike>> {
+        return try {
+
+            val tripsCollectionRef = firestore.collection("trips")
+
+
+            val querySnapshot = tripsCollectionRef.get().await()
+
+
+            val trips = querySnapshot.documents.mapNotNull { document ->
+                document.toObject(Hike::class.java)?.apply {
+                    //TODO assign the document metadata to what you need
+                    //
+                }
+            }
+
+
+            OperationResult.Success(trips)
+
+        } catch (e: Exception) {
+
+            OperationResult.Error(e)
         }
+    }
+
+    //TODO get trips based on user location??
 
 
-    }}
+
+}

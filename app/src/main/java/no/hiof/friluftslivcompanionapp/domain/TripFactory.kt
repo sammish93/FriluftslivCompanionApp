@@ -9,6 +9,7 @@ import java.time.Duration
 
 object TripFactory {
 
+    //TODO Test these functions.
     /**
      * Takes an integer from 1 to 5 and returns a string in the desired supported language.
      * @param difficulty An Int from 1 to 5. If another Int is supplied then "UNKNOWN" is returned.
@@ -52,7 +53,14 @@ object TripFactory {
         return stringToReturn
     }
 
-    fun createHike(tripRoute: List<LatLng>, tripDescription: String, tripDuration: Duration, tripDistance: Double, tripDifficulty: Int) : Hike {
+    fun createTrip(tripType: TripType, tripRoute: List<LatLng>, tripDescription: String, tripDuration: Duration, tripDistance: Double, tripDifficulty: Int) : Trip? {
+        if (tripType == TripType.HIKE) {
+            return Hike(route = tripRoute, description = tripDescription, duration = tripDuration, distanceKm = tripDistance, difficulty = tripDifficulty)
+        }
+        else return null
+    }
+
+    private fun createHike(tripRoute: List<LatLng>, tripDescription: String, tripDuration: Duration, tripDistance: Double, tripDifficulty: Int) : Hike {
         return Hike(route = tripRoute, description = tripDescription, duration = tripDuration, distanceKm = tripDistance, difficulty = tripDifficulty)
     }
 }

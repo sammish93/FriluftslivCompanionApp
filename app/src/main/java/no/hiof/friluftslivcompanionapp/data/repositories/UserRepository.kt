@@ -19,11 +19,11 @@ class UserRepository @Inject constructor(
 ){
     /**
      * Method for creating a new user with the id of
-     * the firestire auth token. It can also be used for editing an
+     * the firestore auth token. It can also be used for editing an
      * existing user's fields
      */
-    suspend fun createUser(user: User) {
-        try {
+    suspend fun createUser(user: User): OperationResult<Unit> {
+        return try {
             val currentUser = auth.currentUser
             if (currentUser != null) {
                 val userId = currentUser.uid
@@ -31,61 +31,90 @@ class UserRepository @Inject constructor(
                 val userCollection = firestore.collection("users")
                 val userDocument = userCollection.document(userId)
 
-                userDocument.set(user).await()
+                // Prepare the user data map
+                val userData = hashMapOf<String, Any?>(
+                    "userId" to user.userId,
+                    "username" to user.username,
+                    "email" to user.email,
+                    "preferences" to user.preferences
+                )
 
+
+                user.lifelist?.let {
+                    userData["lifelist"] = it
+                }
+                user.tripActivity?.let {
+                    userData["tripActivity"] = it
+                }
+
+
+                userDocument.set(userData, SetOptions.merge()).await()
+
+
+                OperationResult.Success(Unit)
             } else {
 
-                throw IllegalStateException("No authenticated user found.")
+                OperationResult.Error(IllegalStateException("No authenticated user found."))
             }
         } catch (e: Exception) {
 
             e.printStackTrace()
+            OperationResult.Error(e)
         }
     }
-    suspend fun getUser(uid: String): User? {
+
+
+    suspend fun getUser(uid: String): OperationResult<User> {
         return try {
             val userCollection = firestore.collection("users")
             val userDocument = userCollection.document(uid)
 
-            val documentSnapshot: DocumentSnapshot = userDocument.get().await()
+            val documentSnapshot = userDocument.get().await()
 
             if (documentSnapshot.exists()) {
+
                 val userData = documentSnapshot.toObject(User::class.java)
-                userData?.copy(userId = documentSnapshot.id)
+                if (userData != null) {
+                    OperationResult.Success(userData.copy(userId = documentSnapshot.id))
+                } else {
+
+                    OperationResult.Error(Exception("Failed to convert document to User object."))
+                }
             } else {
 
-                null
+                OperationResult.Error(Exception("No User found with the provided UID."))
             }
         } catch (e: Exception) {
 
             e.printStackTrace()
-            null
+            OperationResult.Error(e)
         }
     }
 
-    suspend fun deleteUser(uid: String): Boolean {
+
+    suspend fun deleteUser(uid: String): OperationResult<Unit> {
         return try {
             val userCollection = firestore.collection("users")
             val userDocument = userCollection.document(uid)
 
-            val documentSnapshot: DocumentSnapshot = userDocument.get().await()
+            val documentSnapshot = userDocument.get().await()
 
             if (documentSnapshot.exists()) {
 
                 userDocument.delete().await()
-                true
+
+                OperationResult.Success(Unit)
             } else {
 
-                false
+                OperationResult.Error(Exception("No User found with the provided UID."))
             }
-        } catch (e: FirebaseFirestoreException) {
-            Log.e(TAG, "Firestore Exception: ${e.message}", e)
-            false
         } catch (e: Exception) {
-            Log.e(TAG, "An unexpected error occurred: ${e.message}", e)
-            false
+
+            e.printStackTrace()
+            OperationResult.Error(e)
         }
     }
+
 
 
 }
