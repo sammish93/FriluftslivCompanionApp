@@ -2,14 +2,15 @@ package no.hiof.friluftslivcompanionapp.models
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.DocumentId
+import java.time.Duration
 
 data class Hike(
     @DocumentId val documentId: String ="",
     val route: List<LatLng>,
     val description: String?,
-    val duration: Long?,
+    val duration: Duration?,
     val distanceKm: Double?,
-    val difficulty: Float?
+    val difficulty: Int?
 ) : Trip(
     route,
     description,
