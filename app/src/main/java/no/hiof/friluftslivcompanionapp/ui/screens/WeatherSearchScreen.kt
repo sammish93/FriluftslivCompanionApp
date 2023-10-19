@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import no.hiof.friluftslivcompanionapp.ui.components.LocationAutoFillList
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 
@@ -80,23 +81,16 @@ fun WeatherSearchScreen(
                 )
             }
         )
-
-        LazyColumn {
-            items(userViewModel.locationAutoFill) { result ->
-                Text(
-                    text = result.address,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            userViewModel.fetchPlaceInfo(result.placeId)
-                            text = result.address
-                        }
-                        .padding(16.dp)
-                )
+        LocationAutoFillList(
+            viewModel = userViewModel,
+            onAddressSelected = { selectedAddress ->
+                text = selectedAddress
             }
-        }
+        )
+
     }
 }
+
 
 
 
