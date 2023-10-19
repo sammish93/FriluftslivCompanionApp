@@ -1,7 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -17,13 +15,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
@@ -34,10 +28,8 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -53,15 +45,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
+import no.hiof.friluftslivcompanionapp.data.states.TripsState
 import no.hiof.friluftslivcompanionapp.domain.DateFormatter
 import no.hiof.friluftslivcompanionapp.domain.TripFactory
 import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapCreate
@@ -81,8 +71,6 @@ fun TripsCreateScreen(
     // Variables for Bottom Sheet - see https://m3.material.io/components/bottom-sheets/overview
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
-    var dropdownExpanded by remember { mutableStateOf(false) }
-    var dropdownSelectedText by remember { mutableIntStateOf(R.string.trips_create_dropdown_choose_something_exciting) }
 
     val tripState by viewModel.tripsState.collectAsState()
 
@@ -114,110 +102,211 @@ fun TripsCreateScreen(
             },
             sheetState = sheetState
         ) {
-            InfoButtonWithPopup()
+            TripsCreateSheet(tripState, viewModel)
+        }
+    }
+}
 
-            HorizontalDivider()
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun TripsCreateSheet(
+    tripState: TripsState,
+    viewModel: TripsViewModel
+) {
+    var dropdownExpanded by remember { mutableStateOf(false) }
+    var dropdownSelectedText by remember { mutableIntStateOf(R.string.trips_create_dropdown_choose_something_exciting) }
+    var isSelectedTripTypeEnabled by remember { mutableStateOf(true) }
+    var showClearPopup by remember { mutableStateOf(false) }
+    var showCreatePopup by remember { mutableStateOf(false) }
 
-            // Type of trip.
-            ExposedDropdownMenuBox(expanded = dropdownExpanded, onExpandedChange = {
+    Column(
+        modifier = Modifier
+            .selectableGroup()
+            .padding(horizontal = 20.dp)
+            .padding(bottom = 24.dp)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        InfoButtonWithPopup()
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
+
+        // Type of trip.
+        ExposedDropdownMenuBox(
+            expanded = dropdownExpanded, onExpandedChange = {
                 dropdownExpanded = !dropdownExpanded
-            }) {
+            }
+        ) {
 
-                Text(text = tripState.toString())
+            TextField(
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth(),
+                readOnly = true,
+                value = stringResource(dropdownSelectedText),
+                onValueChange = {},
+                label = { Text(stringResource(R.string.trips_create_trip_type)) },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) },
+            )
 
+            // ExposedDropdownMenu is currently buggy - doesn't scale to width.
+            DropdownMenu(
+                expanded = dropdownExpanded, onDismissRequest = {
+                    dropdownExpanded = false
+                }, modifier = Modifier
+                    .exposedDropdownSize()
+            ) {
+                viewModel.tripTypes.forEach { tripType ->
+                    DropdownMenuItem(
+                        text = { Text(text = stringResource(tripType.label)) },
+                        onClick = {
+                            isSelectedTripTypeEnabled = tripType.isEnabled
+                            viewModel.updateCreateTripType(tripType)
+                            dropdownSelectedText = tripType.label
+                            dropdownExpanded = false
+                        })
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.padding(vertical = 12.dp))
+
+        when (isSelectedTripTypeEnabled) {
+            true -> {
+                // Description Field
                 TextField(
+                    value = tripState.createTripDescription,
+                    onValueChange = { viewModel.updateCreateTripDescription(it) },
+                    label = { Text(stringResource(R.string.trips_create_description)) },
+                    singleLine = false,
+                    isError = tripState.createTripDescription.isBlank(),
                     modifier = Modifier
-                        .menuAnchor(),
-                    readOnly = true,
-                    value = stringResource(dropdownSelectedText),
-                    onValueChange = {},
-                    label = { Text(stringResource(R.string.trips_create_trip_type)) },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) },
+                        .fillMaxWidth()
                 )
 
-                ExposedDropdownMenu(expanded = dropdownExpanded, onDismissRequest = {
-                    dropdownExpanded = false
-                }) {
-                    viewModel.tripTypes.forEach { tripType ->
-                        DropdownMenuItem(
-                            text = { Text(text = stringResource(tripType.label)) },
-                            onClick = {
-                                viewModel.updateCreateTripType(tripType)
-                                dropdownSelectedText = tripType.label
-                                dropdownExpanded = false
-                            })
+                Spacer(modifier = Modifier.padding(vertical = 12.dp))
+
+                // Duration of trip in hours and minutes.
+                Text(
+                    DateFormatter.formatDurationToPrettyString(
+                        tripState.createTripDuration,
+                        stringResource(R.string.hours),
+                        stringResource(R.string.minutes)
+                    )
+                )
+
+                Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(text = stringResource(R.string.hours), textAlign = TextAlign.Center)
+                        Row {
+                            ElevatedButton(onClick = {
+                                viewModel.updateCreateTripDuration(
+                                    tripState.createTripDuration.minus(
+                                        Duration.ofHours(1)
+                                    )
+                                )
+                            }) {
+                                Text(text = "-")
+                            }
+
+                            Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+
+                            ElevatedButton(onClick = {
+                                viewModel.updateCreateTripDuration(
+                                    tripState.createTripDuration.plus(
+                                        Duration.ofHours(1)
+                                    )
+                                )
+                            }) {
+                                Text(text = "+")
+                            }
+                        }
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .weight(1f),
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        Text(text = stringResource(R.string.minutes), textAlign = TextAlign.Center)
+                        Row {
+                            ElevatedButton(onClick = {
+                                viewModel.updateCreateTripDuration(
+                                    tripState.createTripDuration.minus(
+                                        Duration.ofMinutes(1)
+                                    )
+                                )
+                            }) {
+                                Text(text = "-")
+                            }
+
+                            Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+
+                            ElevatedButton(onClick = {
+                                viewModel.updateCreateTripDuration(
+                                    tripState.createTripDuration.plus(
+                                        Duration.ofMinutes(1)
+                                    )
+                                )
+                            }) {
+                                Text(text = "+")
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.padding(vertical = 12.dp))
+
+                // Difficulty of trip from 1 to 5.
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    ElevatedButton(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty - 1) }) {
+                        Text(text = "-")
+                    }
+
+                    Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+
+                    Text(TripFactory.convertTripDifficultyFromIntToString(tripState.createTripDifficulty))
+
+                    Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+
+                    ElevatedButton(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty + 1) }) {
+                        Text(text = "+")
                     }
                 }
             }
 
-            // Duration of trip in hours and minutes.
-            ElevatedButton(onClick = {
-                viewModel.updateCreateTripDuration(
-                    tripState.createTripDuration.minus(
-                        Duration.ofHours(1)
-                    )
-                )
-            }) {
-                Text(text = "- " + stringResource(R.string.hours))
+            else -> {
+                Text(stringResource(R.string.trips_create_dropdown_this_type_of_activity))
             }
-            ElevatedButton(onClick = {
-                viewModel.updateCreateTripDuration(
-                    tripState.createTripDuration.minus(
-                        Duration.ofMinutes(1)
-                    )
-                )
-            }) {
-                Text(text = "- " + stringResource(R.string.minutes))
-            }
-            Text(
-                DateFormatter.formatDurationToPrettyString(
-                    tripState.createTripDuration,
-                    stringResource(R.string.hours),
-                    stringResource(R.string.minutes)
-                )
-            )
-            ElevatedButton(onClick = {
-                viewModel.updateCreateTripDuration(
-                    tripState.createTripDuration.plus(
-                        Duration.ofMinutes(1)
-                    )
-                )
-            }) {
-                Text(text = "+ " + stringResource(R.string.minutes))
-            }
-            ElevatedButton(onClick = {
-                viewModel.updateCreateTripDuration(
-                    tripState.createTripDuration.plus(
-                        Duration.ofHours(1)
-                    )
-                )
-            }) {
-                Text(text = "+ " + stringResource(R.string.hours))
-            }
+        }
 
-            // Difficulty of trip from 1 to 5.
-            ElevatedButton(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty - 1) }) {
-                Text(text = "-")
-            }
-            Text(TripFactory.convertTripDifficultyFromIntToString(tripState.createTripDifficulty))
-            ElevatedButton(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty + 1) }) {
-                Text(text = "+")
-            }
+        HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
-            // Description Field
-            TextField(
-                value = tripState.createTripDescription,
-                onValueChange = { viewModel.updateCreateTripDescription(it) },
-                label = { Text(stringResource(R.string.trips_create_description)) },
-                singleLine = false,
-                isError = tripState.createTripDescription.isBlank()
-            )
-
-            HorizontalDivider()
-
-            // Create trip button.
+        // Create trip button.
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Button(
-                onClick = { viewModel.createTrip() },
+                onClick = { showCreatePopup = true },
+                enabled = isSelectedTripTypeEnabled,
+                modifier = Modifier.weight(1f)
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -229,12 +318,16 @@ fun TripsCreateScreen(
                 )
             }
 
+            Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+
+
+
             Button(
                 onClick = {
-                    dropdownSelectedText = R.string.trips_create_dropdown_choose_something_exciting
-                    viewModel.clearTrip()
+                    showClearPopup = true
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                modifier = Modifier.weight(1f)
             ) {
                 Icon(
                     imageVector = Icons.Default.Clear,
@@ -247,10 +340,68 @@ fun TripsCreateScreen(
             }
         }
     }
+
+    if (showCreatePopup) {
+        AlertDialog(
+            onDismissRequest = {
+                showCreatePopup = false
+                viewModel.createTrip()
+            },
+            title = { Text(text = stringResource(R.string.trips_create_dropdown_create_trip)) },
+            text = { Text(stringResource(R.string.trips_create_dropdown_do_you_wish_create)) },
+            confirmButton = {
+                Button(onClick = {
+                    showCreatePopup = false
+                    viewModel.createTrip()
+                    dropdownSelectedText = R.string.trips_create_dropdown_choose_something_exciting
+                    viewModel.clearTrip()
+                }) {
+                    Text(stringResource(R.string.yes))
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        showCreatePopup = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text(stringResource(R.string.no))
+                }
+            }
+        )
+    }
+
+    if (showClearPopup) {
+        AlertDialog(
+            onDismissRequest = { showClearPopup = false },
+            title = { Text(text = stringResource(R.string.trips_create_dropdown_clear_trip)) },
+            text = { Text(stringResource(R.string.trips_create_dropdown_do_you_wish_to_clear)) },
+            confirmButton = {
+                Button(onClick = {
+                    showClearPopup = false
+                    dropdownSelectedText = R.string.trips_create_dropdown_choose_something_exciting
+                    viewModel.clearTrip()
+                }) {
+                    Text(stringResource(R.string.yes))
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        showClearPopup = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text(stringResource(R.string.no))
+                }
+            }
+        )
+    }
 }
 
 @Composable
-fun InfoButtonWithPopup(modifier: Modifier = Modifier) {
+fun InfoButtonWithPopup() {
     var showPopup by remember { mutableStateOf(false) }
 
     val customShape: Shape = RoundedCornerShape(8.dp)
@@ -258,6 +409,9 @@ fun InfoButtonWithPopup(modifier: Modifier = Modifier) {
     // Info button
     Button(
         onClick = { showPopup = true },
+        modifier = Modifier
+            .selectableGroup()
+            .fillMaxWidth()
     ) {
         Icon(
             imageVector = Icons.Default.Info,
