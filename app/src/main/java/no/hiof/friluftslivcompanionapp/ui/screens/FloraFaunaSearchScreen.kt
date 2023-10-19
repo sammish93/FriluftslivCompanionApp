@@ -63,10 +63,17 @@ fun FloraFaunaSearchScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Button(
-                onClick = { /* TODO: Handle click action for "Use my location" */
+                onClick = {
                     viewModel.viewModelScope.launch {
-                        viewModel.searchBirdsByLocation("NO")
-                    }},
+                        val latitude = userState.lastKnownLocation?.latitude
+                        val longitude = userState.lastKnownLocation?.longitude
+                        if (latitude != null && longitude != null) {
+                            viewModel.searchBirdsByYourLocation(latitude, longitude)
+                        } else {
+                            println("Unable to get location coordinates.")
+                        }
+                    }
+                },
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()

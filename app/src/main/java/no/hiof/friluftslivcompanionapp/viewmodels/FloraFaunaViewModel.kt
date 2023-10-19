@@ -14,8 +14,11 @@ import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
 import javax.inject.Inject
 import no.hiof.friluftslivcompanionapp.data.network.Result
+import no.hiof.friluftslivcompanionapp.domain.Geocoding
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.BirdInfo
+import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
+import java.time.LocalDate
 
 // NOTE: Composable Screens in app/ui/screens can communicate with this viewmodel (and thus the data
 // layer via 'import androidx.lifecycle.viewmodel.compose.viewModel' at the top of the file, and
@@ -100,31 +103,32 @@ class FloraFaunaViewModel @Inject constructor(
         }
     }
 
-   /* suspend fun searchBirdsByYourLocation(lat: Double?, lon: Double?) {
+    //Denne returnerer Error: Null
+    suspend fun searchBirdsByYourLocation(latitude: Double?, longitude: Double?) {
         viewModelScope.launch {
             try {
-                // Check if latitude and longitude are available
-                if (lat != null && lon != null) {
-                    val birdResult = api.getRecentObservations(lat = lat, lon = lon, maxResult = 2)
+                val regionCode = Geocoding.getRegionCode(latitude, longitude)
 
-                    if (birdResult is Result.Success) {
-                        val birdList = birdResult.value
+                if (regionCode != null) {
+                    val result = api.getRecentObservations(regionCode = regionCode, maxResult = 2)
+                    if (result is Result.Success) {
+                        val birdList = result.value
                         val processedList = api.processBirdList(birdList) { bird ->
                             bird
                         }
-
                         updateBirdResults(processedList)
-                    } else if (birdResult is Result.Failure) {
-                        println("Bird API call failed: ${birdResult.message}")
+                    } else if (result is Result.Failure) {
+                        println("API call failed: ${result.message}")
                     }
                 } else {
-                    println("Latitude and longitude not available.")
+                    println("Failed to get region code.")
                 }
-            } catch (e: Exception) {
+            } catch(e: Exception) {
                 println("Error: ${e.message}")
             }
         }
-    }*/
+    }
+
 
 
     private val _selectedBirdInfo = MutableStateFlow<BirdInfo?>(null)
