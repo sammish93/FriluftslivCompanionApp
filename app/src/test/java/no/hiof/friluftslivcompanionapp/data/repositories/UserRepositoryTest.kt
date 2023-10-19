@@ -12,7 +12,6 @@ import com.google.firebase.firestore.SetOptions
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.mockito.kotlin.whenever
 import kotlinx.coroutines.test.runTest
 import no.hiof.friluftslivcompanionapp.models.User
@@ -20,23 +19,20 @@ import no.hiof.friluftslivcompanionapp.models.UserPreferences
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mockito
+import org.mockito.Mockito.lenient
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
-import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 
 
-
-import kotlinx.coroutines.tasks.await
 import org.mockito.kotlin.atLeastOnce
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
+
 class UserRepositoryTest {
 
     private lateinit var userRepository: UserRepository
@@ -59,6 +55,8 @@ class UserRepositoryTest {
 
 
     }
+
+
 
     @Test
     fun createUserWithValidUserAndAuthenticatedShouldReturnSuccess() = runTest {
@@ -174,20 +172,89 @@ class UserRepositoryTest {
     }
 
     @Test
-    fun testErrorOccursDuringGetUserOperation() = runTest {
+    fun testExceptionErrorOccursDuringGetUserOperation() = runTest {
         val uid = "validId"
         val exception = Exception("Firestore exeption")
 
         whenever(mockCollection.document(uid)).thenReturn(mockDocument)
 
-        val failedTast = Tasks.forException<DocumentSnapshot>(exception)
-        whenever(mockDocument.get()).thenReturn(failedTast)
+        val failedTask = Tasks.forException<DocumentSnapshot>(exception)
+        whenever(mockDocument.get()).thenReturn(failedTask)
 
         val result = userRepository.getUser(uid)
 
         assertTrue(result is OperationResult.Error)
         assertEquals(exception, (result as OperationResult.Error).exception)
 
-
     }
+
+    @Test
+    fun deleteUserSuccessfullyWithValidId() = runTest{
+        val uid = "testUid"
+
+        val documentSnapshot: DocumentSnapshot = mock()
+        whenever(documentSnapshot.exists()).thenReturn(true)
+
+        whenever(mockCollection.document(uid)).thenReturn(mockDocument)
+
+
+        val successFulGetTask = Tasks.forResult(documentSnapshot)
+        whenever(mockDocument.get()).thenReturn(successFulGetTask)
+
+        val successfulDeleteTask: Task<Void> = mock()
+        lenient().`when`(successfulDeleteTask.isSuccessful).thenReturn(true)
+        whenever(successfulDeleteTask.isComplete).thenReturn(true)
+        whenever(mockDocument.delete()).thenReturn(successfulDeleteTask)
+
+        val result = userRepository.deleteUser(uid)
+
+        assertTrue(result is OperationResult.Success)
+    }
+
+    @Test
+    fun returnErrorWhenDeletingWithNonExistingId() = runTest {
+        val uid = "NonExistentUid"
+
+        val documentSnapshot: DocumentSnapshot = mock()
+        whenever(documentSnapshot.exists()).thenReturn(false)
+
+        whenever(mockCollection.document(uid)).thenReturn(mockDocument)
+
+        val successFulTask = Tasks.forResult(documentSnapshot)
+        whenever(mockDocument.get()).thenReturn(successFulTask)
+
+        val result = userRepository.deleteUser(uid)
+
+        assertTrue(result is OperationResult.Error)
+        assertEquals("No User found with the provided UID.", (result as OperationResult.Error).exception.message)
+    }
+
+    @Test
+    fun returnErrorWhenExceptionOccursDuringDeleteOperation() = runTest {
+        val uid = "testUid"
+        val exception = Exception("Firestore delete exception")
+
+        val documentSnapshot: DocumentSnapshot = mock()
+        whenever(documentSnapshot.exists()).thenReturn(true)
+
+        whenever(mockCollection.document(uid)).thenReturn(mockDocument)
+
+
+        val successfulGetTask = Tasks.forResult(documentSnapshot)
+        whenever(mockDocument.get()).thenReturn(successfulGetTask)
+
+
+        val failedDeleteTask = Tasks.forException<Void>(exception)
+        whenever(mockDocument.delete()).thenReturn(failedDeleteTask)
+
+
+        val result = userRepository.deleteUser(uid)
+
+
+        assertTrue(result is OperationResult.Error)
+        assertEquals(exception, (result as OperationResult.Error).exception)
+    }
+
+
+
 }
