@@ -2,12 +2,12 @@ package no.hiof.friluftslivcompanionapp.models
 
 import java.time.LocalDateTime
 
-class Bird(
-    val speciesName: String?,
+data class Bird(
+    val speciesName: String? = null,
     val speciesNameScientific: String,
     val number: Int,
-    var description: String?,
-    val photoUrl: String?,
+    var description: String? = null,
+    val photoUrl: String? = null,
     val observationDate: LocalDateTime,
     val coordinates: Location
 ) : Animal(
@@ -24,6 +24,21 @@ class Bird(
         )
     }
 
+    fun toMap(): Map<String, Any?> {
+        val birdMap = mutableMapOf<String, Any>()
+
+        speciesName?.let { birdMap["speciesName"] = it }
+        birdMap["speciesNameScientific"] = speciesNameScientific
+        birdMap["number"] = number
+        description?.let { birdMap["description"] = it }
+        photoUrl?.let { birdMap["photoUrl"] = it }
+        birdMap["observationDate"] = observationDate.toString()
+        birdMap["coordinates"] = coordinates.toMap()
+
+        return birdMap
+
+    }
+    /*
     override fun toString(): String {
         return StringBuilder().apply {
             append("\nname: $speciesName\n")
@@ -35,4 +50,6 @@ class Bird(
             append("coordinates: $coordinates\n")
         }.toString()
     }
+
+     */
 }

@@ -465,7 +465,7 @@ object CustomNavGraph {
                         )
                     }
                 }) {
-                WeatherSearchScreen(navController, modifier, weatherViewModel)
+                WeatherSearchScreen(navController, modifier, weatherViewModel, userViewModel)
             }
         }
     }

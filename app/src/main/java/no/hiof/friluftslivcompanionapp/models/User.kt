@@ -11,6 +11,6 @@ data class User(
     var username : String = "",
     var email: String?,
     var preferences: UserPreferences,
-    var lifelist: Lifelist?,
-    var tripActivity: TripActivity?
+    var lifelist: Lifelist? = null,
+    var tripActivity: TripActivity? = null
 )

@@ -105,6 +105,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -146,6 +148,8 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("androidx.activity:activity-ktx:1.8.0")
 
+    // Google Places
+    implementation("com.google.android.libraries.places:places:3.0.0")
 
 
     // Material Design 3 - extra (e.g. SecondaryTabRow)
