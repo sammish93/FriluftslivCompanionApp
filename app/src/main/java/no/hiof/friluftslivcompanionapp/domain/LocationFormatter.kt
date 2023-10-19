@@ -5,6 +5,7 @@ import com.google.android.gms.maps.model.LatLng
 
 object LocationFormatter {
 
+    //TODO Test these functions.
     /**
      * A function designed to return the total distance between 2 or more LatLng locations in
      * a list.

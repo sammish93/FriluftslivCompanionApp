@@ -9,6 +9,7 @@ import java.time.Duration
 
 object TripFactory {
 
+    //TODO Test these functions.
     /**
      * Takes an integer from 1 to 5 and returns a string in the desired supported language.
      * @param difficulty An Int from 1 to 5. If another Int is supplied then "UNKNOWN" is returned.
