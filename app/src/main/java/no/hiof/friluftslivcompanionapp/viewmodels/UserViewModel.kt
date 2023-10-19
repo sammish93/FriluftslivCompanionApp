@@ -2,17 +2,9 @@ package no.hiof.friluftslivcompanionapp.viewmodels
 
 import android.location.Location
 import android.util.Log
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.libraries.places.api.model.AddressComponent
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.net.FetchPlaceRequest
-import com.google.android.libraries.places.api.net.FetchPlaceResponse
+import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.auth.FirebaseUser
@@ -21,10 +13,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import no.hiof.friluftslivcompanionapp.data.api.PlacesApi
 import no.hiof.friluftslivcompanionapp.data.states.AutoCompleteState
-import no.hiof.friluftslivcompanionapp.data.states.SelectedLocationState
+import no.hiof.friluftslivcompanionapp.data.states.PlaceInfoState
 import no.hiof.friluftslivcompanionapp.data.states.UserState
-import java.lang.Exception
 import javax.inject.Inject
 
 /**
@@ -40,6 +33,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class UserViewModel @Inject constructor(
+    private val placesApi: PlacesApi,
     private val placesClient: PlacesClient
 ): ViewModel() {
 
@@ -48,6 +42,25 @@ class UserViewModel @Inject constructor(
 
     // Used for Places API.
     val locationAutoFill = mutableStateListOf<AutoCompleteState>()
+
+    private val _placeInfoState = MutableStateFlow<PlaceInfoState?>(null)
+    val placeInfoState: StateFlow<PlaceInfoState?> = _placeInfoState
+
+    // Used to get city, county, country and coordinates.
+    fun fetchPlaceInfo(placeId: String) {
+        viewModelScope.launch {
+            try {
+                val placeInfoState = placesApi.fetchPlaceInfo(placeId)
+                _placeInfoState.value = placeInfoState
+
+                // Just for testing.
+                logPlaceInformation(placeInfoState)
+
+            } catch (e: Exception) {
+                Log.i("PlaceInfo", "Could not find the place: ${e.message}")
+            }
+        }
+    }
 
     // Updates the last known location in the map's state.
     fun updateLocation(location: Location?) {
@@ -120,38 +133,14 @@ class UserViewModel @Inject constructor(
                     )
                 }
             )
-        }.addOnFailureListener {
-            // Handle errors here.
         }
     }
 
-    fun fetchPlaceInfo(placeId: String) {
-        val placeFields = listOf(
-            Place.Field.ADDRESS_COMPONENTS,
-            Place.Field.LAT_LNG
-        )
-
-        val request = FetchPlaceRequest.newInstance(placeId, placeFields)
-        placesClient.fetchPlace(request)
-            .addOnSuccessListener { response: FetchPlaceResponse ->
-                val addressComponentsList = response.place.addressComponents?.asList()
-                val cityComponent = addressComponentsList?.find { it.types.contains("locality") }
-                val countyComponent = addressComponentsList?.find { it.types.contains("administrative_area_level_1") }
-                val countryComponent = addressComponentsList?.find { it.types.contains("country") }
-
-                val city = cityComponent?.name
-                val county = countyComponent?.name
-                val country = countryComponent?.name
-                val coordinates = response.place.latLng
-
-
-            }
-
-            .addOnFailureListener { exception: Exception ->
-                if (exception is ApiException) {
-                    Log.e("PlaceInfo", "Place not found: ${exception.message}")
-                }
-            }
+    private fun logPlaceInformation(info: PlaceInfoState) {
+        Log.i("PlaceInfo", "City: ${info.city}")
+        Log.i("PlaceInfo", "County: ${info.county}")
+        Log.i("PlaceInfo", "Country: ${info.country}")
+        Log.i("PlaceInfo", "Coordinates: ${info.coordinates}")
     }
 
 }

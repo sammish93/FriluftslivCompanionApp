@@ -87,10 +87,12 @@ fun WeatherSearchScreen(
                     text = result.address,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { userViewModel.fetchPlaceInfo(result.placeId) }
+                        .clickable {
+                            userViewModel.fetchPlaceInfo(result.placeId)
+                            text = result.address
+                        }
                         .padding(16.dp)
                 )
-
             }
         }
     }

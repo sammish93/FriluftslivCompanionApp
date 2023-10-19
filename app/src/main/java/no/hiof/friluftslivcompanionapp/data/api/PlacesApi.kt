@@ -9,11 +9,12 @@ import com.google.android.libraries.places.api.net.FetchPlaceResponse
 import com.google.android.libraries.places.api.net.PlacesClient
 import no.hiof.friluftslivcompanionapp.data.states.PlaceInfoState
 import java.lang.Exception
+import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class PlacesApi(private val placesClient: PlacesClient) {
+class PlacesApi @Inject constructor(private val placesClient: PlacesClient) {
     private var addressList: List<AddressComponent>? = null
 
     suspend fun fetchPlaceInfo(placeId: String): PlaceInfoState {
