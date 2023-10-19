@@ -83,7 +83,10 @@ fun GoogleMapCreate(
     val lastKnownLocation = userState.lastKnownLocation
 
     val mapProperties =
-        MapProperties(isMyLocationEnabled = userState.isLocationPermissionGranted, mapType = MapType.TERRAIN)
+        MapProperties(
+            isMyLocationEnabled = userState.isLocationPermissionGranted,
+            mapType = MapType.TERRAIN
+        )
     val userLocation = getLastKnownLocation(lastKnownLocation)
 
     // Camera position defaults to Oslo if GPS coordinates cannot be retrieved.
@@ -91,93 +94,90 @@ fun GoogleMapCreate(
         userLocation ?: LatLng(
             DefaultLocation.OSLO.lat,
             DefaultLocation.OSLO.lon
-        ), 14f
+        ), if (userState.isLocationPermissionGranted) 14f else 5f
     )
 
     val cameraPositionState = rememberCameraPositionState { position = cameraPosition }
 
-    Box(
+
+    GoogleMap(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth(),
+        properties = mapProperties,
+        cameraPositionState = cameraPositionState,
+        onMapLongClick = { latLng ->
+            val closestNode = findClosestNode(latLng, nodes)
+            if (closestNode != null) {
+                tripsModel.removeNode(closestNode)
+            }
+        },
+        onMapClick = { latLng ->
+            tripsModel.addNode(latLng)
+        }
     ) {
-        GoogleMap(
-            modifier = Modifier
-                .fillMaxWidth(),
-            properties = mapProperties,
-            cameraPositionState = cameraPositionState,
-            onMapLongClick = { latLng ->
-                val closestNode = findClosestNode(latLng, nodes)
-                if (closestNode != null) {
-                    tripsModel.removeNode(closestNode)
-                }
-            },
-            onMapClick = { latLng ->
-                tripsModel.addNode(latLng)
-            }
-        ) {
-            // Add marker representing the nodes.
-            nodes.forEach { node ->
-                Marker(
-                    MarkerState(position = node),
-                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE),
-                    title = "Node",
-                    snippet = "$node"
-                )
-            }
+        // Add marker representing the nodes.
+        nodes.forEach { node ->
+            Marker(
+                MarkerState(position = node),
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE),
+                title = "Node",
+                snippet = "$node"
+            )
+        }
 
-            // Draw polyline if there are at least 2 nodes.
-            if (nodes.size >= 2) {
-                Polyline(
-                    points = nodes,
-                    color = Color.Red,
-                    width = 5f
-                )
-            }
+        // Draw polyline if there are at least 2 nodes.
+        if (nodes.size >= 2) {
+            Polyline(
+                points = nodes,
+                color = Color.Red,
+                width = 5f
+            )
+        }
 
-            // Add marker on the users location.
-            userLocation?.let { MarkerState(position = it) }?.let {
-                Marker(state = it, title = "Location", snippet = "You")
-            }
+        // Add marker on the users location.
+        userLocation?.let { MarkerState(position = it) }?.let {
+            Marker(state = it, title = "Location", snippet = "You")
+        }
 
-            // Animation for the camera if user position is changed.
-            // Commented out animation because of a relocation bug which kept centring camera on
-            // GPS coordinates.
-            /*
-            when (userState.isInitiallyNavigatedTo) {
-                false -> {
-                    when (userLocation) {
-                        null -> {
-                            // Updates the state so the when loop doesn't constantly fire.
-                            tripsModel.updateIsInitiallyNavigatedTo(true)
-                        }
+        // Animation for the camera if user position is changed.
+        // Commented out animation because of a relocation bug which kept centring camera on
+        // GPS coordinates.
+        /*
+        when (userState.isInitiallyNavigatedTo) {
+            false -> {
+                when (userLocation) {
+                    null -> {
+                        // Updates the state so the when loop doesn't constantly fire.
+                        tripsModel.updateIsInitiallyNavigatedTo(true)
+                    }
 
-                        else -> {
-                            LaunchedEffect(userLocation) {
-                                userLocation.let {
-                                    cameraPositionState.animate(
-                                        CameraUpdateFactory.newLatLngZoom(
-                                            it,
-                                            14f
-                                        )
+                    else -> {
+                        LaunchedEffect(userLocation) {
+                            userLocation.let {
+                                cameraPositionState.animate(
+                                    CameraUpdateFactory.newLatLngZoom(
+                                        it,
+                                        14f
                                     )
-                                }
-                                // Updates state so that the map isn't constantly repositioned to
-                                // a user's location.
-                                tripsModel.updateIsInitiallyNavigatedTo(true)
+                                )
                             }
+                            // Updates state so that the map isn't constantly repositioned to
+                            // a user's location.
+                            tripsModel.updateIsInitiallyNavigatedTo(true)
                         }
                     }
                 }
-
-                else -> {
-                    // Let it be, let it be.. Let it be, let it be.
-                    // Speaking words of wisdom. Let it beeEEeEEEEE.
-                }
             }
 
-             */
+            else -> {
+                // Let it be, let it be.. Let it be, let it be.
+                // Speaking words of wisdom. Let it beeEEeEEEEE.
+            }
         }
+
+         */
     }
+
 }
 
 // Lorena´s code.

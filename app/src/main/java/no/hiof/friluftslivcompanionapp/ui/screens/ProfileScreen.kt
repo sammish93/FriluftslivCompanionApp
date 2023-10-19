@@ -1,6 +1,9 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
+import android.content.Context
+import android.content.pm.PackageManager
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,6 +20,8 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
         style = CustomTypography.titleLarge,
         fontStyle = FontStyle.Italic,
         textAlign = TextAlign.Center,
-        modifier = modifier.fillMaxSize()
     )
+    Button(onClick = {  }) {
+        Text("Request GPS Permission")
+    }
 }
