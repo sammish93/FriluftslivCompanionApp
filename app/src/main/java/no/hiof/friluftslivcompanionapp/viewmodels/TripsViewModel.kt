@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
+import android.location.Location
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -70,7 +71,6 @@ class TripsViewModel @Inject constructor(
     // Function to add a node.
     fun addNode(node: LatLng) {
         _nodes.value = _nodes.value + node
-        calculateDistanceKmBetweenTwoNodes()
     }
 
     // Function to remove a node.
@@ -126,19 +126,31 @@ class TripsViewModel @Inject constructor(
         }
     }
 
-    private fun incrementCreateTripDistanceKm(distanceKm: Double) {
-        val previousDistance = _tripsState.value.createTripDistanceKm
-
+    private fun updateCreateTripDistanceKm(distanceMeters: Double) {
         _tripsState.update { currentState ->
             currentState.copy(
-                createTripDistanceKm = previousDistance + distanceKm
+                createTripDistanceKm = distanceMeters / 1000
             )
         }
     }
 
-    private fun calculateDistanceKmBetweenTwoNodes() {
-        //TODO calculate between long and lat
-        incrementCreateTripDistanceKm(1.0)
+    private fun calculateDistanceMetersBetweenTwoNodes(nodeFrom: LatLng, nodeTo: LatLng) : Double {
+        val distance = FloatArray(1)
+        Location.distanceBetween(nodeFrom.latitude, nodeFrom.longitude, nodeTo.latitude, nodeTo.longitude, distance)
+        return distance[0].toDouble()
+    }
+
+    fun calculateTotalDistanceMeters(nodeList: List<LatLng>) : Double {
+        var totalDistance: Double = 0.0
+        val listSize = nodeList.size
+
+        if (listSize >= 2) {
+            for (i in 0 until listSize - 1) {
+                totalDistance += calculateDistanceMetersBetweenTwoNodes(nodeList[i], nodeList[i + 1])
+            }
+        }
+
+        return totalDistance
     }
 
     // Function to clear all data relating to create trip.
@@ -149,7 +161,7 @@ class TripsViewModel @Inject constructor(
                 createTripDuration = Duration.ofHours(1).plus(Duration.ofMinutes(30)),
                 createTripDifficulty = 3,
                 createTripDescription = "",
-                createTripDistanceKm = 1.0
+                createTripDistanceKm = 0.0
             )
         }
         removeNodes()
@@ -158,6 +170,9 @@ class TripsViewModel @Inject constructor(
     fun createTrip() {
         val tripState = _tripsState.value
         val route = _nodes.value
+
+        updateCreateTripDistanceKm(calculateTotalDistanceMeters(route))
+
         val trip = TripFactory.createTrip(
             tripState.createTripType,
             route,

@@ -217,7 +217,7 @@ fun TripsCreateScreen(
 
             // Create trip button.
             Button(
-                onClick = { },
+                onClick = { viewModel.createTrip() },
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
