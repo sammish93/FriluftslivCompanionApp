@@ -134,10 +134,20 @@ class UserViewModel @Inject constructor(
         val request = FetchPlaceRequest.newInstance(placeId, placeFields)
         placesClient.fetchPlace(request)
             .addOnSuccessListener { response: FetchPlaceResponse ->
-                val place = response.place
+                val addressComponentsList = response.place.addressComponents?.asList()
+                val cityComponent = addressComponentsList?.find { it.types.contains("locality") }
+                val countyComponent = addressComponentsList?.find { it.types.contains("administrative_area_level_1") }
+                val countryComponent = addressComponentsList?.find { it.types.contains("country") }
 
-                Log.i("PlaceInfo", "Address Components: ${place.addressComponents}")
-                Log.i("PlaceInfo", "Coordinates: ${place.latLng}")
+                val city = cityComponent?.name
+                val county = countyComponent?.name
+                val country = countryComponent?.name
+                val coordinates = response.place.latLng
+
+                Log.i("PlaceInfo",
+                    "City: $city, County: $county, Country: $country, " +
+                            "Coordinates: ${coordinates?.latitude}, ${coordinates?.longitude}")
+
             }
 
             .addOnFailureListener { exception: Exception ->
