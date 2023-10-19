@@ -1,8 +1,47 @@
 package no.hiof.friluftslivcompanionapp.domain
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import no.hiof.friluftslivcompanionapp.BuildConfig
 import no.hiof.friluftslivcompanionapp.data.api.GeocodingApi
 
 
+class Geocoding private constructor() {
+    private val geocodingApi = GeocodingApi()
+    private val geocodingApiService = geocodingApi.getApiService()
+
+    companion object {
+        private var instance: Geocoding? = null
+
+        fun getInstance(): Geocoding {
+            return instance ?: synchronized(this) {
+                instance ?: Geocoding().also { instance = it }
+            }
+        }
+    }
+
+    suspend fun getRegionCode(latitude: Double?, longitude: Double?): String? {
+        return withContext(Dispatchers.IO) {
+            val latlng = "$latitude,$longitude"
+            val apiKey = BuildConfig.GOOGLE_MAPS_API_KEY
+            val componentsFilter = "country:NO"
+            val response = geocodingApiService.getAddressFromCoordinates(latlng, apiKey, componentsFilter).execute()
+
+            if (response.isSuccessful) {
+                val geocodeResponse = response.body()
+                geocodeResponse?.let { response ->
+                    val addressComponents = response.results.firstOrNull()?.address_components
+                    val regionCode = addressComponents?.firstOrNull {
+                        it.types.contains("administrative_area_level_1")
+                    }?.short_name
+                    return@withContext "NO-$regionCode"
+                }
+            }
+            return@withContext null
+        }
+    }
+}
+
+/*
 object Geocoding {
     private val geocodingApi = GeocodingApi()
     private val geocodingApiService = geocodingApi.getApiService()
@@ -38,7 +77,7 @@ object Geocoding {
         return null
     }
 }
-
+*/
 //Denne returnerer : Region Code is null. I testen laget i testklassen for api.
 /*
 fun getRegionCode(latitude: Double?, longitude: Double?): String? {

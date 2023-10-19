@@ -103,11 +103,10 @@ class FloraFaunaViewModel @Inject constructor(
         }
     }
 
-    //Denne returnerer Error: Null
     suspend fun searchBirdsByYourLocation(latitude: Double?, longitude: Double?) {
         viewModelScope.launch {
             try {
-                val regionCode = Geocoding.getRegionCode(latitude, longitude)
+                val regionCode = Geocoding.getInstance().getRegionCode(latitude, longitude)
 
                 if (regionCode != null) {
                     val result = api.getRecentObservations(regionCode = regionCode, maxResult = 2)
@@ -128,6 +127,7 @@ class FloraFaunaViewModel @Inject constructor(
             }
         }
     }
+
 
 
 

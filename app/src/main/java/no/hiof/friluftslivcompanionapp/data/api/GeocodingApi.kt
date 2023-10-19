@@ -11,13 +11,36 @@ import no.hiof.friluftslivcompanionapp.data.network.RetrofitBuilder
  */
 
 class GeocodingApi {
-    private val geocodingService : GeocodingApiService by lazy{
+    private val geocodingService: GeocodingApiService by lazy {
         val retrofit = RetrofitBuilder.buildGeocodingApi()
         retrofit.create(GeocodingApiService::class.java)
+    }
+    fun getApiService(): GeocodingApiService {
+        return geocodingService
+    }
+}
+
+/*
+class GeocodingApi private constructor() {
+    private val geocodingService: GeocodingApiService by lazy {
+        val retrofit = RetrofitBuilder.buildGeocodingApi()
+        retrofit.create(GeocodingApiService::class.java)
+    }
+
+    companion object {
+        private var instance: GeocodingApi? = null
+
+        fun getInstance(): GeocodingApi {
+            return instance ?: synchronized(this) {
+                instance ?: GeocodingApi().also { instance = it }
+            }
+        }
     }
 
     fun getApiService(): GeocodingApiService {
         return geocodingService
     }
-}
+}*/
+
+
 
