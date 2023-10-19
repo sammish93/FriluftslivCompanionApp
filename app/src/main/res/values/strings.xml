@@ -17,4 +17,12 @@
     <string name="trip_type_cross_country_ski">Cross-Country Ski</string>
     <string name="trip_type_climb">Climb</string>
     <string name="trips_create_dropdown_choose_something_exciting">Choose something exciting!</string>
+    <string name="trips_create_description">Description</string>
+    <string name="trips_create_create_trip">Create Trip</string>
+    <string name="trips_create_trip_type">Trip Type</string>
+    <string name="trips_create_clear_trip">Clear Trip</string>
+    <string name="trips_create_how_to_use_the_map">How to use the map</string>
+    <string name="trips_create_got_it">Got it!</string>
+    <string name="trips_create_tap_the_map">Tap the map to add points and draw routes.</string>
+    <string name="trips_create_hold_on_a_point">Hold on a point to remove it from the route.</string>
 </resources>

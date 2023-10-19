@@ -21,9 +21,12 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -122,7 +125,7 @@ fun TripsCreateScreen(
                     readOnly = true,
                     value = stringResource(dropdownSelectedText),
                     onValueChange = {},
-                    label = { Text("Trip Type") },
+                    label = { Text(stringResource(R.string.trips_create_trip_type)) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) },
                 )
 
@@ -142,7 +145,7 @@ fun TripsCreateScreen(
             }
 
             // Duration of trip in hours and minutes.
-            Button(onClick = {
+            ElevatedButton(onClick = {
                 viewModel.updateCreateTripDuration(
                     tripState.createTripDuration.minus(
                         Duration.ofHours(1)
@@ -151,7 +154,7 @@ fun TripsCreateScreen(
             }) {
                 Text(text = "- " + stringResource(R.string.hours))
             }
-            Button(onClick = {
+            ElevatedButton(onClick = {
                 viewModel.updateCreateTripDuration(
                     tripState.createTripDuration.minus(
                         Duration.ofMinutes(1)
@@ -167,31 +170,31 @@ fun TripsCreateScreen(
                     stringResource(R.string.minutes)
                 )
             )
-            Button(onClick = {
+            ElevatedButton(onClick = {
                 viewModel.updateCreateTripDuration(
                     tripState.createTripDuration.plus(
                         Duration.ofMinutes(1)
                     )
                 )
             }) {
-                Text(text = "+ " + stringResource(R.string.minutes))
+                Text(text = stringResource(R.string.minutes) + " +")
             }
-            Button(onClick = {
+            ElevatedButton(onClick = {
                 viewModel.updateCreateTripDuration(
                     tripState.createTripDuration.plus(
                         Duration.ofHours(1)
                     )
                 )
             }) {
-                Text(text = "+ " + stringResource(R.string.hours))
+                Text(text = stringResource(R.string.hours)  + " +")
             }
 
             // Difficulty of trip from 1 to 5.
-            Button(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty - 1) }) {
+            ElevatedButton(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty - 1) }) {
                 Text(text = "-")
             }
             Text(TripFactory.convertTripDifficultyFromIntToString(tripState.createTripDifficulty))
-            Button(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty + 1) }) {
+            ElevatedButton(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty + 1) }) {
                 Text(text = "+")
             }
 
@@ -199,7 +202,7 @@ fun TripsCreateScreen(
             TextField(
                 value = tripState.createTripDescription,
                 onValueChange = { viewModel.updateCreateTripDescription(it) },
-                label = { Text("Description") },
+                label = { Text(stringResource(R.string.trips_create_description)) },
                 singleLine = false,
                 isError = tripState.createTripDescription.isBlank()
             )
@@ -212,7 +215,7 @@ fun TripsCreateScreen(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add",
                 )
-                Text("Create Trip", modifier = Modifier.padding(start = 4.dp))
+                Text(stringResource(R.string.trips_create_create_trip), modifier = Modifier.padding(start = 4.dp))
             }
 
             Button(
@@ -220,12 +223,13 @@ fun TripsCreateScreen(
                     dropdownSelectedText = R.string.trips_create_dropdown_choose_something_exciting
                     viewModel.clearTrip()
                 },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
                 Icon(
                     imageVector = Icons.Default.Clear,
                     contentDescription = "Clear",
                 )
-                Text("Clear Trip", modifier = Modifier.padding(start = 4.dp))
+                Text(stringResource(R.string.trips_create_clear_trip), modifier = Modifier.padding(start = 4.dp))
             }
 
             HorizontalDivider()
@@ -249,7 +253,7 @@ fun InfoButtonWithPopup(modifier: Modifier = Modifier) {
             imageVector = Icons.Default.Info,
             contentDescription = "Info",
         )
-        Text("How to use the map", modifier = Modifier.padding(start = 4.dp))
+        Text(stringResource(R.string.trips_create_how_to_use_the_map), modifier = Modifier.padding(start = 4.dp))
     }
 
 
@@ -257,11 +261,11 @@ fun InfoButtonWithPopup(modifier: Modifier = Modifier) {
     if (showPopup) {
         AlertDialog(
             onDismissRequest = { showPopup = false },
-            title = { Text(text = "How to use the map") },
+            title = { Text(text = stringResource(R.string.trips_create_how_to_use_the_map)) },
             text = { CardPopup() },
             confirmButton = {
                 Button(onClick = { showPopup = false }) {
-                    Text("Got it!")
+                    Text(stringResource(R.string.trips_create_got_it))
                 }
             }
         )
@@ -282,7 +286,7 @@ fun CardPopup() {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "Tap the map to add points and draw routes.",
+                text = stringResource(R.string.trips_create_tap_the_map),
                 fontSize = 16.sp
             )
         }
@@ -297,7 +301,7 @@ fun CardPopup() {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "Hold on a point to remove it from the route.",
+                text = stringResource(R.string.trips_create_hold_on_a_point),
                 fontSize = 16.sp
             )
         }
