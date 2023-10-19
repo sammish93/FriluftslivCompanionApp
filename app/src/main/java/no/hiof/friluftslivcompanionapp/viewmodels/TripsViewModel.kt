@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
 import no.hiof.friluftslivcompanionapp.data.states.TripsState
+import no.hiof.friluftslivcompanionapp.domain.LocationFormatter
 import no.hiof.friluftslivcompanionapp.domain.TripFactory
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.enums.TripType
@@ -129,28 +130,9 @@ class TripsViewModel @Inject constructor(
     private fun updateCreateTripDistanceKm(distanceMeters: Double) {
         _tripsState.update { currentState ->
             currentState.copy(
-                createTripDistanceKm = distanceMeters / 1000
+                createTripDistanceKm = distanceMeters
             )
         }
-    }
-
-    private fun calculateDistanceMetersBetweenTwoNodes(nodeFrom: LatLng, nodeTo: LatLng) : Double {
-        val distance = FloatArray(1)
-        Location.distanceBetween(nodeFrom.latitude, nodeFrom.longitude, nodeTo.latitude, nodeTo.longitude, distance)
-        return distance[0].toDouble()
-    }
-
-    fun calculateTotalDistanceMeters(nodeList: List<LatLng>) : Double {
-        var totalDistance: Double = 0.0
-        val listSize = nodeList.size
-
-        if (listSize >= 2) {
-            for (i in 0 until listSize - 1) {
-                totalDistance += calculateDistanceMetersBetweenTwoNodes(nodeList[i], nodeList[i + 1])
-            }
-        }
-
-        return totalDistance
     }
 
     // Function to clear all data relating to create trip.
@@ -167,11 +149,12 @@ class TripsViewModel @Inject constructor(
         removeNodes()
     }
 
+    // Function
     fun createTrip() {
         val tripState = _tripsState.value
         val route = _nodes.value
 
-        updateCreateTripDistanceKm(calculateTotalDistanceMeters(route))
+        updateCreateTripDistanceKm(LocationFormatter.calculateTotalDistanceKilometers(route))
 
         val trip = TripFactory.createTrip(
             tripState.createTripType,
@@ -181,5 +164,7 @@ class TripsViewModel @Inject constructor(
             tripState.createTripDistanceKm,
             tripState.createTripDifficulty
         )
+
+        //TODO Integrate database writing and clear create trip values on successful write.
     }
 }
