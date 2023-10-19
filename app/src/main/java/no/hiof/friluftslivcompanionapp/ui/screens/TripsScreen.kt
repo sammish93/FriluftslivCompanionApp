@@ -28,7 +28,6 @@ fun TripsScreen(
         1
     )
 
-    // https://en.wikipedia.org/wiki/ISO_3166-2:NO#:~:text=ISO%203166%2D2%3ANO%20is,coded%20in%20ISO%203166%2D1.
     // Region code can be created using a function ->
     // fun getRegionCode(county: String) : String {
     // when (county) {

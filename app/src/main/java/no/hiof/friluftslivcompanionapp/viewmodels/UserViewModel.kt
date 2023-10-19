@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.model.RectangularBounds
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.auth.FirebaseUser
@@ -18,6 +20,7 @@ import no.hiof.friluftslivcompanionapp.data.api.PlacesApi
 import no.hiof.friluftslivcompanionapp.data.states.AutoCompleteState
 import no.hiof.friluftslivcompanionapp.data.states.PlaceInfoState
 import no.hiof.friluftslivcompanionapp.data.states.UserState
+import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import javax.inject.Inject
 
 /**
@@ -118,7 +121,13 @@ class UserViewModel @Inject constructor(
     }
 
     private fun getAutocompleteRequester(query: String): FindAutocompletePredictionsRequest {
+        val bounds = RectangularBounds.newInstance(
+            LatLng(58.454924, 6.291027),
+            LatLng(63.504264, 11.674327)
+        )
+
         return FindAutocompletePredictionsRequest.builder()
+            .setLocationBias(bounds)
             .setQuery(query)
             .build()
     }
