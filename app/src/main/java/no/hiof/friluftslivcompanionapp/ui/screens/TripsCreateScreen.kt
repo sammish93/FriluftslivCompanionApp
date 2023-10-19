@@ -14,6 +14,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Refresh
@@ -21,7 +22,11 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.HorizontalDivider
@@ -37,6 +42,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -54,6 +60,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.domain.DateFormatter
+import no.hiof.friluftslivcompanionapp.domain.TripFactory
 import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapCreate
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
@@ -71,6 +78,8 @@ fun TripsCreateScreen(
     // Variables for Bottom Sheet - see https://m3.material.io/components/bottom-sheets/overview
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
+    var dropdownExpanded by remember { mutableStateOf(false) }
+    var dropdownSelectedText by remember { mutableIntStateOf(R.string.trips_create_dropdown_choose_something_exciting) }
 
     val tripState by viewModel.tripsState.collectAsState()
 
@@ -102,9 +111,37 @@ fun TripsCreateScreen(
             },
             sheetState = sheetState
         ) {
-            //type of trip
+            // Type of trip.
+            ExposedDropdownMenuBox(expanded = dropdownExpanded, onExpandedChange = {
+                dropdownExpanded = !dropdownExpanded
+            }) {
 
-            //duration
+                TextField(
+                    modifier = Modifier
+                        .menuAnchor(),
+                    readOnly = true,
+                    value = stringResource(dropdownSelectedText),
+                    onValueChange = {},
+                    label = { Text("Trip Type") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) },
+                )
+
+                ExposedDropdownMenu(expanded = dropdownExpanded, onDismissRequest = {
+                    dropdownExpanded = false
+                }) {
+                    viewModel.tripTypes.forEach { tripType ->
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(tripType.label)) },
+                            onClick = {
+                                viewModel.updateCreateTripType(tripType)
+                                dropdownSelectedText = tripType.label
+                                dropdownExpanded = false
+                            })
+                    }
+                }
+            }
+
+            // Duration of trip in hours and minutes.
             Button(onClick = {
                 viewModel.updateCreateTripDuration(
                     tripState.createTripDuration.minus(
@@ -149,11 +186,11 @@ fun TripsCreateScreen(
                 Text(text = "+ " + stringResource(R.string.hours))
             }
 
-            //difficulty
+            // Difficulty of trip from 1 to 5.
             Button(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty - 1) }) {
                 Text(text = "-")
             }
-            Text(tripState.createTripDifficulty.toString())
+            Text(TripFactory.convertTripDifficultyFromIntToString(tripState.createTripDifficulty))
             Button(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty + 1) }) {
                 Text(text = "+")
             }
@@ -163,7 +200,8 @@ fun TripsCreateScreen(
                 value = tripState.createTripDescription,
                 onValueChange = { viewModel.updateCreateTripDescription(it) },
                 label = { Text("Description") },
-                singleLine = false
+                singleLine = false,
+                isError = tripState.createTripDescription.isBlank()
             )
 
             // Create trip button.
@@ -175,6 +213,19 @@ fun TripsCreateScreen(
                     contentDescription = "Add",
                 )
                 Text("Create Trip", modifier = Modifier.padding(start = 4.dp))
+            }
+
+            Button(
+                onClick = {
+                    dropdownSelectedText = R.string.trips_create_dropdown_choose_something_exciting
+                    viewModel.clearTrip()
+                },
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Clear,
+                    contentDescription = "Clear",
+                )
+                Text("Clear Trip", modifier = Modifier.padding(start = 4.dp))
             }
 
             HorizontalDivider()

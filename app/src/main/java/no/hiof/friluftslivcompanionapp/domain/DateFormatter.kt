@@ -72,6 +72,16 @@ object DateFormatter {
         return ""
     }
 
+    /**
+     * Takes a duration and two localised strings and outputs a 'pretty' string.
+     * @param duration A time measurement as type Duration
+     * @param hoursLocalised A string which should be passed as a string resource. Due to the
+     * constraints of non-composable functions, stringResources should be passed here.
+     * @param minutesLocalised A string which should be passed as a string resource. Due to the
+     * constraints of non-composable functions, stringResources should be passed here.
+     * @return Returns a pretty string. A Duration of 01HH30MM00SS would return "1 Hours 30 Minutes"
+     * if hoursLocalised and minutesLocalised are passed in English.
+     */
     fun formatDurationToPrettyString(
         duration: Duration,
         hoursLocalised: String,

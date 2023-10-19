@@ -47,6 +47,12 @@ class TripsViewModel @Inject constructor(
         Screen.TRIPS_CREATE to "Create Trip"
     )
 
+    var tripTypes = listOf(
+        TripType.HIKE,
+        TripType.SKI,
+        TripType.CLIMB
+    )
+
     override fun changeHighlightedTab(index: Int) {
         _uiState.update { currentState ->
             currentState.copy(
@@ -57,7 +63,7 @@ class TripsViewModel @Inject constructor(
 
     // Function to retrieve the last highlighted tab.
     override fun getHighlightedTab(): Int {
-       return  _uiState.value.currentTabIndex
+        return _uiState.value.currentTabIndex
     }
 
     // Function to add a node.
@@ -68,6 +74,10 @@ class TripsViewModel @Inject constructor(
     // Function to remove a node.
     fun removeNode(node: LatLng) {
         _nodes.value = _nodes.value.filter { it != node }
+    }
+
+    fun removeNodes() {
+        _nodes.value = listOf()
     }
 
     fun updateIsInitiallyNavigatedTo(isInitiallyNavigatedTo: Boolean) {
@@ -112,5 +122,17 @@ class TripsViewModel @Inject constructor(
                 createTripDescription = description
             )
         }
+    }
+
+    fun clearTrip() {
+        _tripsState.update { currentState ->
+            currentState.copy(
+                createTripType = null,
+                createTripDuration = Duration.ofHours(1).plus(Duration.ofMinutes(30)),
+                createTripDifficulty = 3,
+                createTripDescription = ""
+            )
+        }
+        removeNodes()
     }
 }

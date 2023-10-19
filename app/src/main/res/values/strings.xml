@@ -13,4 +13,8 @@
     <string name="hours">Hours</string>
     <string name="minutes">Minutes</string>
     <string name="current_weather">Current Weather</string>
+    <string name="trip_type_hike">Hike</string>
+    <string name="trip_type_cross_country_ski">Cross-Country Ski</string>
+    <string name="trip_type_climb">Climb</string>
+    <string name="trips_create_dropdown_choose_something_exciting">Choose something exciting!</string>
 </resources>

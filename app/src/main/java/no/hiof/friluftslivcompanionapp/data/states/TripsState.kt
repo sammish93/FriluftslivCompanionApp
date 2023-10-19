@@ -13,8 +13,8 @@ import java.time.Duration
  */
 data class TripsState(
     val isInitiallyNavigatedTo: Boolean = false,
-    val createTripType: TripType = TripType.HIKE,
+    val createTripType: TripType? = null,
     val createTripDuration: Duration = Duration.ofHours(1).plus(Duration.ofMinutes(30)),
     val createTripDifficulty: Int = 3,
-    val createTripDescription: String = "i like it"
+    val createTripDescription: String = ""
 )
