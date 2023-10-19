@@ -1,12 +1,18 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
 import android.location.Location
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.model.AddressComponent
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.FetchPlaceResponse
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.auth.FirebaseUser
@@ -18,6 +24,7 @@ import kotlinx.coroutines.flow.update
 import no.hiof.friluftslivcompanionapp.data.states.AutoCompleteState
 import no.hiof.friluftslivcompanionapp.data.states.SelectedLocationState
 import no.hiof.friluftslivcompanionapp.data.states.UserState
+import java.lang.Exception
 import javax.inject.Inject
 
 /**
@@ -41,7 +48,6 @@ class UserViewModel @Inject constructor(
 
     // Used for Places API.
     val locationAutoFill = mutableStateListOf<AutoCompleteState>()
-    private var selectedLocation by mutableStateOf(SelectedLocationState())
 
     // Updates the last known location in the map's state.
     fun updateLocation(location: Location?) {
@@ -119,7 +125,26 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    fun setSelectedLocationValues(city: String, coordinates: String, regionCode: String) {
-        selectedLocation = SelectedLocationState(city, coordinates, regionCode)
+    fun fetchPlaceInfo(placeId: String) {
+        val placeFields = listOf(
+            Place.Field.ADDRESS_COMPONENTS,
+            Place.Field.LAT_LNG
+        )
+
+        val request = FetchPlaceRequest.newInstance(placeId, placeFields)
+        placesClient.fetchPlace(request)
+            .addOnSuccessListener { response: FetchPlaceResponse ->
+                val place = response.place
+
+                Log.i("PlaceInfo", "Address Components: ${place.addressComponents}")
+                Log.i("PlaceInfo", "Coordinates: ${place.latLng}")
+            }
+
+            .addOnFailureListener { exception: Exception ->
+                if (exception is ApiException) {
+                    Log.e("PlaceInfo", "Place not found: ${exception.message}")
+                }
+            }
     }
+
 }
