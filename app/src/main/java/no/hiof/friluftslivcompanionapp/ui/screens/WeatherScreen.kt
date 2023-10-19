@@ -52,10 +52,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
+import no.hiof.friluftslivcompanionapp.data.states.UserState
+import no.hiof.friluftslivcompanionapp.data.states.WeatherState
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.enums.WeatherUnit
+import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
 import no.hiof.friluftslivcompanionapp.ui.components.PrimaryWeatherCard
 import no.hiof.friluftslivcompanionapp.ui.components.SecondaryWeatherCard
@@ -93,11 +97,7 @@ fun WeatherScreen(
     when (weatherState.isLoading) {
         // When the coroutine handling an API request is still running async then a progress bar
         // is shown.
-        true -> CircularProgressIndicator(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentSize(Alignment.Center)
-        )
+        true -> CustomLoadingScreen()
 
         else -> when (weatherState.isFailure || weatherState.isNoGps) {
             // When a successful reponse has been returned then the following is displayed.
@@ -106,11 +106,11 @@ fun WeatherScreen(
                     // A button that allows the user to click and display the Bottom Sheet.
                     floatingActionButton = {
                         ExtendedFloatingActionButton(
-                            text = { Text("Settings") },
+                            text = { Text(stringResource(R.string.settings)) },
                             icon = {
                                 Icon(
                                     Icons.Filled.Settings,
-                                    contentDescription = "Change Forecast Settings"
+                                    contentDescription = stringResource(R.string.weather_change_forecast_settings)
                                 )
                             },
                             onClick = {
@@ -238,13 +238,17 @@ fun WeatherScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = if (weatherState.isNoGps) stringResource(R.string.error_no_gps_location_found) else stringResource(R.string.error_retrieving_api_success_response),
+                        text = if (weatherState.isNoGps) stringResource(R.string.error_no_gps_location_found) else stringResource(
+                            R.string.error_retrieving_api_success_response
+                        ),
                         style = CustomTypography.headlineMedium,
                         textAlign = TextAlign.Center,
                         modifier = modifier.wrapContentSize(Alignment.Center)
                     )
                     IconButton(onClick = {
                         CoroutineScope(Dispatchers.Default).launch {
+                            //TODO Add functionality to prompt the user to share their location if
+                            // permissions aren't currently given.
                             viewModel.getWeatherForecast(
                                 userState.lastKnownLocation?.latitude,
                                 userState.lastKnownLocation?.longitude
@@ -268,66 +272,75 @@ fun WeatherScreen(
             },
             sheetState = sheetState
         ) {
-            Column(
-                Modifier
-                    .selectableGroup()
-                    .padding(horizontal = 20.dp)
-                    .padding(bottom = 24.dp)
-            ) {
-                viewModel.radioOptions.forEach { option ->
-                    val unitEnum = option.key
-                    val unitLabel = option.value
+            WeatherBottomSheet(viewModel, weatherState, userState)
+        }
+    }
+}
 
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 12.dp)
-                            .selectable(
-                                selected = (unitEnum == weatherState.unitChoice),
-                                onClick = {
-                                    viewModel.updateWeatherUnit(unitEnum)
-                                    CoroutineScope(Dispatchers.Default).launch {
-                                        viewModel.getWeatherForecast(
-                                            userState.lastKnownLocation?.latitude,
-                                            userState.lastKnownLocation?.longitude
-                                        )
-                                    }
-                                },
-                                role = Role.RadioButton
-                            ),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = (unitEnum == weatherState.unitChoice),
-                            onClick = null // null recommended for accessibility with screenreaders
-                        )
-                        Text(
-                            text = unitLabel,
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
-                    }
-                }
-                Button(
-                    modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .fillMaxWidth(),
-                    onClick = {
-                        CoroutineScope(Dispatchers.Default).launch {
-                            viewModel.getWeatherForecast(
-                                userState.lastKnownLocation?.latitude,
-                                userState.lastKnownLocation?.longitude
-                            )
-                        }
-                    }
-                ) {
-                    Icon(
-                        Icons.Filled.Refresh,
-                        contentDescription = "Refresh"
+@Composable
+fun WeatherBottomSheet(
+    viewModel: WeatherViewModel,
+    weatherState: WeatherState,
+    userState: UserState
+) {
+    Column(
+        Modifier
+            .selectableGroup()
+            .padding(horizontal = 20.dp)
+            .padding(bottom = 24.dp)
+    ) {
+        viewModel.radioOptions.forEach { option ->
+            val unitEnum = option.key
+            val unitLabel = option.value
+
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp)
+                    .selectable(
+                        selected = (unitEnum == weatherState.unitChoice),
+                        onClick = {
+                            viewModel.updateWeatherUnit(unitEnum)
+                            CoroutineScope(Dispatchers.Default).launch {
+                                viewModel.getWeatherForecast(
+                                    userState.lastKnownLocation?.latitude,
+                                    userState.lastKnownLocation?.longitude
+                                )
+                            }
+                        },
+                        role = Role.RadioButton
+                    ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(
+                    selected = (unitEnum == weatherState.unitChoice),
+                    onClick = null // null recommended for accessibility with screenreaders
+                )
+                Text(
+                    text = unitLabel,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+            }
+        }
+        Button(
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+                .fillMaxWidth(),
+            onClick = {
+                CoroutineScope(Dispatchers.Default).launch {
+                    viewModel.getWeatherForecast(
+                        userState.lastKnownLocation?.latitude,
+                        userState.lastKnownLocation?.longitude
                     )
-                    Text("Update Weather Forecast", modifier = Modifier.padding(start = 4.dp))
                 }
             }
+        ) {
+            Icon(
+                Icons.Filled.Refresh,
+                contentDescription = "Refresh"
+            )
+            Text("Update Weather Forecast", modifier = Modifier.padding(start = 4.dp))
         }
     }
 }

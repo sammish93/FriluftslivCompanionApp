@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.update
 import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
 import no.hiof.friluftslivcompanionapp.data.states.TripsState
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
+import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
+import java.time.Duration
 import javax.inject.Inject
 
 // NOTE: Composable Screens in app/ui/screens can communicate with this viewmodel (and thus the data
@@ -40,9 +42,15 @@ class TripsViewModel @Inject constructor(
     val nodes: StateFlow<List<LatLng>> = _nodes.asStateFlow()
 
     override var tabDestinations = mapOf(
-        Screen.TRIPS to "Trips",
-        Screen.TRIPS_RECENT_ACTIVITY to "Recent Activity",
-        Screen.TRIPS_CREATE to "Create Trip"
+        Screen.TRIPS to Screen.TRIPS.navBarLabel,
+        Screen.TRIPS_RECENT_ACTIVITY to Screen.TRIPS_RECENT_ACTIVITY.navBarLabel,
+        Screen.TRIPS_CREATE to Screen.TRIPS_CREATE.navBarLabel
+    )
+
+    var tripTypes = listOf(
+        TripType.HIKE,
+        TripType.SKI,
+        TripType.CLIMB
     )
 
     override fun changeHighlightedTab(index: Int) {
@@ -55,7 +63,7 @@ class TripsViewModel @Inject constructor(
 
     // Function to retrieve the last highlighted tab.
     override fun getHighlightedTab(): Int {
-       return  _uiState.value.currentTabIndex
+        return _uiState.value.currentTabIndex
     }
 
     // Function to add a node.
@@ -68,11 +76,71 @@ class TripsViewModel @Inject constructor(
         _nodes.value = _nodes.value.filter { it != node }
     }
 
+    fun removeNodes() {
+        _nodes.value = listOf()
+    }
+
     fun updateIsInitiallyNavigatedTo(isInitiallyNavigatedTo: Boolean) {
         _tripsState.update { currentState ->
             currentState.copy(
                 isInitiallyNavigatedTo = isInitiallyNavigatedTo
             )
         }
+    }
+
+    fun updateCreateTripType(tripType: TripType) {
+        _tripsState.update { currentState ->
+            currentState.copy(
+                createTripType = tripType
+            )
+        }
+    }
+
+    fun updateCreateTripDuration(duration: Duration) {
+        if (!duration.isNegative) {
+            _tripsState.update { currentState ->
+                currentState.copy(
+                    createTripDuration = duration
+                )
+            }
+        }
+    }
+
+    fun updateCreateTripDifficulty(difficulty: Int) {
+        if (difficulty in 1..5) {
+            _tripsState.update { currentState ->
+                currentState.copy(
+                    createTripDifficulty = difficulty
+                )
+            }
+        }
+    }
+
+    fun updateCreateTripDescription(description: String) {
+        _tripsState.update { currentState ->
+            currentState.copy(
+                createTripDescription = description
+            )
+        }
+    }
+
+    fun clearTrip() {
+        _tripsState.update { currentState ->
+            currentState.copy(
+                createTripType = null,
+                createTripDuration = Duration.ofHours(1).plus(Duration.ofMinutes(30)),
+                createTripDifficulty = 3,
+                createTripDescription = ""
+            )
+        }
+        removeNodes()
+    }
+
+    fun createTrip() {
+        _tripsState.value.createTripType
+        _tripsState.value.createTripDuration
+        _tripsState.value.createTripDifficulty
+        _tripsState.value.createTripDescription
+        _nodes.value
     }
 }

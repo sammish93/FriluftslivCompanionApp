@@ -25,7 +25,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,7 +37,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -68,7 +66,11 @@ import no.hiof.friluftslivcompanionapp.utils.getLastKnownLocation
  * A marker will be placed on the user's location with a title "Location" and a snippet "You".
  */
 @Composable
-fun GoogleMap(viewModel: UserViewModel, tripsModel: TripsViewModel) {
+fun GoogleMapCreate(
+    viewModel: UserViewModel,
+    tripsModel: TripsViewModel,
+    modifier: Modifier = Modifier
+) {
 
     // State to hold nodes added by user taps.
     val nodes by tripsModel.nodes.collectAsState()
@@ -81,7 +83,10 @@ fun GoogleMap(viewModel: UserViewModel, tripsModel: TripsViewModel) {
     val lastKnownLocation = userState.lastKnownLocation
 
     val mapProperties =
-        MapProperties(isMyLocationEnabled = lastKnownLocation != null, mapType = MapType.TERRAIN)
+        MapProperties(
+            isMyLocationEnabled = userState.isLocationPermissionGranted,
+            mapType = MapType.TERRAIN
+        )
     val userLocation = getLastKnownLocation(lastKnownLocation)
 
     // Camera position defaults to Oslo if GPS coordinates cannot be retrieved.
@@ -89,175 +94,90 @@ fun GoogleMap(viewModel: UserViewModel, tripsModel: TripsViewModel) {
         userLocation ?: LatLng(
             DefaultLocation.OSLO.lat,
             DefaultLocation.OSLO.lon
-        ), 14f
+        ), if (userState.isLocationPermissionGranted) 14f else 5f
     )
+
     val cameraPositionState = rememberCameraPositionState { position = cameraPosition }
 
-    Box(
+
+    GoogleMap(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth(),
+        properties = mapProperties,
+        cameraPositionState = cameraPositionState,
+        onMapLongClick = { latLng ->
+            val closestNode = findClosestNode(latLng, nodes)
+            if (closestNode != null) {
+                tripsModel.removeNode(closestNode)
+            }
+        },
+        onMapClick = { latLng ->
+            tripsModel.addNode(latLng)
+        }
     ) {
-        GoogleMap(
-            modifier = Modifier
-                .fillMaxWidth(),
-            properties = mapProperties,
-            cameraPositionState = cameraPositionState,
-            onMapLongClick = { latLng ->
-                val closestNode = findClosestNode(latLng, nodes)
-                if (closestNode != null) {
-                    tripsModel.removeNode(closestNode)
-                }
-            },
-            onMapClick = { latLng ->
-                tripsModel.addNode(latLng)
-            }
-        ) {
-            // Add marker representing the nodes.
-            nodes.forEach { node ->
-                Marker(
-                    MarkerState(position = node),
-                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE),
-                    title = "Node",
-                    snippet = "$node"
-                )
-            }
+        // Add marker representing the nodes.
+        nodes.forEach { node ->
+            Marker(
+                MarkerState(position = node),
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE),
+                title = "Node",
+                snippet = "$node"
+            )
+        }
 
-            // Draw polyline if there are at least 2 nodes.
-            if (nodes.size >= 2) {
-                Polyline(
-                    points = nodes,
-                    color = Color.Red,
-                    width = 5f
-                )
-            }
+        // Draw polyline if there are at least 2 nodes.
+        if (nodes.size >= 2) {
+            Polyline(
+                points = nodes,
+                color = Color.Red,
+                width = 5f
+            )
+        }
 
-            // Add marker on the users location.
-            userLocation?.let { MarkerState(position = it) }?.let {
-                Marker(state = it, title = "Location", snippet = "You")
-            }
+        // Add marker on the users location.
+        userLocation?.let { MarkerState(position = it) }?.let {
+            Marker(state = it, title = "Location", snippet = "You")
+        }
 
-            // Animation for the camera if user position is changed.
-            // Commented out animation because of a relocation bug which kept centring camera on
-            // GPS coordinates.
-            /*
-            when (userState.isInitiallyNavigatedTo) {
-                false -> {
-                    when (userLocation) {
-                        null -> {
-                            // Updates the state so the when loop doesn't constantly fire.
-                            tripsModel.updateIsInitiallyNavigatedTo(true)
-                        }
+        // Animation for the camera if user position is changed.
+        // Commented out animation because of a relocation bug which kept centring camera on
+        // GPS coordinates.
+        /*
+        when (userState.isInitiallyNavigatedTo) {
+            false -> {
+                when (userLocation) {
+                    null -> {
+                        // Updates the state so the when loop doesn't constantly fire.
+                        tripsModel.updateIsInitiallyNavigatedTo(true)
+                    }
 
-                        else -> {
-                            LaunchedEffect(userLocation) {
-                                userLocation.let {
-                                    cameraPositionState.animate(
-                                        CameraUpdateFactory.newLatLngZoom(
-                                            it,
-                                            14f
-                                        )
+                    else -> {
+                        LaunchedEffect(userLocation) {
+                            userLocation.let {
+                                cameraPositionState.animate(
+                                    CameraUpdateFactory.newLatLngZoom(
+                                        it,
+                                        14f
                                     )
-                                }
-                                // Updates state so that the map isn't constantly repositioned to
-                                // a user's location.
-                                tripsModel.updateIsInitiallyNavigatedTo(true)
+                                )
                             }
+                            // Updates state so that the map isn't constantly repositioned to
+                            // a user's location.
+                            tripsModel.updateIsInitiallyNavigatedTo(true)
                         }
                     }
                 }
-
-                else -> {
-                    // Let it be, let it be.. Let it be, let it be.
-                    // Speaking words of wisdom. Let it beeEEeEEEEE.
-                }
             }
 
-             */
-        }
-
-        InfoButtonWithPopup(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(bottom = 8.dp, start = 8.dp)
-        )
-
-    }
-}
-
-@Composable
-fun InfoButtonWithPopup(modifier: Modifier = Modifier) {
-    var showPopup by remember { mutableStateOf(false) }
-
-    val customShape: Shape = RoundedCornerShape(8.dp)
-
-    // Info button
-    Box(
-        modifier = modifier
-            .background(MaterialTheme.colorScheme.surface, shape = customShape)
-            .width(55.dp)
-    ) {
-        IconButton(
-            onClick = { showPopup = true },
-            modifier = Modifier.align(Alignment.Center)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Info,
-                contentDescription = "Info",
-                modifier = Modifier.size(26.dp),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
-        }
-    }
-
-    // Popup dialog.
-    if (showPopup) {
-        AlertDialog(
-            onDismissRequest = { showPopup = false },
-            title = { Text(text = "How to use the map") },
-            text = { CardPopup() },
-            confirmButton = {
-                Button(onClick = { showPopup = false }) {
-                    Text("Got it!")
-                }
+            else -> {
+                // Let it be, let it be.. Let it be, let it be.
+                // Speaking words of wisdom. Let it beeEEeEEEEE.
             }
-        )
-    }
-}
+        }
 
-@Composable
-fun CardPopup() {
-    Column {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Tap the map to add points and draw routes.",
-                fontSize = 16.sp
-            )
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Hold on point to remove it from the route.",
-                fontSize = 16.sp
-            )
-        }
+         */
     }
+
 }
 
 // Lorena´s code.

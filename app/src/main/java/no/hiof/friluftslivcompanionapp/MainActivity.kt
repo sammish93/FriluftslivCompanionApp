@@ -10,10 +10,14 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
@@ -32,6 +36,8 @@ import no.hiof.friluftslivcompanionapp.ui.theme.FriluftslivCompanionAppTheme
 import javax.inject.Inject
 
 import androidx.compose.material3.Typography
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import no.hiof.friluftslivcompanionapp.ui.components.CustomNavigationBar
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
@@ -42,6 +48,9 @@ import no.hiof.friluftslivcompanionapp.CustomNavGraph.floraFaunaGraph
 import no.hiof.friluftslivcompanionapp.CustomNavGraph.profileGraph
 import no.hiof.friluftslivcompanionapp.CustomNavGraph.tripsGraph
 import no.hiof.friluftslivcompanionapp.CustomNavGraph.weatherGraph
+import no.hiof.friluftslivcompanionapp.models.Location
+import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
+import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
@@ -56,6 +65,8 @@ class MainActivity : ComponentActivity() {
     // Initialize location manager and update viewModel.
     private val locationManager = LocationManager(this, lifecycle) { location ->
         userViewModel.updateLocation(location)
+        userViewModel.updateLocationPermissionGranted(true)
+        userViewModel.updateLocationManagerCalled(true)
     }
 
     private val permissionManager by lazy {
@@ -63,7 +74,13 @@ class MainActivity : ComponentActivity() {
             activityResultRegistry,
             onPermissionGranted = { locationManager.startLocationUpdate() },
             onPermissionDenied = {
-            /* Can handle denied permission if needed. I don´t know how we will do this yet. */
+                /*
+                val defaultLoc = android.location.Location("Permission Manager - Denied")
+                defaultLoc.longitude = DefaultLocation.OSLO.lon
+                defaultLoc.latitude = DefaultLocation.OSLO.lat
+                userViewModel.updateLocation(defaultLoc)
+                 */
+                userViewModel.updateLocationManagerCalled(true)
             }
         )
     }
@@ -110,6 +127,11 @@ class MainActivity : ComponentActivity() {
 
 }
 
+// Screen used when a user's GPS location is being fetched.
+@Composable
+fun WaitingScreen() {
+    CustomLoadingScreen()
+}
 
 @Composable
 fun FriluftslivApp(
@@ -126,6 +148,7 @@ fun FriluftslivApp(
     val tripsViewModel = hiltViewModel<TripsViewModel>()
     val floraFaunaViewModel = hiltViewModel<FloraFaunaViewModel>()
     val weatherViewModel = hiltViewModel<WeatherViewModel>()
+    val userState by userViewModel.state.collectAsState()
 
     // CustomTabsBar Composables are assigned to functions here and injected in NavHost below.
     val tripsTabsBar: @Composable () -> Unit =
@@ -135,62 +158,66 @@ fun FriluftslivApp(
     val weatherTabsBar: @Composable () -> Unit =
         { CustomTabsBar(weatherViewModel, navController) }
 
-    Scaffold(
-        topBar = {
-            when (currentRoute) {
-                // The following pages cause a tab bar to appear.
-                Screen.TRIPS.name,
-                Screen.TRIPS_RECENT_ACTIVITY.name,
-                Screen.TRIPS_CREATE.name -> tripsTabsBar()
+    when (userState.isLocationManagerCalled) {
+        true ->
+            Scaffold(
+                topBar = {
+                    when (currentRoute) {
+                        // The following pages cause a tab bar to appear.
+                        Screen.TRIPS.name,
+                        Screen.TRIPS_RECENT_ACTIVITY.name,
+                        Screen.TRIPS_CREATE.name -> tripsTabsBar()
 
-                Screen.WEATHER.name,
-                Screen.WEATHER_SEARCH.name -> weatherTabsBar()
+                        Screen.WEATHER.name,
+                        Screen.WEATHER_SEARCH.name -> weatherTabsBar()
 
-                Screen.FLORA_FAUNA.name,
-                Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
-                Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> floraFaunaTabsBar()
+                        Screen.FLORA_FAUNA.name,
+                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
+                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> floraFaunaTabsBar()
 
-                // No tab bars for every other page.
-                else -> null
-            }
-        },
-        bottomBar = {
-            CustomNavigationBar(navController)
-        }
-    ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            NavHost(
-                navController = navController,
-                startDestination = Screen.HOME.name,
-                modifier = modifier.fillMaxSize()
-            ) {
-                composable(
-                    Screen.HOME.name,
-                    enterTransition = {
-                        // Transition animation from every page.
-                        slideIntoContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Down,
-                            animationSpec = tween(500)
-                        )
-                    },
-                    exitTransition = {
-                        slideOutOfContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Up,
-                            animationSpec = tween(500)
-                        )
-                    }) {
-                    HomeScreen(modifier.padding(innerPadding))
+                        // No tab bars for every other page.
+                        else -> null
+                    }
+                },
+                bottomBar = {
+                    CustomNavigationBar(navController)
                 }
+            ) { innerPadding ->
+                Box(modifier = Modifier.padding(innerPadding)) {
+                    NavHost(
+                        navController = navController,
+                        startDestination = Screen.HOME.name,
+                        modifier = modifier.fillMaxSize()
+                    ) {
+                        composable(
+                            Screen.HOME.name,
+                            enterTransition = {
+                                // Transition animation from every page.
+                                slideIntoContainer(
+                                    AnimatedContentTransitionScope.SlideDirection.Down,
+                                    animationSpec = tween(500)
+                                )
+                            },
+                            exitTransition = {
+                                slideOutOfContainer(
+                                    AnimatedContentTransitionScope.SlideDirection.Up,
+                                    animationSpec = tween(500)
+                                )
+                            }) {
+                            HomeScreen(userViewModel, modifier.padding(innerPadding))
+                        }
 
-                tripsGraph(navController, tripsViewModel, userViewModel, modifier)
+                        tripsGraph(navController, tripsViewModel, userViewModel, modifier)
 
-                floraFaunaGraph(navController, floraFaunaViewModel, userViewModel, modifier)
+                        floraFaunaGraph(navController, floraFaunaViewModel, userViewModel, modifier)
 
-                weatherGraph(navController, weatherViewModel, userViewModel, modifier)
+                        weatherGraph(navController, weatherViewModel, userViewModel, modifier)
 
-                profileGraph(navController, userViewModel, modifier)
+                        profileGraph(navController, userViewModel, modifier)
+                    }
+                }
             }
-        }
+        else -> WaitingScreen()
     }
 }
 

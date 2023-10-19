@@ -44,8 +44,8 @@ class WeatherViewModel @Inject constructor(
 
     // Tab destinations that are accessible in the "weather" route.
     override var tabDestinations = mapOf(
-        Screen.WEATHER to "Weather",
-        Screen.WEATHER_SEARCH to "Search"
+        Screen.WEATHER to Screen.WEATHER.navBarLabel,
+        Screen.WEATHER_SEARCH to Screen.WEATHER_SEARCH.navBarLabel
     )
 
     // Options available to the Bottom Sheet radio buttons.

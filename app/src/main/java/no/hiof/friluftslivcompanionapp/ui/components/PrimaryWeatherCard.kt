@@ -23,9 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.domain.DateFormatter
 import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.Weather
@@ -59,11 +61,11 @@ fun PrimaryWeatherCard(
                 .padding(end = 12.dp)
                 .weight(1f)) {
                 Text(
-                    text = if (weather.date == LocalDate.now() && current) "Current Weather" else DateFormatter.formatToPrettyStringWithoutYear(
+                    text = if (weather.date == LocalDate.now() && current) stringResource(R.string.current_weather) else DateFormatter.formatToPrettyStringWithoutYear(
                         weather.date
                     ),
                     style = MaterialTheme.typography.headlineSmall,
-                    textAlign = TextAlign.Center,
+                    textAlign = TextAlign.Left,
                 )
                 Row(
                     modifier = modifier.fillMaxHeight(),

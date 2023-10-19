@@ -83,7 +83,6 @@ object CustomNavGraph {
                         )
 
                         Screen.FLORA_FAUNA.name,
-                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
                         Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
                         Screen.WEATHER.name,
                         Screen.WEATHER_SEARCH.name,
@@ -107,16 +106,10 @@ object CustomNavGraph {
                 when (tripsViewModel.getHighlightedTab()) {
                     1 -> {
                         navController.navigate(Screen.TRIPS_RECENT_ACTIVITY.name)
-                        {
-                            launchSingleTop = true
-                        }
                     }
 
                     2 -> {
                         navController.navigate(Screen.TRIPS_CREATE.name)
-                        {
-                            launchSingleTop = true
-                        }
                     }
 
                     else -> TripsScreen(navController, modifier, tripsViewModel, userViewModel)
@@ -157,7 +150,6 @@ object CustomNavGraph {
 
                         Screen.FLORA_FAUNA.name,
                         Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
-                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
                         Screen.WEATHER.name,
                         Screen.WEATHER_SEARCH.name,
                         Screen.PROFILE.name -> exitTransition(
@@ -205,7 +197,6 @@ object CustomNavGraph {
 
                         Screen.FLORA_FAUNA.name,
                         Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
-                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
                         Screen.WEATHER.name,
                         Screen.WEATHER_SEARCH.name,
                         Screen.PROFILE.name -> exitTransition(
@@ -220,7 +211,7 @@ object CustomNavGraph {
                         )
                     }
                 }) {
-                TripsCreateScreen(navController, modifier, tripsViewModel)
+                TripsCreateScreen(navController, modifier, tripsViewModel, userViewModel)
             }
         }
     }
@@ -239,7 +230,6 @@ object CustomNavGraph {
                 enterTransition = {
                     when (initialState.destination.route) {
                         // Transition animation from the following pages.
-                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
                         Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> enterTransition(
                             AnimatedContentTransitionScope.SlideDirection.Right,
                             500
@@ -255,7 +245,6 @@ object CustomNavGraph {
                 exitTransition = {
                     when (navController.currentBackStackEntry?.destination?.route) {
                         // Transition animation from the following pages.
-                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
                         Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> exitTransition(
                             AnimatedContentTransitionScope.SlideDirection.Left,
                             500
@@ -286,16 +275,6 @@ object CustomNavGraph {
                 when (floraFaunaViewModel.getHighlightedTab()) {
                     1 -> {
                         navController.navigate(Screen.FLORA_FAUNA_SEARCH_LOCATION.name)
-                        {
-                            launchSingleTop = true
-                        }
-                    }
-
-                    2 -> {
-                        navController.navigate(Screen.FLORA_FAUNA_SEARCH_SPECIES.name)
-                        {
-                            launchSingleTop = true
-                        }
                     }
 
                     else -> FloraFaunaScreen(navController, modifier, floraFaunaViewModel, userViewModel)
@@ -312,11 +291,6 @@ object CustomNavGraph {
                             500
                         )
 
-                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> enterTransition(
-                            AnimatedContentTransitionScope.SlideDirection.Right,
-                            500
-                        )
-
                         // No transition animation from other pages.
                         else -> null
                     }
@@ -326,11 +300,6 @@ object CustomNavGraph {
                         // Transition animation from the following pages.
                         Screen.FLORA_FAUNA.name -> exitTransition(
                             AnimatedContentTransitionScope.SlideDirection.Right,
-                            500
-                        )
-
-                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name -> exitTransition(
-                            AnimatedContentTransitionScope.SlideDirection.Left,
                             500
                         )
 
@@ -359,55 +328,6 @@ object CustomNavGraph {
                 )
             }
 
-            composable(
-                Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
-                enterTransition = {
-                    when (initialState.destination.route) {
-                        // Transition animation from the following pages.
-                        Screen.FLORA_FAUNA.name,
-                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> enterTransition(
-                            AnimatedContentTransitionScope.SlideDirection.Left,
-                            500
-                        )
-
-                        // No transition animation from other pages.
-                        else -> null
-                    }
-                },
-                exitTransition = {
-                    when (navController.currentBackStackEntry?.destination?.route) {
-                        // Transition animation from the following pages.
-                        Screen.FLORA_FAUNA.name,
-                        Screen.FLORA_FAUNA_SEARCH_LOCATION.name -> exitTransition(
-                            AnimatedContentTransitionScope.SlideDirection.Right,
-                            500
-                        )
-
-                        Screen.TRIPS.name,
-                        Screen.TRIPS_RECENT_ACTIVITY.name,
-                        Screen.TRIPS_CREATE.name,
-                        Screen.WEATHER.name,
-                        Screen.WEATHER_SEARCH.name,
-                        Screen.PROFILE.name -> exitTransition(
-                            AnimatedContentTransitionScope.SlideDirection.Up,
-                            500
-                        )
-
-                        // Transition animation from every other page.
-                        else -> exitTransition(
-                            AnimatedContentTransitionScope.SlideDirection.Down,
-                            500
-                        )
-                    }
-                }) {
-                FloraFaunaSearchScreen(
-                    "Species",
-                    navController,
-                    modifier,
-                    floraFaunaViewModel,
-                    userViewModel
-                )
-            }
             // FLORA_FAUNA_ADDITIONAL_INFO-skjermen
             composable(
                 Screen.FLORA_FAUNA_ADDITIONAL_INFO.route,
@@ -477,7 +397,6 @@ object CustomNavGraph {
                         )
 
                         Screen.FLORA_FAUNA.name,
-                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
                         Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
                         Screen.TRIPS.name,
                         Screen.TRIPS_RECENT_ACTIVITY.name,
@@ -502,9 +421,6 @@ object CustomNavGraph {
                 when (weatherViewModel.getHighlightedTab()) {
                     1 -> {
                         navController.navigate(Screen.WEATHER_SEARCH.name)
-                        {
-                            launchSingleTop = true
-                        }
                     }
 
                     else -> WeatherScreen(navController, modifier, weatherViewModel, userViewModel)
@@ -535,7 +451,6 @@ object CustomNavGraph {
 
                         Screen.FLORA_FAUNA.name,
                         Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
-                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
                         Screen.TRIPS.name, Screen.TRIPS_RECENT_ACTIVITY.name,
                         Screen.TRIPS_CREATE.name,
                         Screen.PROFILE.name -> exitTransition(
@@ -573,7 +488,6 @@ object CustomNavGraph {
                     when (navController.currentBackStackEntry?.destination?.route) {
                         Screen.FLORA_FAUNA.name,
                         Screen.FLORA_FAUNA_SEARCH_LOCATION.name,
-                        Screen.FLORA_FAUNA_SEARCH_SPECIES.name,
                         Screen.WEATHER.name,
                         Screen.WEATHER_SEARCH.name,
                         Screen.TRIPS.name,

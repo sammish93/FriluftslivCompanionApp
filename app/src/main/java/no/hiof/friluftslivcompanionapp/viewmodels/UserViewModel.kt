@@ -50,4 +50,22 @@ class UserViewModel @Inject constructor(): ViewModel() {
     fun getCurrentUser(): FirebaseUser? {
         return  _state.value.currentUser
     }
+
+    // Updates the status of the location manager loading a user's GPS position.
+    fun updateLocationManagerCalled(isLocationManagerCalled: Boolean) {
+        _state.update { currentState ->
+            currentState.copy(
+                isLocationManagerCalled = isLocationManagerCalled
+            )
+        }
+    }
+
+    // Updates whether the user has shared their location.
+    fun updateLocationPermissionGranted(isLocationPermissionGranted: Boolean) {
+        _state.update { currentState ->
+            currentState.copy(
+                isLocationPermissionGranted = isLocationPermissionGranted
+            )
+        }
+    }
 }
