@@ -20,8 +20,10 @@ import no.hiof.friluftslivcompanionapp.data.api.PlacesApi
 import no.hiof.friluftslivcompanionapp.data.states.AutoCompleteState
 import no.hiof.friluftslivcompanionapp.data.states.PlaceInfoState
 import no.hiof.friluftslivcompanionapp.data.states.UserState
+import no.hiof.friluftslivcompanionapp.domain.LocationFormatter
 import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import javax.inject.Inject
+import kotlin.math.sqrt
 
 /**
  * A ViewModel responsible for managing and updating the state of the Google Map.
@@ -38,7 +40,7 @@ import javax.inject.Inject
 class UserViewModel @Inject constructor(
     private val placesApi: PlacesApi,
     private val placesClient: PlacesClient
-): ViewModel() {
+) : ViewModel() {
 
     private val _state = MutableStateFlow(UserState(lastKnownLocation = null))
     val state: StateFlow<UserState> = _state.asStateFlow()
@@ -85,7 +87,7 @@ class UserViewModel @Inject constructor(
 
     // Returns the current user as a FirebaseUser object.
     fun getCurrentUser(): FirebaseUser? {
-        return  _state.value.currentUser
+        return _state.value.currentUser
     }
 
     // Updates the status of the location manager loading a user's GPS position.
@@ -121,9 +123,9 @@ class UserViewModel @Inject constructor(
     }
 
     private fun getAutocompleteRequester(query: String): FindAutocompletePredictionsRequest {
-        val bounds = RectangularBounds.newInstance(
-            LatLng(58.454924, 6.291027),
-            LatLng(63.504264, 11.674327)
+        val bounds = LocationFormatter.createRectangularBoundsFromLatLng(
+            _state.value.lastKnownLocation?.latitude ?: DefaultLocation.OSLO.lat,
+            _state.value.lastKnownLocation?.longitude ?: DefaultLocation.OSLO.lon
         )
 
         return FindAutocompletePredictionsRequest.builder()

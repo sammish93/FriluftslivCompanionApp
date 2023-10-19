@@ -151,6 +151,8 @@ dependencies {
     // Google Places
     implementation("com.google.android.libraries.places:places:3.0.0")
 
+    // Maps Utils
+    implementation("com.google.maps.android:android-maps-utils:0.6.2")
 
     // Material Design 3 - extra (e.g. SecondaryTabRow)
     implementation("androidx.compose.material3:material3:1.2.0-alpha09")
