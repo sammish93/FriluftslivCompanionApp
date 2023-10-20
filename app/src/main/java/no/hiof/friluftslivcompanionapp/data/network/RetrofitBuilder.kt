@@ -35,12 +35,5 @@ object RetrofitBuilder {
             .build()
     }
 
-    fun buildGeocodingApi(): Retrofit{
-        return Retrofit.Builder()
-            .baseUrl("https://maps.googleapis.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-    }
 
 }
