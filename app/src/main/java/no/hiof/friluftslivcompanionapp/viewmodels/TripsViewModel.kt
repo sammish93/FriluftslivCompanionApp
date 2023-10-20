@@ -1,13 +1,17 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
-import android.location.Location
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import no.hiof.friluftslivcompanionapp.data.repositories.OperationResult
+import no.hiof.friluftslivcompanionapp.data.repositories.TripsRepository
 import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
 import no.hiof.friluftslivcompanionapp.data.states.TripsState
 import no.hiof.friluftslivcompanionapp.domain.LocationFormatter
@@ -31,7 +35,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TripsViewModel @Inject constructor(
     // Communication with the data layer can be injected as dependencies here.
-    // private val repository: TripsRepository
+    private val tripsRepository: TripsRepository
 ) : ViewModel(), TabNavigation {
 
     private val _uiState = MutableStateFlow(TabsUiState())
@@ -167,5 +171,28 @@ class TripsViewModel @Inject constructor(
         )
 
         //TODO Integrate database writing and clear create trip values on successful write.
+
+        if (trip != null) {
+            viewModelScope.launch {
+                when (val result = tripsRepository.createTrip(trip)) {
+                    is OperationResult.Success -> {
+
+                        clearTrip()
+                    }
+                    is OperationResult.Error -> {
+
+                        val exception = result.exception
+                        Log.e(TAG, "Error writing trip to Firestore: ${exception.message}")
+                    }
+                }
+            }
+        } else {
+
+        }
     }
+
+    companion object {
+        private const val TAG = "TripsViewModel"
+    }
+
 }
