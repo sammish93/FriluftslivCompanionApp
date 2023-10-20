@@ -75,7 +75,8 @@ fun FloraFaunaSearchScreen(
                 onClick = {
                     if (!locations.isNullOrEmpty()) {
                         val location = locations[0]
-                        val locality = location.locality ?: "Oslo"
+                        // Changed from 'locality' to 'adminArea'.
+                        val locality = location.adminArea ?: "Oslo"
 
                         viewModel.viewModelScope.launch {
                             val (regionCode, message) = viewModel.searchBirdsByYourLocation(locality)

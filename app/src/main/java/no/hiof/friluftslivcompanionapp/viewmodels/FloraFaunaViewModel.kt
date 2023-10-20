@@ -44,6 +44,7 @@ class FloraFaunaViewModel @Inject constructor(
         Screen.FLORA_FAUNA to Screen.FLORA_FAUNA.navBarLabel,
         Screen.FLORA_FAUNA_SEARCH_LOCATION to Screen.FLORA_FAUNA_SEARCH_LOCATION.navBarLabel
     )
+
     override fun changeHighlightedTab(index: Int) {
         _uiState.update { currentState ->
             currentState.copy(
@@ -54,7 +55,7 @@ class FloraFaunaViewModel @Inject constructor(
 
     // Function to retrieve the last highlighted tab.
     override fun getHighlightedTab(): Int {
-        return  _uiState.value.currentTabIndex
+        return _uiState.value.currentTabIndex
     }
 
     private val api = BirdObservations.getInstance()
@@ -71,7 +72,7 @@ class FloraFaunaViewModel @Inject constructor(
      * @param results The list of bird observations to update the bird results with.
      */
     private fun updateBirdResults(results: List<Bird>) {
-        _birdResults.value=results
+        _birdResults.value = results
     }
 
 
@@ -86,7 +87,26 @@ class FloraFaunaViewModel @Inject constructor(
     suspend fun searchBirdsByLocation(location: String) {
         viewModelScope.launch {
             try {
-                val result = api.getRecentObservations(regionCode = location, maxResult = 2)
+
+                // COMMENTS TO LORENA
+                // Call this:
+                val result = api.getRecentObservations(regionCode = location, maxResult = 10)
+                // If list is empty then call this:
+                /*
+                result = api.getObservationsBetweenDates(
+                    startDate = LocalDate.now().minusWeeks(1),
+                    endDate = LocalDate.now(),
+                    regionCode = "NO-15",
+                    maxResult = 10
+                )
+                 */
+                // If list is still empty then maybe just create a boolean mutablestateof and make it
+                // so that a message appears that says 'no birds found recently in your area'
+                // you can use my weatherscreen as a basis - it displays a loading screen when
+                // the api request is being sent. once it is returned then the contents are dispalyed.
+                // if your list is empty then instead of showing contents you could show just a simple
+                // text - like my weather screen shows 'no gps location found'.
+
                 if (result is Result.Success) {
                     val birdList = result.value
                     if (birdList.isNotEmpty()) {
@@ -100,7 +120,7 @@ class FloraFaunaViewModel @Inject constructor(
                 } else if (result is Result.Failure) {
                     println("API call failed: ${result.message}")
                 }
-            } catch(e: Exception) {
+            } catch (e: Exception) {
                 println("Error: ${e.message}")
             }
 
@@ -130,11 +150,6 @@ class FloraFaunaViewModel @Inject constructor(
             "NO-03" to "Error: ${e.message}" // Standardverdi og en feilmelding i tilfelle det oppstår feil
         }
     }
-
-
-
-
-
 
 
     private val _selectedBirdInfo = MutableStateFlow<BirdInfo?>(null)
