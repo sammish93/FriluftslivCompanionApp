@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -33,12 +33,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polyline
+import com.google.maps.android.compose.rememberCameraPositionState
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.models.DummyTrip
+import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
+import no.hiof.friluftslivcompanionapp.utils.getCameraPosition
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import java.util.Locale
+
 
 val dummyTrips: List<DummyTrip> = DummyTrip.getDummyData()
 
@@ -57,28 +67,6 @@ fun TripsRecentActivityScreen(
         items(dummyTrips) { trip ->
             TripCard(trip)
         }
-    }
-}
-
-@Composable
-fun TripsDetailScreen(trip: DummyTrip) {
-    Column {
-        Text(text = trip.city)
-        Text(text = trip.county)
-        Text(text = trip.type)
-        Text(text = trip.description)
-        Text(text = trip.duration)
-        Text(text = "${trip.difficulty} / 5 Difficulty")
-
-        // Må implementere en map veiw.
-    }
-}
-
-@Composable
-fun MapView(nodes: List<LatLng>) {
-
-    GoogleMap() {
-
     }
 }
 
@@ -126,12 +114,16 @@ fun TripCard(trip: DummyTrip) {
                     text = "${trip.type} in ${trip.city}",
                     style = MaterialTheme.typography.headlineMedium
                 )
+
                 Spacer(modifier = Modifier.height(8.dp))
+
                 Text(
                     text = "County: ${trip.county}",
                     style = MaterialTheme.typography.bodyMedium
                 )
+
                 Spacer(modifier = Modifier.height(8.dp))
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -157,6 +149,44 @@ fun TripCard(trip: DummyTrip) {
                         Text(text = "View Trip!")
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun StaticMapWithNodes(nodes: List<LatLng>) {
+
+    val mapProperties = MapProperties(
+        isMyLocationEnabled = false,
+        mapType = MapType.TERRAIN
+    )
+
+    val cameraPosition = getCameraPosition(
+        nodes.firstOrNull()
+            ?: LatLng(DefaultLocation.OSLO.lat, DefaultLocation.OSLO.lon), 14f
+    )
+    val cameraPositionState = rememberCameraPositionState { position = cameraPosition }
+
+    GoogleMap(
+        modifier = Modifier.fillMaxWidth(),
+        properties = mapProperties,
+        cameraPositionState = cameraPositionState
+    ) {
+        nodes.forEach { node ->
+            Marker(
+                MarkerState(position = node),
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE),
+                title = "Node",
+                snippet = "$node"
+            )
+
+            if (nodes.size >= 2) {
+                Polyline(
+                    points = nodes,
+                    color = Color.Red,
+                    width = 5f
+                )
             }
         }
     }
