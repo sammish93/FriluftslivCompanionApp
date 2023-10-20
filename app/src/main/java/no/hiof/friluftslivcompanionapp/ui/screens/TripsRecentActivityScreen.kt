@@ -1,7 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,25 +9,28 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.android.gms.maps.model.LatLng
@@ -46,8 +48,6 @@ fun TripsRecentActivityScreen(
     modifier: Modifier = Modifier,
     viewModel: TripsViewModel = viewModel()
 ) {
-
-
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -94,10 +94,13 @@ fun TripCard(trip: DummyTrip) {
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        ),
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .height(270.dp)
+            .height(275.dp)
             .width(240.dp)
     ) {
         Column(
@@ -109,7 +112,7 @@ fun TripCard(trip: DummyTrip) {
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp)
+                    .height(145.dp)
                     .clip(RoundedCornerShape(8.dp))
             )
 
@@ -117,22 +120,40 @@ fun TripCard(trip: DummyTrip) {
 
             Column(
                 modifier = Modifier
-                    .padding(start = 10.dp, top = 8.dp, end = 8.dp, bottom = 8.dp)
+                    .padding(start = 12.dp, top = 8.dp, end = 12.dp, bottom = 8.dp)
             ) {
                 Text(
                     text = "${trip.type} in ${trip.city}",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
+                    style = MaterialTheme.typography.headlineMedium
                 )
-                Spacer(modifier = Modifier.height(10.dp))
-                Text(text = trip.county)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "County: ${trip.county}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = trip.distance, modifier = Modifier.weight(1f))
-                    Button(onClick = { /*TODO*/ }) {
+                    val lightGreen = 0xFF88E088
+                    Text(
+                        text = "Distance: ${trip.distance}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f))
+                    Button(
+                        modifier = Modifier.offset(y = ((-5).dp)),
+                        elevation = ButtonDefaults.buttonElevation(
+                            defaultElevation = 6.dp
+                        ),
+                        onClick = { /*TODO*/ },
+                        colors = ButtonColors(
+                            containerColor = Color(lightGreen),
+                            contentColor = Color.Black,
+                            disabledContainerColor = Color(lightGreen),
+                            disabledContentColor = Color.Black
+                        )
+                    ) {
                         Text(text = "View Trip!")
                     }
                 }
