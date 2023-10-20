@@ -9,10 +9,11 @@ import java.time.Duration
 // NOTE: We might want to include a List of pictures relating to a trip where users could submit
 // their own photos.
 abstract class Trip(
-    route: List<LatLng>,
-    description: String?,
-    duration: Duration?,
-    distanceKm: Double?,
-    difficulty: Int?,
+    open val route: List<LatLng>,
+    open val description: String?,
+    open val duration: Duration?,
+    open val distanceKm: Double?,
+    open val difficulty: Int?,
 ) {
+    abstract fun toMap(): Map<String, Any?>
 }

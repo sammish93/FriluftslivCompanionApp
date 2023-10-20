@@ -6,11 +6,11 @@ import java.time.Duration
 
 data class Hike(
     @DocumentId val documentId: String ="",
-    val route: List<LatLng>,
-    val description: String? = null,
-    val duration: Duration? = null,
-    val distanceKm: Double? = null,
-    val difficulty: Int? = null
+    override val route: List<LatLng>,
+    override val description: String? = null,
+    override val duration: Duration? = null,
+    override val distanceKm: Double? = null,
+    override val difficulty: Int? = null
 ) : Trip(
     route,
     description,
@@ -19,7 +19,7 @@ data class Hike(
     difficulty
 ) {
 
-    fun toMap(): Map<String, Any?> {
+   override fun toMap(): Map<String, Any?> {
 
         val resultMap = mutableMapOf<String, Any?>()
 
