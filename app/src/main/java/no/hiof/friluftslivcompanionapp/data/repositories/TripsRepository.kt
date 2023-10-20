@@ -3,22 +3,16 @@ package no.hiof.friluftslivcompanionapp.data.repositories
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.trySendBlocking
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.tasks.await
 import no.hiof.friluftslivcompanionapp.models.Hike
-import no.hiof.friluftslivcompanionapp.data.network.Result
+import no.hiof.friluftslivcompanionapp.models.Trip
 import javax.inject.Inject
 
 class TripsRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth
 ){
-    suspend fun addHike(hike: Hike): OperationResult<Unit> {
+    suspend fun createTrip(hike: Trip?): OperationResult<Unit> {
         return try {
 
             val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
@@ -27,7 +21,11 @@ class TripsRepository @Inject constructor(
             val tripDocument = firestore.collection("trips").document()
 
 
-            tripDocument.set(hike.toMap()).await()
+            if (hike != null) {
+                tripDocument.set(hike.toMap()).await()
+            }  else {
+                throw IllegalStateException("Trip is null")
+            }
 
             OperationResult.Success(Unit)
         } catch (e: Exception) {
