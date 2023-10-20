@@ -14,10 +14,8 @@ import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
 import javax.inject.Inject
 import no.hiof.friluftslivcompanionapp.data.network.Result
-import no.hiof.friluftslivcompanionapp.domain.Geocoding
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.BirdInfo
-import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import java.time.LocalDate
 
 // NOTE: Composable Screens in app/ui/screens can communicate with this viewmodel (and thus the data
@@ -87,26 +85,8 @@ class FloraFaunaViewModel @Inject constructor(
     suspend fun searchBirdsByLocation(location: String) {
         viewModelScope.launch {
             try {
-
-                // COMMENTS TO LORENA
-                // Call this:
                 val result = api.getRecentObservations(regionCode = location, maxResult = 10)
-                // If list is empty then call this:
-                /*
-                result = api.getObservationsBetweenDates(
-                    startDate = LocalDate.now().minusWeeks(1),
-                    endDate = LocalDate.now(),
-                    regionCode = "NO-15",
-                    maxResult = 10
-                )
-                 */
-                // If list is still empty then maybe just create a boolean mutablestateof and make it
-                // so that a message appears that says 'no birds found recently in your area'
-                // you can use my weatherscreen as a basis - it displays a loading screen when
-                // the api request is being sent. once it is returned then the contents are dispalyed.
-                // if your list is empty then instead of showing contents you could show just a simple
-                // text - like my weather screen shows 'no gps location found'.
-
+                //TODO: Make comment: loading ...
                 if (result is Result.Success) {
                     val birdList = result.value
                     if (birdList.isNotEmpty()) {
@@ -115,7 +95,21 @@ class FloraFaunaViewModel @Inject constructor(
                         }
                         updateBirdResults(processedList)
                     } else {
-                        println("No bird observations found for the specified location.")
+                        val secondaryResult = performSecondaryRequest(location)
+
+                        if (secondaryResult is Result.Success) {
+                            val secondaryBirdList = secondaryResult.value
+                            if (secondaryBirdList.isNotEmpty()) {
+                                val processedList = api.processBirdList(secondaryBirdList) { bird ->
+                                    bird
+                                }
+                                updateBirdResults(processedList)
+                            } else {
+                                println("No bird observations found in the past week in the specified location.")
+                            }
+                        } else if (secondaryResult is Result.Failure) {
+                            println("Secondary API call failed: ${secondaryResult.message}")
+                        }
                     }
                 } else if (result is Result.Failure) {
                     println("API call failed: ${result.message}")
@@ -123,25 +117,65 @@ class FloraFaunaViewModel @Inject constructor(
             } catch (e: Exception) {
                 println("Error: ${e.message}")
             }
-
         }
     }
 
+    private suspend fun performSecondaryRequest(location: String): Result<List<Bird>> {
+        println("No enough bird observations found for the specified location. Making a secondary request...")
 
-    suspend fun searchBirdsByYourLocation(location: String): Pair<String, String> {
+        return api.getObservationsBetweenDates(
+            startDate = LocalDate.now().minusWeeks(1),
+            endDate = LocalDate.now(),
+            regionCode = location,
+            maxResult = 5
+        )
+    }
+
+
+    fun searchBirdsByYourLocation(location: String): Pair<String, String> {
         return try {
             val regionCode = when (location) {
+                //I need the previous region code and the current region name,
+                // as Ebird uses the previous region codes,
+                // and the geocode API uses the current region name.
+
+                "Østfold" -> "NO-01"
+                "Buskerud" -> "NO-06"
+                "Akershus" -> "NO-02"
+                "Viken" -> "NO-01,NO-02,NO-06"
+
+                "Hedemark" -> "NO-04"
+                "Oppland" -> "NO-05"
+                "Innlandet" -> "NO-04,NO-05"
+
                 "Oslo" -> "NO-03"
-                "Viken" -> "NO-30"
-                "Vestland" -> "NO-46"
-                "Agder" -> "NO-42"
-                "Innlandet" -> "NO-34"
+
+                "Telemark" -> "NO-08"
+                "Vestfold" -> "NO-07"
+                "Vestfold og Telemark" -> "NO-07,NO-08"
+
+                "Aust-Agder" -> "NO-09"
+                "Vest-Agder" -> "NO-10"
+                "Agder" -> "NO-09, NO-10"
+
                 "Rogaland" -> "NO-11"
-                "Vestfold og Telemark" -> "NO-38"
+
+                "Hordaland" -> "NO-12"
+                "Sogn og Fjordane" -> "NO-14"
+                "Vestland" -> "NO-12, NO-14"
+
                 "Møre og Romsdal" -> "NO-15"
-                "Trøndelag" -> "NO-50"
-                "Troms og Finnmark" -> "NO-54"
+
+                "Sør-Trøndelag" -> "NO-16"
+                "Nord-Trøndelag" -> "NO-17"
+                "Trøndelag" -> "NO-16,NO-17"
+
                 "Nordland" -> "NO-18"
+
+                "Troms" -> "NO-19"
+                "Finnmark" -> "NO-20"
+                "Troms og Finnmark" -> "NO-19,NO-20"
+
                 else -> "NO-03"
             }
             regionCode to "Success" // Returner både regionkoden og en suksessmelding
