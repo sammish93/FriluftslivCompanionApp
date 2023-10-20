@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
+import android.location.Geocoder
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -13,12 +14,15 @@ import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
 import no.hiof.friluftslivcompanionapp.ui.components.items.ListItemWithButtonsAndImg
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
+import java.util.Locale
 
 
 @Composable
@@ -30,7 +34,12 @@ fun FloraFaunaSearchScreen(
     userViewModel: UserViewModel = viewModel()
 ) {
     val userState by userViewModel.state.collectAsState()
-
+    val geocoder = Geocoder(LocalContext.current, Locale.getDefault())
+    val locations = geocoder.getFromLocation(
+        userState.lastKnownLocation?.latitude ?: DefaultLocation.OSLO.lat,
+        userState.lastKnownLocation?.longitude ?: DefaultLocation.OSLO.lon,
+        1
+    )
     if(searchBy.equals("Location" ,ignoreCase = true)){
     var locationName by remember { mutableStateOf("") }
     val birdResults by viewModel.birdResults.collectAsState()
@@ -64,13 +73,27 @@ fun FloraFaunaSearchScreen(
         ) {
             Button(
                 onClick = {
-                    viewModel.viewModelScope.launch {
-                        val latitude = userState.lastKnownLocation?.latitude
-                        val longitude = userState.lastKnownLocation?.longitude
-                        if (latitude != null && longitude != null) {
-                            viewModel.searchBirdsByYourLocation(latitude, longitude)
-                        } else {
-                            println("Unable to get location coordinates.")
+                    if (!locations.isNullOrEmpty()) {
+                        val location = locations[0]
+                        val locality = location.locality ?: "Oslo"
+
+                        viewModel.viewModelScope.launch {
+                            val (regionCode, message) = viewModel.searchBirdsByYourLocation(locality)
+
+                            if (regionCode == "NO-03") {
+                                println("Using default location: Oslo")
+                            } else {
+                                println(message)
+                            }
+
+                            viewModel.searchBirdsByLocation(regionCode)
+                        }
+                    } else {
+                        println("Unable to get location. Using default location: Oslo")
+                        viewModel.viewModelScope.launch {
+                            val (regionCode, message) = viewModel.searchBirdsByYourLocation("Oslo")
+                            println(message)
+                            viewModel.searchBirdsByLocation(regionCode)
                         }
                     }
                 },

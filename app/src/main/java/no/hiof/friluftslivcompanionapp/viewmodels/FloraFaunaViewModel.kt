@@ -89,10 +89,14 @@ class FloraFaunaViewModel @Inject constructor(
                 val result = api.getRecentObservations(regionCode = location, maxResult = 2)
                 if (result is Result.Success) {
                     val birdList = result.value
-                    val processedList = api.processBirdList(birdList) { bird ->
-                        bird
+                    if (birdList.isNotEmpty()) {
+                        val processedList = api.processBirdList(birdList) { bird ->
+                            bird
+                        }
+                        updateBirdResults(processedList)
+                    } else {
+                        println("No bird observations found for the specified location.")
                     }
-                    updateBirdResults(processedList)
                 } else if (result is Result.Failure) {
                     println("API call failed: ${result.message}")
                 }
@@ -103,30 +107,32 @@ class FloraFaunaViewModel @Inject constructor(
         }
     }
 
-    suspend fun searchBirdsByYourLocation(latitude: Double?, longitude: Double?) {
-        viewModelScope.launch {
-            try {
-                val regionCode = Geocoding.getInstance().getRegionCode(latitude, longitude)
 
-                if (regionCode != null) {
-                    val result = api.getRecentObservations(regionCode = regionCode, maxResult = 2)
-                    if (result is Result.Success) {
-                        val birdList = result.value
-                        val processedList = api.processBirdList(birdList) { bird ->
-                            bird
-                        }
-                        updateBirdResults(processedList)
-                    } else if (result is Result.Failure) {
-                        println("API call failed: ${result.message}")
-                    }
-                } else {
-                    println("Failed to get region code.")
-                }
-            } catch(e: Exception) {
-                println("Error: ${e.message}")
+    suspend fun searchBirdsByYourLocation(location: String): Pair<String, String> {
+        return try {
+            val regionCode = when (location) {
+                "Oslo" -> "NO-03"
+                "Viken" -> "NO-30"
+                "Vestland" -> "NO-46"
+                "Agder" -> "NO-42"
+                "Innlandet" -> "NO-34"
+                "Rogaland" -> "NO-11"
+                "Vestfold og Telemark" -> "NO-38"
+                "Møre og Romsdal" -> "NO-15"
+                "Trøndelag" -> "NO-50"
+                "Troms og Finnmark" -> "NO-54"
+                "Nordland" -> "NO-18"
+                else -> "NO-03"
             }
+            regionCode to "Success" // Returner både regionkoden og en suksessmelding
+        } catch (e: Exception) {
+            println("Error: ${e.message}")
+            "NO-03" to "Error: ${e.message}" // Standardverdi og en feilmelding i tilfelle det oppstår feil
         }
     }
+
+
+
 
 
 
