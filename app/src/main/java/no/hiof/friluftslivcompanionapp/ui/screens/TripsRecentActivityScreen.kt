@@ -1,7 +1,7 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,23 +11,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,6 +36,7 @@ import com.google.maps.android.compose.GoogleMap
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.models.DummyTrip
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
+import java.util.Locale
 
 val dummyTrips: List<DummyTrip> = DummyTrip.getDummyData()
 
@@ -86,40 +85,57 @@ fun MapView(nodes: List<LatLng>) {
 @Composable
 fun TripCard(trip: DummyTrip) {
 
+    val imageResource = when (trip.type.lowercase(Locale.ROOT)) {
+        "hike" -> R.drawable.hike
+        "climb" -> R.drawable.climb
+        else -> R.drawable.ski
+    }
+
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
+            .height(270.dp)
+            .width(240.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(8.dp)
+        Column(
+            modifier = Modifier.fillMaxSize()
         ){
             Image(
-                painter = painterResource(id = R.drawable.hike),
+                painter = painterResource(id = imageResource),
                 contentDescription = "Hiking Image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .fillMaxSize()
-                    .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .clip(RoundedCornerShape(8.dp))
             )
 
-            Spacer(modifier = Modifier.width(49.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Column(
-                modifier = Modifier.weight(1f)
-            ){
-                Text(text = trip.city, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-
-                Spacer(modifier = Modifier.height(8.dp))
-
+                modifier = Modifier
+                    .padding(start = 10.dp, top = 8.dp, end = 8.dp, bottom = 8.dp)
+            ) {
+                Text(
+                    text = "${trip.type} in ${trip.city}",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+                Spacer(modifier = Modifier.height(10.dp))
                 Text(text = trip.county)
-                Text(text = trip.type)
-                Text(text = trip.distance)
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = trip.distance, modifier = Modifier.weight(1f))
+                    Button(onClick = { /*TODO*/ }) {
+                        Text(text = "View Trip!")
+                    }
+                }
             }
         }
     }
