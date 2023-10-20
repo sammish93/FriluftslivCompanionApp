@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
+import android.location.Geocoder
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -13,12 +14,17 @@ import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
+import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
 import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
 import no.hiof.friluftslivcompanionapp.ui.components.items.ListItemWithButtonsAndImg
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
+import java.util.Locale
 
 
 @Composable
@@ -30,16 +36,23 @@ fun FloraFaunaSearchScreen(
     userViewModel: UserViewModel = viewModel()
 ) {
     val userState by userViewModel.state.collectAsState()
+    val geocoder = Geocoder(LocalContext.current, Locale.getDefault())
+    val locations = geocoder.getFromLocation(
+        userState.lastKnownLocation?.latitude ?: DefaultLocation.OSLO.lat,
+        userState.lastKnownLocation?.longitude ?: DefaultLocation.OSLO.lon,
+        1
+    )
 
-    if(searchBy.equals("Location" ,ignoreCase = true)){
     var locationName by remember { mutableStateOf("") }
     val birdResults by viewModel.birdResults.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(8.dp)
 
-        ) {
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -63,10 +76,26 @@ fun FloraFaunaSearchScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Button(
-                onClick = { /* TODO: Handle click action for "Use my location" */
-                    viewModel.viewModelScope.launch {
-                        viewModel.searchBirdsByLocation("NO")
-                    }},
+                onClick = {
+                    if (!locations.isNullOrEmpty()) {
+                        val location = locations[0]
+                        val locality = location.adminArea ?: "Oslo"
+
+                        viewModel.viewModelScope.launch {
+                            val (regionCode, message) = viewModel.searchBirdsByYourLocation(locality)
+                            println("Found your location: $regionCode")
+                            println(message)
+                            viewModel.searchBirdsByLocation(regionCode)
+                        }
+                    } else {
+                        println("Unable to get location. Using default location: Oslo")
+                        viewModel.viewModelScope.launch {
+                            val (regionCode, message) = viewModel.searchBirdsByYourLocation("Oslo")
+                            println(message)
+                            viewModel.searchBirdsByLocation(regionCode)
+                        }
+                    }
+                },
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
@@ -98,22 +127,26 @@ fun FloraFaunaSearchScreen(
             }
 
         }
-        ListComponent(birdResults) { bird, textStyle ->
-            ListItemWithButtonsAndImg(
-                bird,
-                textStyle,
-                displayText = { it.speciesName ?: "Unknown Bird" },
-                fetchImage = { it.photoUrl ?: "" }
-            ){
-                viewModel.updateSelectedBirdInfo(bird)
-                navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
-            }
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            if (isLoading) {
+                CustomLoadingScreen()
+            } else {
+                ListComponent(birdResults) { bird, textStyle ->
+                    ListItemWithButtonsAndImg(
+                        bird,
+                        textStyle,
+                        displayText = { it.speciesName ?: "Unknown Bird" },
+                        fetchImage = { it.photoUrl ?: "" }
+                    ) {
+                        viewModel.updateSelectedBirdInfo(bird)
+                        navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
+                    }
+                }
             }
         }
-    }
-    else if (searchBy.equals("Species", ignoreCase = true)) {
-
-        Text(text = "Content for Species Search")
     }
 }
 
