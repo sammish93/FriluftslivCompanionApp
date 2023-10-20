@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -78,12 +79,6 @@ fun TripsRecentActivityScreen(
 fun TripCard(trip: DummyTrip) {
 
     var showDialog by remember { mutableStateOf(false) }
-
-    if (showDialog) {
-        Dialog(onDismissRequest = { showDialog = false }) {
-            StaticMapWithNodes(nodes = trip.nodes)
-        }
-    }
 
     val imageResource = when (trip.type.lowercase(Locale.ROOT)) {
         "hike" -> R.drawable.hike
@@ -161,6 +156,20 @@ fun TripCard(trip: DummyTrip) {
                         Text(text = "View Trip!")
                     }
                 }
+            }
+        }
+    }
+    if (showDialog) {
+        Dialog(onDismissRequest = { showDialog = false }) {
+            Card(
+                shape = RoundedCornerShape(12.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(16.dp)
+            ) {
+                StaticMapWithNodes(nodes = trip.nodes)
             }
         }
     }
