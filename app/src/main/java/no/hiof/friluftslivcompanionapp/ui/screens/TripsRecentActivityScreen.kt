@@ -15,10 +15,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.android.gms.maps.model.LatLng
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
+
+// Class to hold dummy trips.
+data class Trip(
+    val city: String,
+    val county: String,
+    val type: String,
+    val description: String,
+    val duration: String,
+    val difficulty: Int,
+    val distance: String,
+    val nodes: List<LatLng>
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
