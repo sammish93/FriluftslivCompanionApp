@@ -14,11 +14,13 @@ import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
+import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
 import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
 import no.hiof.friluftslivcompanionapp.ui.components.items.ListItemWithButtonsAndImg
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
@@ -40,15 +42,17 @@ fun FloraFaunaSearchScreen(
         userState.lastKnownLocation?.longitude ?: DefaultLocation.OSLO.lon,
         1
     )
-    if(searchBy.equals("Location" ,ignoreCase = true)){
+
     var locationName by remember { mutableStateOf("") }
     val birdResults by viewModel.birdResults.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(8.dp)
 
-        ) {
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -123,22 +127,26 @@ fun FloraFaunaSearchScreen(
             }
 
         }
-        ListComponent(birdResults) { bird, textStyle ->
-            ListItemWithButtonsAndImg(
-                bird,
-                textStyle,
-                displayText = { it.speciesName ?: "Unknown Bird" },
-                fetchImage = { it.photoUrl ?: "" }
-            ){
-                viewModel.updateSelectedBirdInfo(bird)
-                navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
-            }
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            if (isLoading) {
+                CustomLoadingScreen()
+            } else {
+                ListComponent(birdResults) { bird, textStyle ->
+                    ListItemWithButtonsAndImg(
+                        bird,
+                        textStyle,
+                        displayText = { it.speciesName ?: "Unknown Bird" },
+                        fetchImage = { it.photoUrl ?: "" }
+                    ) {
+                        viewModel.updateSelectedBirdInfo(bird)
+                        navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
+                    }
+                }
             }
         }
-    }
-    else if (searchBy.equals("Species", ignoreCase = true)) {
-
-        Text(text = "Content for Species Search")
     }
 }
 

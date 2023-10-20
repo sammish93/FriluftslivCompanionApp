@@ -73,6 +73,8 @@ class FloraFaunaViewModel @Inject constructor(
         _birdResults.value = results
     }
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
     /**
      * Searches for birds based on the specified location.
@@ -85,8 +87,10 @@ class FloraFaunaViewModel @Inject constructor(
     suspend fun searchBirdsByLocation(location: String) {
         viewModelScope.launch {
             try {
+                _isLoading.value = true
+
                 val result = api.getRecentObservations(regionCode = location, maxResult = 10)
-                //TODO: Make comment: loading ...
+
                 if (result is Result.Success) {
                     val birdList = result.value
                     if (birdList.isNotEmpty()) {
@@ -116,10 +120,11 @@ class FloraFaunaViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 println("Error: ${e.message}")
-            }
+            } finally { _isLoading.value = false }
         }
     }
 
+    //TODO: Solve why it returns more than 5 results
     private suspend fun performSecondaryRequest(location: String): Result<List<Bird>> {
         println("No enough bird observations found for the specified location. Making a secondary request...")
 
