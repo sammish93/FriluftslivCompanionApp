@@ -365,7 +365,8 @@ object CustomNavGraph {
                 // Innholdet for FLORA_FAUNA_ADDITIONAL_INFO-skjermen
                 FloraFaunaAdditionalInfo(
                     modifier,
-                    floraFaunaViewModel
+                    floraFaunaViewModel,
+                    navController
                 )
             }
 
