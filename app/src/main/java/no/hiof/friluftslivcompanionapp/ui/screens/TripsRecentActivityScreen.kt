@@ -79,7 +79,6 @@ fun TripsRecentActivityScreen(
 fun TripCard(trip: DummyTrip) {
 
     var showDialog by remember { mutableStateOf(false) }
-
     val imageResource = when (trip.type.lowercase(Locale.ROOT)) {
         "hike" -> R.drawable.hike
         "climb" -> R.drawable.climb
@@ -167,16 +166,16 @@ fun TripCard(trip: DummyTrip) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(16.dp)
+                    .padding(top = 16.dp, bottom = 16.dp)
             ) {
-                StaticMapWithNodes(nodes = trip.nodes)
+                GoogleMapWithNodes(nodes = trip.nodes)
             }
         }
     }
 }
 
 @Composable
-fun StaticMapWithNodes(nodes: List<LatLng>) {
+fun GoogleMapWithNodes(nodes: List<LatLng>) {
 
     val mapProperties = MapProperties(
         isMyLocationEnabled = false,
