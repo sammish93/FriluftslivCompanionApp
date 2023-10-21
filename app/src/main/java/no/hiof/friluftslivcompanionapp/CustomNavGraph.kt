@@ -15,6 +15,7 @@ import no.hiof.friluftslivcompanionapp.ui.screens.FloraFaunaAdditionalInfo
 import no.hiof.friluftslivcompanionapp.ui.screens.FloraFaunaScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.FloraFaunaSearchScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.ProfileScreen
+import no.hiof.friluftslivcompanionapp.ui.screens.TripsAdditionalInfoScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.TripsCreateScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.TripsRecentActivityScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.TripsScreen
@@ -167,7 +168,8 @@ object CustomNavGraph {
                 TripsRecentActivityScreen(
                     navController,
                     modifier,
-                    tripsViewModel
+                    tripsViewModel,
+                    userViewModel
                 )
             }
 
@@ -212,6 +214,14 @@ object CustomNavGraph {
                     }
                 }) {
                 TripsCreateScreen(navController, modifier, tripsViewModel, userViewModel)
+            }
+
+            composable(
+                Screen.TRIPS_ADDITIONAL_INFO.name,
+                //enterTransition = { }, Not present.
+                //exitTransition = { } Not present.
+                ) {
+                TripsAdditionalInfoScreen(navController, modifier, tripsViewModel, userViewModel)
             }
         }
     }

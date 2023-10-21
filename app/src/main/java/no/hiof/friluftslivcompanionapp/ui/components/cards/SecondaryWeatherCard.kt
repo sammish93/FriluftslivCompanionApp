@@ -1,4 +1,4 @@
-package no.hiof.friluftslivcompanionapp.ui.components
+package no.hiof.friluftslivcompanionapp.ui.components.cards
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,11 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.domain.DateFormatter
 import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.Weather
@@ -39,10 +37,10 @@ import java.time.LocalDate
 
 
 @Composable
-fun PrimaryWeatherCard(
+fun SecondaryWeatherCard(
     weather: Weather,
     units: WeatherUnit = WeatherUnit.METRIC,
-    current: Boolean = true,
+    current: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
@@ -50,7 +48,7 @@ fun PrimaryWeatherCard(
             defaultElevation = 6.dp
         ),
         modifier = modifier
-            .height(120.dp)
+            .height(75.dp)
             .fillMaxWidth()
     ) {
         Row(
@@ -61,36 +59,35 @@ fun PrimaryWeatherCard(
                 .padding(end = 12.dp)
                 .weight(1f)) {
                 Text(
-                    text = if (weather.date == LocalDate.now() && current) stringResource(R.string.current_weather) else DateFormatter.formatToPrettyStringWithoutYear(
+                    text = if (weather.date == LocalDate.now() && current) "Current Weather" else DateFormatter.formatToPrettyStringWithoutYear(
                         weather.date
                     ),
-                    style = MaterialTheme.typography.headlineSmall,
-                    textAlign = TextAlign.Left,
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center,
                 )
                 Row(
                     modifier = modifier.fillMaxHeight(),
                     verticalAlignment = Alignment.Bottom
                 ) {
-                    Column {
                         Text(
                             text = when (units) {
-                                WeatherUnit.DEFAULT -> "Temperature: ${weather.temperature} K"
-                                WeatherUnit.IMPERIAL -> "Temperature: ${weather.temperature} °F"
-                                else -> "Temperature: ${weather.temperature} °C"
+                                WeatherUnit.DEFAULT -> "${weather.temperature} K"
+                                WeatherUnit.IMPERIAL -> "${weather.temperature} °F"
+                                else -> "${weather.temperature} °C"
                             },
                             style = MaterialTheme.typography.bodyMedium,
                             textAlign = TextAlign.Center,
                         )
                         Text(
                             text = when (units) {
-                                WeatherUnit.DEFAULT -> "Wind Speed: ${weather.windSpeed} m/s"
-                                WeatherUnit.IMPERIAL -> "Wind Speed: ${weather.windSpeed} mi/s"
-                                else -> "Wind Speed: ${weather.windSpeed} m/s"
+                                WeatherUnit.DEFAULT -> "${weather.windSpeed} m/s"
+                                WeatherUnit.IMPERIAL -> "${weather.windSpeed} mi/s"
+                                else -> "${weather.windSpeed} m/s"
                             },
+                            modifier = modifier.padding(start = 12.dp),
                             style = MaterialTheme.typography.bodyMedium,
                             textAlign = TextAlign.Center,
                         )
-                    }
                 }
             }
             Box(
@@ -108,6 +105,46 @@ fun PrimaryWeatherCard(
                     contentDescription = "An icon that summarises the weather."
                 )
             }
+        }
+    }
+}
+
+var weather = Weather(
+    Location(44.123, 52.2),
+    LocalDate.parse("2023-10-14"),
+    6.2,
+    21.4,
+    WeatherType.THUNDERSTORM
+)
+
+@Composable
+private fun ThemePreview(
+    typography: Typography,
+    isDarkTheme: Boolean,
+    content: @Composable () -> Unit
+) {
+    FriluftslivCompanionAppTheme(typography = CustomTypography, useDarkTheme = isDarkTheme) {
+        content()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LightThemePreview() {
+    Surface(tonalElevation = 5.dp) {
+        ThemePreview(typography = CustomTypography, isDarkTheme = false) {
+
+            SecondaryWeatherCard(weather)
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Dark Theme")
+@Composable
+fun DarkThemePreview() {
+    Surface(tonalElevation = 5.dp) {
+        ThemePreview(typography = CustomTypography, isDarkTheme = true) {
+            SecondaryWeatherCard(weather)
         }
     }
 }

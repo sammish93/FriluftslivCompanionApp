@@ -16,10 +16,12 @@ import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
 import no.hiof.friluftslivcompanionapp.data.states.TripsState
 import no.hiof.friluftslivcompanionapp.domain.LocationFormatter
 import no.hiof.friluftslivcompanionapp.domain.TripFactory
+import no.hiof.friluftslivcompanionapp.models.DummyTrip
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
 import java.time.Duration
+import java.time.LocalDate
 import javax.inject.Inject
 
 // NOTE: Composable Screens in app/ui/screens can communicate with this viewmodel (and thus the data
@@ -195,4 +197,27 @@ class TripsViewModel @Inject constructor(
         private const val TAG = "TripsViewModel"
     }
 
+    fun updateSelectedTrip(trip: DummyTrip) {
+        _tripsState.update { currentState ->
+            currentState.copy(
+                selectedTrip = trip
+            )
+        }
+    }
+
+    fun updateSelectedTripDate(tripDate: LocalDate) {
+        _tripsState.update { currentState ->
+            currentState.copy(
+                selectedTripDate = tripDate
+            )
+        }
+    }
+
+    fun updateSelectedTripIsRecentActivity(isRecentActivity: Boolean) {
+        _tripsState.update { currentState ->
+            currentState.copy(
+                isSelectedTripRecentActivity = isRecentActivity
+            )
+        }
+    }
 }

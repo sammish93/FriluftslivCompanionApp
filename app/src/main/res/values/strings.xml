@@ -48,4 +48,11 @@
     <string name="trips_create_dropdown_do_you_wish_create">Do you wish create this trip so that it is accessible to everyone?</string>
     <string name="trips_create_dropdown_clear_trip">Clear trip?</string>
     <string name="trips_create_dropdown_do_you_wish_to_clear">Do you wish to clear the data relating to trip you\'re currently creating?</string>
+    <string name="back">Back</string>
+    <string name="duration">Duration</string>
+    <string name="distance">Distance</string>
+    <string name="difficulty">Difficulty</string>
+    <string name="date">Date</string>
+    <string name="trips_add_to_recent_activity">Add to Recent Activity</string>
+    <string name="trips_recent_activity_add_trip">Add Trip</string>
 </resources>
