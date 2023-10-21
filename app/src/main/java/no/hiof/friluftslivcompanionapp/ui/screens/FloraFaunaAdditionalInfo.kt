@@ -2,6 +2,7 @@ package no.hiof.friluftslivcompanionapp.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -19,9 +20,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import no.hiof.friluftslivcompanionapp.models.BirdInfo
+import no.hiof.friluftslivcompanionapp.ui.components.TopBar
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 
@@ -29,37 +32,46 @@ import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 @Composable
 fun FloraFaunaAdditionalInfo (
     modifier: Modifier = Modifier,
-    viewModel: FloraFaunaViewModel = viewModel()
+    viewModel: FloraFaunaViewModel = viewModel(),
+    navController: NavController
 ){
     val birdInfo: BirdInfo? = viewModel.selectedBirdInfo.collectAsState().value
-
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    Column(
+        modifier = modifier.fillMaxSize()
     ) {
-        item {
-            Text("Extra Information", style= CustomTypography.titleLarge)
-            birdInfo?.let {
-                Image(
-                    painter = rememberImagePainter(data = it.imageUrl),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(180.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .wrapContentHeight(),
-                    contentScale = ContentScale.Crop
-                )
+        TopBar(
+            title = "Back to results",
+            onBackClick = {
+                navController.popBackStack()
+            }
+        )
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                Text("Extra Information", style = CustomTypography.titleLarge)
+                birdInfo?.let {
+                    Image(
+                        painter = rememberImagePainter(data = it.imageUrl),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(180.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .wrapContentHeight(),
+                        contentScale = ContentScale.Crop
+                    )
 
-                Text(text = "${it.speciesName}", style= CustomTypography.headlineLarge)
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(text = "${it.description}", style= CustomTypography.bodyLarge)
+                    Text(text = "${it.speciesName}", style = CustomTypography.headlineLarge)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(text = "${it.description}", style = CustomTypography.bodyLarge)
+                }
+
             }
 
         }
-
     }
-
 }
