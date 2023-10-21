@@ -22,7 +22,7 @@ import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
 import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
-import no.hiof.friluftslivcompanionapp.ui.components.items.ListItemWithButtonsAndImg
+import no.hiof.friluftslivcompanionapp.ui.components.items.CardList
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import java.util.Locale
 
@@ -105,6 +105,7 @@ fun FloraFaunaSearchScreen(
             }
 
             Spacer(modifier = Modifier.width(8.dp))
+
             Button(
                 onClick = {
                     viewModel.viewModelScope.launch {
@@ -127,6 +128,7 @@ fun FloraFaunaSearchScreen(
             }
 
         }
+        
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
@@ -135,7 +137,7 @@ fun FloraFaunaSearchScreen(
                 CustomLoadingScreen()
             } else {
                 ListComponent(birdResults) { bird, textStyle ->
-                    ListItemWithButtonsAndImg(
+                    CardList(
                         bird,
                         textStyle,
                         displayText = { it.speciesName ?: "Unknown Bird" },
