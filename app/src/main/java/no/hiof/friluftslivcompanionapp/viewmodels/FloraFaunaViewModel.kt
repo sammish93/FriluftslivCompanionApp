@@ -76,8 +76,6 @@ class FloraFaunaViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    //TODO: Solve why it returns more or less than the set maxResult.
-    //TODO: Solve why it only returns 1 result when using my location.
 
     /**
      * Searches for birds based on the specified location.
@@ -92,7 +90,7 @@ class FloraFaunaViewModel @Inject constructor(
             try {
                 _isLoading.value = true
 
-                val result = api.getRecentObservations(regionCode = location, maxResult = 12)
+                val result = api.getRecentObservations(regionCode = location, maxResult = 1)
 
                 if (result is Result.Success) {
                     val birdList = result.value
@@ -127,7 +125,7 @@ class FloraFaunaViewModel @Inject constructor(
         }
     }
 
-
+    //TODO: Solve why it returns more or less than the set maxResult.
     private suspend fun performSecondaryRequest(location: String): Result<List<Bird>> {
         println("No enough bird observations found for the specified location. Making a secondary request...")
 
@@ -135,7 +133,7 @@ class FloraFaunaViewModel @Inject constructor(
             startDate = LocalDate.now().minusWeeks(1),
             endDate = LocalDate.now(),
             regionCode = location,
-            maxResult = 5
+            maxResult = 1
         )
     }
 

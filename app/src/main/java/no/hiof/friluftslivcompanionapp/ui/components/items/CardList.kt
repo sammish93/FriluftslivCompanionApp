@@ -3,13 +3,15 @@ package no.hiof.friluftslivcompanionapp.ui.components.items
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
@@ -26,6 +28,7 @@ import coil.compose.rememberImagePainter
 import androidx.compose.ui.layout.ContentScale
 import coil.annotation.ExperimentalCoilApi
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 
@@ -42,51 +45,68 @@ fun <T> CardList(
     val imageUrl = fetchImage(item)
 
     Card(
+        shape= RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        ),
         modifier = Modifier
-            .fillMaxSize()
-            .wrapContentSize()
             .padding(8.dp)
+            .width(180.dp)
             .clickable { onMoreInfoClick(item) }
 
-
     ) {
-        Box{
+
             if (imageUrl.isNotEmpty()) {
                 val painter = rememberImagePainter(data = imageUrl)
-                Box{
-                    Image(
-                        painter = painter,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(160.dp)
-                            .clip(RoundedCornerShape(8.dp)),
-                        contentScale = ContentScale.Crop
-                    )
-                    IconButton(
-                        onClick = { onMoreInfoClick(item) },
-                        modifier = Modifier
-                            .size(38.dp)
-                            .padding(8.dp)
-                            .align(Alignment.BottomEnd)
-                    ) {
-                        Icon(
-                            tint = MaterialTheme.colorScheme.secondaryContainer,
-                            imageVector = Icons.Default.Info,
-                            contentDescription = "Clickable button for additional info"
+                Column {
+                    Box {
+                        Image(
+                            painter = painter,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .aspectRatio(1f)
+                                .size(160.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop
                         )
+
+                        IconButton(
+                            onClick = { onMoreInfoClick(item) },
+                            modifier = Modifier
+                                .size(38.dp)
+                                .padding(8.dp)
+                                .align(Alignment.BottomEnd)
+                        ) {
+                            Icon(
+                                tint = MaterialTheme.colorScheme.secondaryContainer,
+                                imageVector = Icons.Default.Info,
+                                contentDescription = "Clickable button for additional info"
+                            )
+                        }
+
                     }
-
-                }
-
-            } else {
-                Box{
                     Text(
                         text = displayText(item),
                         style = textStyle,
                         modifier = Modifier
                             .padding(top = 4.dp)
-                            .align(Alignment.Center)
+                            .align(Alignment.CenterHorizontally)
+
                     )
+                }
+
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = displayText(item),
+                        style = textStyle,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+
                     Button(
                         onClick = { onMoreInfoClick(item) },
                         modifier = Modifier
@@ -96,17 +116,6 @@ fun <T> CardList(
                         Text(text = "Additional details for ${displayText(item)}")
                     }
                 }
-
             }
-
         }
-        Text(
-            text = displayText(item),
-            style = textStyle,
-            modifier = Modifier
-                .padding(top = 4.dp)
-                .align(Alignment.CenterHorizontally)
-        )
-
     }
-}
