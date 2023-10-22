@@ -90,7 +90,7 @@ class FloraFaunaViewModel @Inject constructor(
             try {
                 _isLoading.value = true
 
-                val result = api.getRecentObservations(regionCode = location, maxResult = 1)
+                val result = api.getRecentObservations(regionCode = location, maxResult = 10)
 
                 if (result is Result.Success) {
                     val birdList = result.value
@@ -133,7 +133,7 @@ class FloraFaunaViewModel @Inject constructor(
             startDate = LocalDate.now().minusWeeks(1),
             endDate = LocalDate.now(),
             regionCode = location,
-            maxResult = 1
+            maxResult = 5
         )
     }
 
