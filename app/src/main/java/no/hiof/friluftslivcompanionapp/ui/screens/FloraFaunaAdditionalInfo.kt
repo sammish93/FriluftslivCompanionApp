@@ -57,7 +57,7 @@ fun FloraFaunaAdditionalInfo (
                 birdInfo?.let {
                     Image(
                         painter = rememberImagePainter(data = it.imageUrl),
-                        contentDescription = null,
+                        contentDescription = "Photo of ${it.speciesName}",
                         modifier = Modifier
                             .size(180.dp)
                             .clip(RoundedCornerShape(12.dp))
