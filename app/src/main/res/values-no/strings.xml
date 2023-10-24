@@ -61,4 +61,8 @@
     <string name="lang_select_language">Select Language</string>
     <string name="confirm">Confirm</string>
     <string name="dismiss">Dismiss</string>
+    <string name="enabled">Enabled</string>
+    <string name="oops">Oops!</string>
+    <string name="okay">Okay</string>
+    <string name="loc_permission_declined">You seem to have declined permission to share your location one too many times. If you wish to share your location with this application then please enable permissions manually via your phone\'s settings.</string>
 </resources>

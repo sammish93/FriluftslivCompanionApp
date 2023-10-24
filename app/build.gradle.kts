@@ -136,7 +136,7 @@ dependencies {
     // Google Fonts
     implementation("androidx.compose.ui:ui-text-google-fonts:1.4.3")
 
-    //Google Play need to have this for google authentication
+    // Google Play need to have this for google authentication
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     // Mockito
@@ -148,7 +148,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("androidx.activity:activity-ktx:1.8.0")
 
-    //GSON
+    // GSON
     implementation ("com.google.code.gson:gson:2.10.1")
     // Google Places
     implementation("com.google.android.libraries.places:places:3.0.0")
@@ -158,4 +158,7 @@ dependencies {
 
     // Material Design 3 - extra (e.g. SecondaryTabRow)
     implementation("androidx.compose.material3:material3:1.2.0-alpha09")
+
+    // Permissions
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
 }

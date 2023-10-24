@@ -25,7 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
@@ -42,14 +40,25 @@ import androidx.compose.ui.unit.dp
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
+import android.Manifest
+import android.content.Context
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.Switch
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.platform.LocalContext
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.shouldShowRationale
 import no.hiof.friluftslivcompanionapp.R
-import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.ui.components.TopBar
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SettingsScreen(
     navController: NavController,
@@ -58,7 +67,11 @@ fun SettingsScreen(
 ) {
     val userState by userViewModel.state.collectAsState()
 
+    val locPermissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
+    val context = LocalContext.current
+
     val openLanguageDialogue = remember { mutableStateOf(false) }
+    val openLocDialogue = remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -79,6 +92,7 @@ fun SettingsScreen(
                 verticalArrangement = Arrangement.Top
             ) {
 
+                // Language selector.
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -115,26 +129,68 @@ fun SettingsScreen(
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
-            }
+                // GPS Location updater.
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Default.LocationOn,
+                            contentDescription = "Update GPS Location"
+                        )
 
-            when (openLanguageDialogue.value) {
-                true -> {
-                    LangAlertDialogue(
-                        onDismissRequest = { openLanguageDialogue.value = false },
-                        onConfirmation = {
-                            openLanguageDialogue.value = false
-                        },
-                        userViewModel = userViewModel
+                        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+
+                        Text(
+                            text = "GPS Location",
+                            textAlign = TextAlign.Start
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Switch(
+                        checked = locPermissionState.status.isGranted,
+                        onCheckedChange = {
+                            if (locPermissionState.status.shouldShowRationale) {
+                                locPermissionState.launchPermissionRequest()
+                            } else {
+                                openLocDialogue.value = true
+                            }
+                        }
                     )
                 }
-
-                else -> {}
             }
+        }
+
+        when (openLanguageDialogue.value) {
+            true -> {
+                LangAlertDialogue(
+                    onDismissRequest = { openLanguageDialogue.value = false },
+                    onConfirmation = {
+                        openLanguageDialogue.value = false
+                    },
+                    userViewModel = userViewModel
+                )
+            }
+
+            else -> {}
+        }
+        when (openLocDialogue.value) {
+            true -> {
+                LocAlertDialogue(
+                    onConfirmation = {
+                        openLocDialogue.value = false
+                    },
+                )
+            }
+
+            else -> {}
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LangAlertDialogue(
     userViewModel: UserViewModel = viewModel(),
@@ -213,6 +269,33 @@ fun LangAlertDialogue(
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
                 Text(stringResource(R.string.dismiss))
+            }
+        }
+    )
+}
+
+@Composable
+fun LocAlertDialogue(
+    onConfirmation: () -> Unit,
+) {
+
+    AlertDialog(
+        title = {
+            Text(text = stringResource(R.string.oops))
+        },
+        text = {
+            Text(text = stringResource(R.string.loc_permission_declined))
+        },
+        onDismissRequest = {
+            onConfirmation()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirmation()
+                }
+            ) {
+                Text(stringResource(R.string.okay))
             }
         }
     )
