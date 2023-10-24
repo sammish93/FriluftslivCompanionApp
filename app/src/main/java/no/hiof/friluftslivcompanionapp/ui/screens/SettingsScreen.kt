@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,12 +31,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
@@ -109,9 +113,7 @@ fun SettingsScreen(
                     )
                 }
 
-
                 HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
-
 
             }
 
@@ -121,7 +123,7 @@ fun SettingsScreen(
                         onDismissRequest = { openLanguageDialogue.value = false },
                         onConfirmation = {
                             openLanguageDialogue.value = false
-                            },
+                        },
                         userViewModel = userViewModel
                     )
                 }
@@ -139,6 +141,8 @@ fun LangAlertDialogue(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
 ) {
+
+    val coroutineScope = rememberCoroutineScope()
     val (selectedLanguage, onLanguageSelected) = remember { mutableStateOf(userViewModel.getLanguage()) }
 
     AlertDialog(
@@ -186,6 +190,17 @@ fun LangAlertDialogue(
             Button(onClick = {
                 userViewModel.updateLanguage(selectedLanguage)
                 onConfirmation()
+                coroutineScope.launch {
+                    //TODO Smooth out this function - if default language is called in MainActivity
+                    // first then this function is buggy. First time you change it works, then you
+                    // change back to "en" and it won't update, then you change back to "no" and
+                    // nothing, then "en" and finally it changes.
+                    AppCompatDelegate.setApplicationLocales(
+                        LocaleListCompat.forLanguageTags(
+                            userViewModel.getLanguage().code
+                        )
+                    )
+                }
             }) {
                 Text(stringResource(R.string.confirm))
             }

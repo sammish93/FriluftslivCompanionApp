@@ -2,10 +2,14 @@ package no.hiof.friluftslivcompanionapp
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
@@ -38,6 +42,7 @@ import javax.inject.Inject
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
+import androidx.core.os.LocaleListCompat
 import no.hiof.friluftslivcompanionapp.ui.components.CustomNavigationBar
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
@@ -50,14 +55,16 @@ import no.hiof.friluftslivcompanionapp.CustomNavGraph.tripsGraph
 import no.hiof.friluftslivcompanionapp.CustomNavGraph.weatherGraph
 import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
+import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
+import java.util.Locale
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var auth: FirebaseAuth
     private val userViewModel: UserViewModel by viewModels()
@@ -88,6 +95,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Hides the "Friluftsliv Companion" black bar that appears at the top of the screen.
+        supportActionBar?.hide()
+
         locationManager.initializeFusedLocationProviderClient()
 
         // Check for location permissions and request if not granted.
@@ -115,6 +125,12 @@ class MainActivity : ComponentActivity() {
                         FriluftslivApp(userViewModel = userViewModel)
                     }
                 }
+
+                //TODO Set the default locale to be set according to a user's already-saved
+                // preference. Settings screen has a TO-DO explaining a bug.
+                // Code was based on examples shown here -
+                // https://medium.com/@fierydinesh/multi-language-support-android-localization-in-app-and-system-settings-change-language-e00957e9c48c
+                //AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(SupportedLanguage.ENGLISH.code))
             }
         } else {
             // No user signed in, start SignInActivity
@@ -123,8 +139,6 @@ class MainActivity : ComponentActivity() {
             finish()
         }
     }
-
-
 }
 
 // Screen used when a user's GPS location is being fetched.
@@ -217,6 +231,7 @@ fun FriluftslivApp(
                     }
                 }
             }
+
         else -> WaitingScreen()
     }
 }
