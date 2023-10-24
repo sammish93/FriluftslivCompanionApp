@@ -247,10 +247,6 @@ fun LangAlertDialogue(
                 userViewModel.updateLanguage(selectedLanguage)
                 onConfirmation()
                 coroutineScope.launch {
-                    //TODO Smooth out this function - if default language is called in MainActivity
-                    // first then this function is buggy. First time you change it works, then you
-                    // change back to "en" and it won't update, then you change back to "no" and
-                    // nothing, then "en" and finally it changes.
                     AppCompatDelegate.setApplicationLocales(
                         LocaleListCompat.forLanguageTags(
                             userViewModel.getLanguage().code
