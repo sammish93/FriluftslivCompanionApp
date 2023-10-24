@@ -22,6 +22,8 @@ import no.hiof.friluftslivcompanionapp.data.states.PlaceInfoState
 import no.hiof.friluftslivcompanionapp.data.states.UserState
 import no.hiof.friluftslivcompanionapp.domain.LocationFormatter
 import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
+import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
+import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import javax.inject.Inject
 import kotlin.math.sqrt
 
@@ -51,6 +53,11 @@ class UserViewModel @Inject constructor(
     private val _placeInfoState = MutableStateFlow<PlaceInfoState?>(null)
     private val placeInfoState: StateFlow<PlaceInfoState?> = _placeInfoState
 
+    var supportedLanguages = listOf(
+        SupportedLanguage.ENGLISH,
+        SupportedLanguage.NORWEGIAN
+    )
+
     // Used to get city, county, country and coordinates.
     fun fetchPlaceInfo(placeId: String) {
         viewModelScope.launch {
@@ -75,6 +82,7 @@ class UserViewModel @Inject constructor(
             )
         }
     }
+
 
     // Updates the currently logged in user.
     fun updateCurrentUser(currentUser: FirebaseUser) {
@@ -106,6 +114,19 @@ class UserViewModel @Inject constructor(
                 isLocationPermissionGranted = isLocationPermissionGranted
             )
         }
+    }
+
+    // Updates the user's preferred application language.
+    fun updateLanguage(language: SupportedLanguage) {
+        _state.update { currentState ->
+            currentState.copy(
+                language = language
+            )
+        }
+    }
+
+    fun getLanguage(): SupportedLanguage {
+        return  _state.value.language
     }
 
     // FUNCTIONS USED FOR PLACES API.

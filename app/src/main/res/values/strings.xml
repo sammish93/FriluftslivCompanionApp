@@ -55,4 +55,10 @@
     <string name="date">Date</string>
     <string name="trips_add_to_recent_activity">Add to Recent Activity</string>
     <string name="trips_recent_activity_add_trip">Add Trip</string>
+    <string name="lang_english">English</string>
+    <string name="lang_norwegian">Norwegian</string>
+    <string name="lang_language">Language</string>
+    <string name="lang_select_language">Select Language</string>
+    <string name="confirm">Confirm</string>
+    <string name="dismiss">Dismiss</string>
 </resources>
