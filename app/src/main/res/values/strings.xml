@@ -36,7 +36,7 @@
     <string name="navigation_trips">Trips</string>
     <string name="navigation_search">Search</string>
     <string name="navigation_create_trip">Create Trip</string>
-    <string name="navigation_recent_activity">Recent Activity</string>
+    <string name="navigation_recent_activity">Trip Log</string>
     <string name="navigation_add_trip">Add Trip</string>
     <string name="navigation_search_results">Search Results</string>
     <string name="navigation_settings">Settings</string>

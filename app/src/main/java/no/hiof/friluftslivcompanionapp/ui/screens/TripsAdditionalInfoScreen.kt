@@ -64,7 +64,7 @@ fun TripsAdditionalInfoScreen(
 
     Scaffold(
         topBar = {
-            TopBar(title = "", onBackClick = { navController.popBackStack() })
+            TopBar(title = "Back To Trip Log", onBackClick = { navController.popBackStack() })
         },
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
