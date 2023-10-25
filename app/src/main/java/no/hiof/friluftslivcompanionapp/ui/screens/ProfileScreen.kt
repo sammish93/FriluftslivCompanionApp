@@ -148,7 +148,7 @@ fun ProfileScreen(
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
-                Text(text = "${LocalDate.now().year} Leaderboard")
+                Text(text = stringResource(R.string.profile_year_leaderboard, LocalDate.now().year))
 
                 Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
@@ -165,7 +165,7 @@ fun ProfileScreen(
                             .padding(12.dp)
                     ) {
                         //TODO Implement functionality to get top 3 people with most recentactivity.
-                        Text(text = "Trips Taken")
+                        Text(text = stringResource(R.string.profile_trips_taken))
 
                         Spacer(modifier = Modifier.padding(vertical = 4.dp))
 

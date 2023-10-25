@@ -100,7 +100,7 @@ fun SettingsScreen(
 
     Scaffold(
         topBar = {
-            TopBar(title = "Back To Profile", onBackClick = { navController.popBackStack() })
+            TopBar(title = stringResource(R.string.navigation_back_to_profile), onBackClick = { navController.popBackStack() })
         },
     ) { innerPadding ->
         Box(
@@ -129,7 +129,7 @@ fun SettingsScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             Icons.Default.Menu,
-                            contentDescription = "Change Language"
+                            contentDescription = stringResource(R.string.settings_change_language)
                         )
 
                         Spacer(modifier = Modifier.padding(horizontal = 4.dp))
@@ -149,7 +149,7 @@ fun SettingsScreen(
 
                     Icon(
                         Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = "Change Language"
+                        contentDescription = stringResource(id = R.string.settings_change_language)
                     )
                 }
 
@@ -166,13 +166,13 @@ fun SettingsScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             Icons.Default.AccountCircle,
-                            contentDescription = "Update Profile Picture"
+                            contentDescription = stringResource(R.string.settings_update_profile_picture)
                         )
 
                         Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
                         Text(
-                            text = "Profile Picture",
+                            text = stringResource(R.string.settings_profile_picture),
                             textAlign = TextAlign.Start
                         )
                     }
@@ -181,7 +181,7 @@ fun SettingsScreen(
 
                     Icon(
                         Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = "Change Profile Picture"
+                        contentDescription = stringResource(R.string.settings_update_profile_picture)
                     )
                 }
 
@@ -195,13 +195,13 @@ fun SettingsScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             Icons.Default.LocationOn,
-                            contentDescription = "Update GPS Location"
+                            contentDescription = stringResource(R.string.settings_update_gps_location)
                         )
 
                         Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
                         Text(
-                            text = "GPS Location",
+                            text = stringResource(R.string.settings_gps_location),
                             textAlign = TextAlign.Start
                         )
                     }
@@ -214,7 +214,7 @@ fun SettingsScreen(
                             if (locPermissionState.status.isGranted) {
                                 Toast.makeText(
                                     context,
-                                    "You are already sharing your GPS location.",
+                                    R.string.settings_you_are_already_sharing_your_gps_location,
                                     Toast.LENGTH_SHORT
                                 ).show()
                             } else if (locPermissionState.status.shouldShowRationale) {
@@ -236,13 +236,13 @@ fun SettingsScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             Icons.Default.Build,
-                            contentDescription = "Toggle Dark Mode"
+                            contentDescription = stringResource(R.string.settings_toggle_dark_mode)
                         )
 
                         Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
                         Text(
-                            text = "Dark Mode",
+                            text = stringResource(R.string.settings_dark_mode),
                             textAlign = TextAlign.Start
                         )
                     }
@@ -272,14 +272,20 @@ fun SettingsScreen(
                 when (userState.currentUser?.isAnonymous) {
                     true -> {
                         Text(
-                            text = "Email not registered",
+                            text = stringResource(R.string.settings_email_not_registered),
                             style = CustomTypography.bodySmall
                         )
                     }
 
                     else -> {
                         Text(
-                            text = "Email: ${userState.currentUser?.email}",
+                            text =
+                                stringResource(
+                                    R.string.settings_email,
+                                    (if (!userState.currentUser?.email?.isNullOrBlank()!!) userState.currentUser?.email else stringResource(
+                                        id = R.string.unknown
+                                    ))!!
+                                ),
                             style = CustomTypography.bodySmall
                         )
                     }
@@ -290,7 +296,7 @@ fun SettingsScreen(
                 when (locPermissionState.status.isGranted) {
                     false -> {
                         Text(
-                            text = "No GPS location permission given",
+                            text = stringResource(R.string.settings_no_gps_location_permission_given),
                             style = CustomTypography.bodySmall
                         )
                         Spacer(modifier = Modifier.padding(vertical = 2.dp))
@@ -300,21 +306,39 @@ fun SettingsScreen(
                 }
 
                 Text(
-                    text = "Municipality: ${location?.get(0)?.subAdminArea}",
+                    text =
+                    stringResource(
+                        R.string.settings_municipality,
+                        (if (!location?.get(0)?.subAdminArea.isNullOrBlank()) location?.get(0)?.subAdminArea else stringResource(
+                            id = R.string.unknown
+                        ))!!
+                    ),
                     style = CustomTypography.bodySmall
                 )
 
                 Spacer(modifier = Modifier.padding(vertical = 2.dp))
 
                 Text(
-                    text = "County: ${location?.get(0)?.adminArea}",
+                    text =
+                        stringResource(
+                            R.string.settings_county,
+                            (if (!location?.get(0)?.adminArea.isNullOrBlank()) location?.get(0)?.adminArea else stringResource(
+                                id = R.string.unknown
+                            ))!!
+                        ),
                     style = CustomTypography.bodySmall
                 )
 
                 Spacer(modifier = Modifier.padding(vertical = 2.dp))
 
                 Text(
-                    text = "Country: ${location?.get(0)?.countryName}",
+                    text =
+                    stringResource(
+                        R.string.settings_country,
+                        (if (!location?.get(0)?.countryName.isNullOrBlank()) location?.get(0)?.countryName else stringResource(
+                            id = R.string.unknown
+                        ))!!
+                    ),
                     style = CustomTypography.bodySmall
                 )
 
@@ -343,10 +367,10 @@ fun SettingsScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Add,
-                                    contentDescription = "Register Account",
+                                    contentDescription = stringResource(R.string.settings_register_account),
                                 )
                                 Text(
-                                    "Register Account",
+                                    stringResource(R.string.settings_register_account),
                                     modifier = Modifier.padding(start = 4.dp)
                                 )
                             }
@@ -518,7 +542,7 @@ fun ProfileAlertDialogue(
 
     AlertDialog(
         title = {
-            Text("Select Profile Picture")
+            Text(stringResource(R.string.settings_select_profile_picture))
         },
         text = {
             Column(

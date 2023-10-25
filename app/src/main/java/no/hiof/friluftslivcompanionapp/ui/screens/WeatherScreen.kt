@@ -144,7 +144,7 @@ fun WeatherScreen(
                             )
                         }
                     }) {
-                        Icon(Icons.Default.Refresh, contentDescription = "Refresh")
+                        Icon(Icons.Default.Refresh, contentDescription = stringResource(id = R.string.refresh))
                     }
                 }
             }
@@ -315,7 +315,7 @@ fun WeatherBottomSheet(
                     onClick = null // null recommended for accessibility with screenreaders
                 )
                 Text(
-                    text = unitLabel,
+                    text = stringResource(unitLabel),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(start = 16.dp)
                 )
@@ -336,9 +336,9 @@ fun WeatherBottomSheet(
         ) {
             Icon(
                 Icons.Filled.Refresh,
-                contentDescription = "Refresh"
+                contentDescription = stringResource(R.string.refresh)
             )
-            Text("Update Weather Forecast", modifier = Modifier.padding(start = 4.dp))
+            Text(stringResource(R.string.weather_update_weather_forecast), modifier = Modifier.padding(start = 4.dp))
         }
     }
 }

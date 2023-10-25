@@ -21,12 +21,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.ui.components.LocationAutoFillList
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
@@ -54,7 +56,7 @@ fun WeatherSearchScreen(
                 userViewModel.searchPlaces(it)
             },
             label = { Text(
-                text = "Search for a place",
+                text = stringResource(R.string.search_search_for_a_place),
                 style = TextStyle(fontWeight = FontWeight.Medium)
             ) },
             modifier = Modifier.fillMaxWidth(),
@@ -67,13 +69,13 @@ fun WeatherSearchScreen(
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
-                    contentDescription = "Search Icon"
+                    contentDescription = stringResource(R.string.search_icon)
                 )
             },
             trailingIcon = {
                 Icon(
                     imageVector = Icons.Default.Close,
-                    contentDescription = "Clear Text",
+                    contentDescription = stringResource(R.string.search_clear_text),
                     modifier = Modifier.clickable {
                         text = ""
                         userViewModel.clearAutocompleteResults()

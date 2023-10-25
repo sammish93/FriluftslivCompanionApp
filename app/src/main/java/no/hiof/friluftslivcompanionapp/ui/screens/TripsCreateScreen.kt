@@ -78,11 +78,11 @@ fun TripsCreateScreen(
         // A button that allows the user to click and display the Bottom Sheet.
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                text = { Text("Create Trip") },
+                text = { Text(stringResource(id = R.string.trips_create_create_trip)) },
                 icon = {
                     Icon(
                         Icons.Filled.Add,
-                        contentDescription = "Create Trip"
+                        contentDescription = stringResource(id = R.string.trips_create_create_trip)
                     )
                 },
                 onClick = {
@@ -217,7 +217,7 @@ private fun TripsCreateSheet(
                                     )
                                 )
                             }) {
-                                Text(text = "-")
+                                Text(text = stringResource(R.string.symbol_minus))
                             }
 
                             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
@@ -229,7 +229,7 @@ private fun TripsCreateSheet(
                                     )
                                 )
                             }) {
-                                Text(text = "+")
+                                Text(text = stringResource(R.string.symbol_plus))
                             }
                         }
                     }
@@ -248,7 +248,7 @@ private fun TripsCreateSheet(
                                     )
                                 )
                             }) {
-                                Text(text = "-")
+                                Text(text = stringResource(R.string.symbol_minus))
                             }
 
                             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
@@ -260,7 +260,7 @@ private fun TripsCreateSheet(
                                     )
                                 )
                             }) {
-                                Text(text = "+")
+                                Text(text = stringResource(R.string.symbol_plus))
                             }
                         }
                     }
@@ -276,7 +276,7 @@ private fun TripsCreateSheet(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     ElevatedButton(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty - 1) }) {
-                        Text(text = "-")
+                        Text(text = stringResource(R.string.symbol_minus))
                     }
 
                     Spacer(modifier = Modifier.padding(horizontal = 4.dp))
@@ -286,7 +286,7 @@ private fun TripsCreateSheet(
                     Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
                     ElevatedButton(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty + 1) }) {
-                        Text(text = "+")
+                        Text(text = stringResource(R.string.symbol_plus))
                     }
                 }
             }
@@ -310,7 +310,7 @@ private fun TripsCreateSheet(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add",
+                    contentDescription = stringResource(R.string.add),
                 )
                 Text(
                     stringResource(R.string.trips_create_create_trip),
@@ -331,7 +331,7 @@ private fun TripsCreateSheet(
             ) {
                 Icon(
                     imageVector = Icons.Default.Clear,
-                    contentDescription = "Clear",
+                    contentDescription = stringResource(R.string.trips_create_clear),
                 )
                 Text(
                     stringResource(R.string.trips_create_clear_trip),
@@ -415,7 +415,7 @@ fun InfoButtonWithPopup() {
     ) {
         Icon(
             imageVector = Icons.Default.Info,
-            contentDescription = "Info",
+            contentDescription = stringResource(R.string.trips_create_info),
         )
         Text(
             stringResource(R.string.trips_create_how_to_use_the_map),
