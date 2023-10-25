@@ -442,7 +442,8 @@ fun ProfileAlertDialogue(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
 ) {
-    val (selectedDisplayPicture, onDisplayPictureSelected) = remember { mutableStateOf(userViewModel.getDisplayPicture()) }
+    val (selectedDisplayPicture, onDisplayPictureSelected) =
+        remember { mutableStateOf(userViewModel.getDisplayPicture()) }
 
     AlertDialog(
         title = {
@@ -471,8 +472,8 @@ fun ProfileAlertDialogue(
                                     .clip(CircleShape)
                                     .border(
                                         4.dp,
-                                        if (isPictureSelected) MaterialTheme.colorScheme.primary
-                                        else MaterialTheme.colorScheme.secondary,
+                                        if (isPictureSelected) MaterialTheme.colorScheme.error
+                                        else MaterialTheme.colorScheme.primary,
                                         CircleShape
                                     )
                                     .selectable(
