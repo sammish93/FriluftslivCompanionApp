@@ -45,6 +45,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
 import android.Manifest
 import android.content.Context
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -198,7 +199,13 @@ fun SettingsScreen(
                     Switch(
                         checked = locPermissionState.status.isGranted,
                         onCheckedChange = {
-                            if (locPermissionState.status.shouldShowRationale) {
+                            if (locPermissionState.status.isGranted) {
+                                Toast.makeText(
+                                    context,
+                                    "You are already sharing your GPS location.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else if (locPermissionState.status.shouldShowRationale) {
                                 locPermissionState.launchPermissionRequest()
                             } else {
                                 openLocDialogue.value = true
@@ -465,7 +472,7 @@ fun ProfileAlertDialogue(
 
                             Image(
                                 painter = painterResource(picture.defaultResolution),
-                                contentDescription = "Display Picture",
+                                contentDescription = stringResource(R.string.display_picture),
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
                                     .size(64.dp)

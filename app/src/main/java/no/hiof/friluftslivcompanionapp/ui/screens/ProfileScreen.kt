@@ -35,9 +35,10 @@ fun ProfileScreen(
 
     Scaffold(
         topBar = {
-            SettingsBar {
-                navController.navigate(Screen.PROFILE_SETTINGS.name)
-            }
+            SettingsBar(
+                onClick = { navController.navigate(Screen.PROFILE_SETTINGS.name) },
+                userViewModel = userViewModel
+            )
         },
     ) { innerPadding ->
         Box(
