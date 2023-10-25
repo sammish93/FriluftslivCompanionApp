@@ -2,6 +2,8 @@ package no.hiof.friluftslivcompanionapp.data.states
 
 import android.location.Location
 import com.google.firebase.auth.FirebaseUser
+import no.hiof.friluftslivcompanionapp.models.User
+import no.hiof.friluftslivcompanionapp.models.enums.DisplayPicture
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import java.util.Locale
 
@@ -15,6 +17,7 @@ data class UserState(
     val currentUser: FirebaseUser? = null,
     val language: SupportedLanguage = SupportedLanguage.ENGLISH,
     val isDarkMode: Boolean = false,
+    val displayPicture: DisplayPicture = DisplayPicture.DP_DEFAULT,
     val lastKnownLocation: Location? = null,
     val isLocationManagerCalled: Boolean = false,
     val isLocationPermissionGranted: Boolean = false,

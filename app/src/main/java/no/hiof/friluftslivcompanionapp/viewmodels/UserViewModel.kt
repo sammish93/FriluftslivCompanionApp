@@ -22,6 +22,7 @@ import no.hiof.friluftslivcompanionapp.data.states.PlaceInfoState
 import no.hiof.friluftslivcompanionapp.data.states.UserState
 import no.hiof.friluftslivcompanionapp.domain.LocationFormatter
 import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
+import no.hiof.friluftslivcompanionapp.models.enums.DisplayPicture
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import javax.inject.Inject
@@ -56,6 +57,18 @@ class UserViewModel @Inject constructor(
     var supportedLanguages = listOf(
         SupportedLanguage.ENGLISH,
         SupportedLanguage.NORWEGIAN
+    )
+
+    var displayPictures = listOf(
+        DisplayPicture.DP_DEFAULT,
+        DisplayPicture.DP_ONE,
+        DisplayPicture.DP_TWO,
+        DisplayPicture.DP_THREE,
+        DisplayPicture.DP_FOUR,
+        DisplayPicture.DP_FIVE,
+        DisplayPicture.DP_SIX,
+        DisplayPicture.DP_SEVEN,
+        DisplayPicture.DP_EIGHT,
     )
 
     // Used to get city, county, country and coordinates.
@@ -111,6 +124,21 @@ class UserViewModel @Inject constructor(
     // Updates whether dark mode is enabled.
     fun getIsDarkMode() : Boolean {
         return _state.value.isDarkMode
+    }
+
+    // Updates the user's chosen display picture.
+    //TODO Write this value to a firebase user.
+    fun updateDisplayPicture(displayPicture: DisplayPicture) {
+        _state.update { currentState ->
+            currentState.copy(
+                displayPicture = displayPicture
+            )
+        }
+    }
+
+    // Retrieves the logged in user's current display picture.
+    fun getDisplayPicture() : DisplayPicture {
+        return _state.value.displayPicture
     }
 
     // Updates the status of the location manager loading a user's GPS position.
