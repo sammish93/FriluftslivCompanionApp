@@ -45,6 +45,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
 import android.Manifest
 import android.content.Context
+import android.location.Geocoder
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -67,8 +68,11 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale
 import no.hiof.friluftslivcompanionapp.R
+import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.ui.components.TopBar
+import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
+import java.util.Locale
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -78,9 +82,17 @@ fun SettingsScreen(
     modifier: Modifier = Modifier
 ) {
     val userState by userViewModel.state.collectAsState()
-
     val locPermissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
+
     val context = LocalContext.current
+
+
+    val geocoder = Geocoder(LocalContext.current, Locale.getDefault())
+    val location = geocoder.getFromLocation(
+        userState.lastKnownLocation?.latitude ?: DefaultLocation.OSLO.lat,
+        userState.lastKnownLocation?.longitude ?: DefaultLocation.OSLO.lon,
+        1
+    )
 
     val openLanguageDialogue = remember { mutableStateOf(false) }
     val openLocDialogue = remember { mutableStateOf(false) }
@@ -246,93 +258,145 @@ fun SettingsScreen(
                 }
             }
 
-            when (userState.currentUser?.isAnonymous) {
-                true -> {
+            Column(
+                modifier = Modifier
+                    .padding(20.dp)
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Bottom
+            ) {
 
-                    Column(
-                        modifier = Modifier
-                            .padding(20.dp)
-                            .align(Alignment.BottomCenter)
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Bottom
-                    ) {
+                HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
+                when (userState.currentUser?.isAnonymous) {
+                    true -> {
+                        Text(
+                            text = "Email not registered",
+                            style = CustomTypography.bodySmall
+                        )
+                    }
 
-                        // Button to register an anonymous account.
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Button(
-                                    onClick = {
-                                        //TODO Implement click behaviour that handles
-                                        // registering of an anonymous account.
-                                    },
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Add,
-                                        contentDescription = "Register Account",
-                                    )
-                                    Text(
-                                        "Register Account",
-                                        modifier = Modifier.padding(start = 4.dp)
-                                    )
-                                }
-                            }
-                        }
+                    else -> {
+                        Text(
+                            text = "Email: ${userState.currentUser?.email}",
+                            style = CustomTypography.bodySmall
+                        )
                     }
                 }
 
-                else -> {}
-            }
-        }
+                Spacer(modifier = Modifier.padding(vertical = 2.dp))
 
-        when (openLanguageDialogue.value) {
-            true -> {
-                LangAlertDialogue(
-                    onDismissRequest = { openLanguageDialogue.value = false },
-                    onConfirmation = {
-                        openLanguageDialogue.value = false
-                    },
-                    userViewModel = userViewModel
+                when (locPermissionState.status.isGranted) {
+                    false -> {
+                        Text(
+                            text = "No GPS location permission given",
+                            style = CustomTypography.bodySmall
+                        )
+                        Spacer(modifier = Modifier.padding(vertical = 2.dp))
+                    }
+
+                    else -> {}
+                }
+
+                Text(
+                    text = "Municipality: ${location?.get(0)?.subAdminArea}",
+                    style = CustomTypography.bodySmall
                 )
-            }
 
-            else -> {}
-        }
+                Spacer(modifier = Modifier.padding(vertical = 2.dp))
 
-        when (openLocDialogue.value) {
-            true -> {
-                LocAlertDialogue(
-                    onConfirmation = {
-                        openLocDialogue.value = false
-                    },
+                Text(
+                    text = "County: ${location?.get(0)?.adminArea}",
+                    style = CustomTypography.bodySmall
                 )
-            }
 
-            else -> {}
-        }
+                Spacer(modifier = Modifier.padding(vertical = 2.dp))
 
-        when (openProfileDialogue.value) {
-            true -> {
-                ProfileAlertDialogue(
-                    onDismissRequest = { openProfileDialogue.value = false },
-                    onConfirmation = {
-                        openProfileDialogue.value = false
-                    },
-                    userViewModel = userViewModel
+                Text(
+                    text = "Country: ${location?.get(0)?.countryName}",
+                    style = CustomTypography.bodySmall
                 )
-            }
 
-            else -> {}
+                Spacer(modifier = Modifier.padding(vertical = 2.dp))
+
+                Text(
+                    text = "Lon: ${userState.lastKnownLocation?.longitude}, Lat: ${userState.lastKnownLocation?.latitude}",
+                    style = CustomTypography.bodySmall
+                )
+
+                // Button to register an anonymous account.
+                when (userState.currentUser?.isAnonymous) {
+                    true -> {
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Button(
+                                onClick = {
+                                    //TODO Implement click behaviour that handles
+                                    // registering of an anonymous account.
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Register Account",
+                                )
+                                Text(
+                                    "Register Account",
+                                    modifier = Modifier.padding(start = 4.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    else -> {}
+                }
+            }
         }
+    }
+
+    when (openLanguageDialogue.value) {
+        true -> {
+            LangAlertDialogue(
+                onDismissRequest = { openLanguageDialogue.value = false },
+                onConfirmation = {
+                    openLanguageDialogue.value = false
+                },
+                userViewModel = userViewModel
+            )
+        }
+
+        else -> {}
+    }
+
+    when (openLocDialogue.value) {
+        true -> {
+            LocAlertDialogue(
+                onConfirmation = {
+                    openLocDialogue.value = false
+                },
+            )
+        }
+
+        else -> {}
+    }
+
+    when (openProfileDialogue.value) {
+        true -> {
+            ProfileAlertDialogue(
+                onDismissRequest = { openProfileDialogue.value = false },
+                onConfirmation = {
+                    openProfileDialogue.value = false
+                },
+                userViewModel = userViewModel
+            )
+        }
+
+        else -> {}
     }
 }
 
