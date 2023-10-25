@@ -14,6 +14,7 @@ import java.util.Locale
 data class UserState(
     val currentUser: FirebaseUser? = null,
     val language: SupportedLanguage = SupportedLanguage.ENGLISH,
+    val isDarkMode: Boolean = false,
     val lastKnownLocation: Location? = null,
     val isLocationManagerCalled: Boolean = false,
     val isLocationPermissionGranted: Boolean = false,

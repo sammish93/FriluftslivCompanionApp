@@ -47,6 +47,8 @@ import android.Manifest
 import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Switch
 import androidx.compose.material3.TextButton
@@ -72,6 +74,7 @@ fun SettingsScreen(
 
     val openLanguageDialogue = remember { mutableStateOf(false) }
     val openLocDialogue = remember { mutableStateOf(false) }
+    val openProfileDialogue = remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -129,6 +132,38 @@ fun SettingsScreen(
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
+                // Profile picture selector.
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.clickable {
+                        openProfileDialogue.value = true
+                    }
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Default.AccountCircle,
+                            contentDescription = "Update Profile Picture"
+                        )
+
+                        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+
+                        Text(
+                            text = "Profile Picture",
+                            textAlign = TextAlign.Start
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Icon(
+                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = "Change Profile Picture"
+                    )
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
+
                 // GPS Location updater.
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -161,6 +196,37 @@ fun SettingsScreen(
                         }
                     )
                 }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
+
+                // Dark mode selector.
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Default.Build,
+                            contentDescription = "Toggle Dark Mode"
+                        )
+
+                        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+
+                        Text(
+                            text = "Dark Mode",
+                            textAlign = TextAlign.Start
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Switch(
+                        checked = userState.isDarkMode,
+                        onCheckedChange = {
+                            userViewModel.updateDarkMode(!userState.isDarkMode)
+                        }
+                    )
+                }
             }
         }
 
@@ -177,12 +243,27 @@ fun SettingsScreen(
 
             else -> {}
         }
+
         when (openLocDialogue.value) {
             true -> {
                 LocAlertDialogue(
                     onConfirmation = {
                         openLocDialogue.value = false
                     },
+                )
+            }
+
+            else -> {}
+        }
+
+        when (openLanguageDialogue.value) {
+            true -> {
+                ProfileAlertDialogue(
+                    onDismissRequest = { openLanguageDialogue.value = false },
+                    onConfirmation = {
+                        openLanguageDialogue.value = false
+                    },
+                    userViewModel = userViewModel
                 )
             }
 
@@ -292,6 +373,85 @@ fun LocAlertDialogue(
                 }
             ) {
                 Text(stringResource(R.string.okay))
+            }
+        }
+    )
+}
+
+@Composable
+fun ProfileAlertDialogue(
+    userViewModel: UserViewModel = viewModel(),
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+) {
+
+    val coroutineScope = rememberCoroutineScope()
+    val (selectedLanguage, onLanguageSelected) = remember { mutableStateOf(userViewModel.getLanguage()) }
+
+    AlertDialog(
+        title = {
+            Text(text = stringResource(R.string.lang_select_language))
+        },
+        text = {
+            Column(
+                Modifier
+                    .selectableGroup()
+            ) {
+                userViewModel.supportedLanguages.forEach { option ->
+                    val langLabel = stringResource(option.nameLocalized)
+
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp)
+                            .selectable(
+                                selected = (option == selectedLanguage),
+                                onClick = {
+                                    onLanguageSelected(option)
+                                },
+                                role = Role.RadioButton
+                            ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = (option == selectedLanguage),
+                            onClick = null // null recommended for accessibility with screenreaders
+                        )
+                        Text(
+                            text = langLabel,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
+                }
+            }
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            Button(onClick = {
+                userViewModel.updateLanguage(selectedLanguage)
+                onConfirmation()
+                coroutineScope.launch {
+                    AppCompatDelegate.setApplicationLocales(
+                        LocaleListCompat.forLanguageTags(
+                            userViewModel.getLanguage().code
+                        )
+                    )
+                }
+            }) {
+                Text(stringResource(R.string.confirm))
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = {
+                    onDismissRequest()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text(stringResource(R.string.dismiss))
             }
         }
     )

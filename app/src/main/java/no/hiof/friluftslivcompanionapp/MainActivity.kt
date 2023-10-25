@@ -109,13 +109,17 @@ class MainActivity : AppCompatActivity() {
         if (currentUser != null) {
 
             // Updates the userViewModel to the current user.
+            //TODO Update values for isDarkMode, language, etc.
             userViewModel.updateCurrentUser(currentUser)
 
             // User is signed in, shows the main content.
             setContent {
+                // State to be present in a composable so that theme updates on value change.
+                val userState by userViewModel.state.collectAsState()
+
                 FriluftslivCompanionAppTheme(
                     typography = CustomTypography,
-                    //useDarkTheme = true
+                    useDarkTheme = userState.isDarkMode
                 ) {
                     Surface(
                         tonalElevation = 5.dp,

@@ -98,6 +98,21 @@ class UserViewModel @Inject constructor(
         return _state.value.currentUser
     }
 
+    // Updates whether dark mode is enabled.
+    //TODO Write this value to a firebase user.
+    fun updateDarkMode(isDarkMode: Boolean) {
+        _state.update { currentState ->
+            currentState.copy(
+                isDarkMode = isDarkMode
+            )
+        }
+    }
+
+    // Updates whether dark mode is enabled.
+    fun getIsDarkMode() : Boolean {
+        return _state.value.isDarkMode
+    }
+
     // Updates the status of the location manager loading a user's GPS position.
     fun updateLocationManagerCalled(isLocationManagerCalled: Boolean) {
         _state.update { currentState ->
