@@ -182,7 +182,7 @@ fun ProfileScreen(
                         HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
                         //TODO Implement functionality to get top 3 people with most sightings.
-                        Text(text = "Species Spotted")
+                        Text(text = stringResource(R.string.profile_species_spotted))
 
                         Spacer(modifier = Modifier.padding(vertical = 4.dp))
 

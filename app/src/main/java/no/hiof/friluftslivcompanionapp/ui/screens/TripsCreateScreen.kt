@@ -54,6 +54,7 @@ import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.data.states.TripsState
 import no.hiof.friluftslivcompanionapp.domain.DateFormatter
 import no.hiof.friluftslivcompanionapp.domain.TripFactory
+import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapCreate
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
@@ -73,6 +74,7 @@ fun TripsCreateScreen(
     var showBottomSheet by remember { mutableStateOf(false) }
 
     val tripState by viewModel.tripsState.collectAsState()
+    val userState by userViewModel.state.collectAsState()
 
     Scaffold(
         // A button that allows the user to click and display the Bottom Sheet.
@@ -102,7 +104,7 @@ fun TripsCreateScreen(
             },
             sheetState = sheetState
         ) {
-            TripsCreateSheet(tripState, viewModel)
+            TripsCreateSheet(tripState, viewModel, userState.language)
         }
     }
 }
@@ -111,7 +113,8 @@ fun TripsCreateScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 private fun TripsCreateSheet(
     tripState: TripsState,
-    viewModel: TripsViewModel
+    viewModel: TripsViewModel,
+    language: SupportedLanguage = SupportedLanguage.ENGLISH
 ) {
     var dropdownExpanded by remember { mutableStateOf(false) }
     var dropdownSelectedText by remember { mutableIntStateOf(R.string.trips_create_dropdown_choose_something_exciting) }
@@ -281,7 +284,7 @@ private fun TripsCreateSheet(
 
                     Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
-                    Text(TripFactory.convertTripDifficultyFromIntToString(tripState.createTripDifficulty))
+                    Text(TripFactory.convertTripDifficultyFromIntToString(tripState.createTripDifficulty, language))
 
                     Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 

@@ -50,6 +50,7 @@ import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.data.states.UserState
 import no.hiof.friluftslivcompanionapp.data.states.WeatherState
+import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
 import no.hiof.friluftslivcompanionapp.ui.components.cards.PrimaryWeatherCard
 import no.hiof.friluftslivcompanionapp.ui.components.cards.SecondaryWeatherCard
@@ -112,7 +113,7 @@ fun WeatherScreen(
                 ) { contentPadding ->
 
                     // The main content of the screen is in this block.
-                    ForecastCards(contentPadding, weatherState)
+                    ForecastCards(contentPadding, weatherState, userState.language)
                 }
             }
 
@@ -169,7 +170,8 @@ fun WeatherScreen(
 @Composable
 private fun ForecastCards(
     contentPadding: PaddingValues,
-    weatherState: WeatherState
+    weatherState: WeatherState,
+    language: SupportedLanguage
 ) {
     Column(
         modifier = Modifier
@@ -183,7 +185,8 @@ private fun ForecastCards(
         weatherState.currentWeather?.let {
             PrimaryWeatherCard(
                 weather = it,
-                units = weatherState.unitChoice
+                units = weatherState.unitChoice,
+                language = language
             )
         }
 
@@ -193,7 +196,8 @@ private fun ForecastCards(
             PrimaryWeatherCard(
                 weather = it,
                 units = weatherState.unitChoice,
-                current = false
+                current = false,
+                language = language
             )
         }
 
@@ -210,7 +214,8 @@ private fun ForecastCards(
             weatherState.todayPlusOneWeather?.let {
                 SecondaryWeatherCard(
                     weather = it,
-                    units = weatherState.unitChoice
+                    units = weatherState.unitChoice,
+                    language = language
                 )
             }
 
@@ -219,7 +224,8 @@ private fun ForecastCards(
             weatherState.todayPlusTwoWeather?.let {
                 SecondaryWeatherCard(
                     weather = it,
-                    units = weatherState.unitChoice
+                    units = weatherState.unitChoice,
+                    language = language
                 )
             }
 
@@ -228,7 +234,8 @@ private fun ForecastCards(
             weatherState.todayPlusThreeWeather?.let {
                 SecondaryWeatherCard(
                     weather = it,
-                    units = weatherState.unitChoice
+                    units = weatherState.unitChoice,
+                    language = language
                 )
             }
 
@@ -237,7 +244,8 @@ private fun ForecastCards(
             weatherState.todayPlusFourWeather?.let {
                 SecondaryWeatherCard(
                     weather = it,
-                    units = weatherState.unitChoice
+                    units = weatherState.unitChoice,
+                    language = language
                 )
             }
 
@@ -246,7 +254,8 @@ private fun ForecastCards(
             weatherState.todayPlusFiveWeather?.let {
                 SecondaryWeatherCard(
                     weather = it,
-                    units = weatherState.unitChoice
+                    units = weatherState.unitChoice,
+                    language = language
                 )
             }
 
@@ -255,7 +264,8 @@ private fun ForecastCards(
             weatherState.todayPlusSixWeather?.let {
                 SecondaryWeatherCard(
                     weather = it,
-                    units = weatherState.unitChoice
+                    units = weatherState.unitChoice,
+                    language = language
                 )
             }
 
@@ -264,7 +274,8 @@ private fun ForecastCards(
             weatherState.todayPlusSevenWeather?.let {
                 SecondaryWeatherCard(
                     weather = it,
-                    units = weatherState.unitChoice
+                    units = weatherState.unitChoice,
+                    language = language
                 )
             }
 

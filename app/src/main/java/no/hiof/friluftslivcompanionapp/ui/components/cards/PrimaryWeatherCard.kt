@@ -31,11 +31,13 @@ import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.domain.DateFormatter
 import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.Weather
+import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.models.enums.WeatherType
 import no.hiof.friluftslivcompanionapp.models.enums.WeatherUnit
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.ui.theme.FriluftslivCompanionAppTheme
 import java.time.LocalDate
+import java.util.Locale
 
 
 @Composable
@@ -43,6 +45,7 @@ fun PrimaryWeatherCard(
     weather: Weather,
     units: WeatherUnit = WeatherUnit.METRIC,
     current: Boolean = true,
+    language: SupportedLanguage = SupportedLanguage.ENGLISH,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
@@ -62,7 +65,8 @@ fun PrimaryWeatherCard(
                 .weight(1f)) {
                 Text(
                     text = if (weather.date == LocalDate.now() && current) stringResource(R.string.current_weather) else DateFormatter.formatToPrettyStringWithoutYear(
-                        weather.date
+                        weather.date,
+                        language
                     ),
                     style = MaterialTheme.typography.headlineSmall,
                     textAlign = TextAlign.Left,
