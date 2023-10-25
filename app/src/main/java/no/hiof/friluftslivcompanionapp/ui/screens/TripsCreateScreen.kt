@@ -54,6 +54,7 @@ import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.data.states.TripsState
 import no.hiof.friluftslivcompanionapp.domain.DateFormatter
 import no.hiof.friluftslivcompanionapp.domain.TripFactory
+import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapCreate
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
@@ -73,16 +74,17 @@ fun TripsCreateScreen(
     var showBottomSheet by remember { mutableStateOf(false) }
 
     val tripState by viewModel.tripsState.collectAsState()
+    val userState by userViewModel.state.collectAsState()
 
     Scaffold(
         // A button that allows the user to click and display the Bottom Sheet.
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                text = { Text("Create Trip") },
+                text = { Text(stringResource(id = R.string.trips_create_create_trip)) },
                 icon = {
                     Icon(
                         Icons.Filled.Add,
-                        contentDescription = "Create Trip"
+                        contentDescription = stringResource(id = R.string.trips_create_create_trip)
                     )
                 },
                 onClick = {
@@ -102,7 +104,7 @@ fun TripsCreateScreen(
             },
             sheetState = sheetState
         ) {
-            TripsCreateSheet(tripState, viewModel)
+            TripsCreateSheet(tripState, viewModel, userState.language)
         }
     }
 }
@@ -111,7 +113,8 @@ fun TripsCreateScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 private fun TripsCreateSheet(
     tripState: TripsState,
-    viewModel: TripsViewModel
+    viewModel: TripsViewModel,
+    language: SupportedLanguage = SupportedLanguage.ENGLISH
 ) {
     var dropdownExpanded by remember { mutableStateOf(false) }
     var dropdownSelectedText by remember { mutableIntStateOf(R.string.trips_create_dropdown_choose_something_exciting) }
@@ -217,7 +220,7 @@ private fun TripsCreateSheet(
                                     )
                                 )
                             }) {
-                                Text(text = "-")
+                                Text(text = stringResource(R.string.symbol_minus))
                             }
 
                             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
@@ -229,7 +232,7 @@ private fun TripsCreateSheet(
                                     )
                                 )
                             }) {
-                                Text(text = "+")
+                                Text(text = stringResource(R.string.symbol_plus))
                             }
                         }
                     }
@@ -248,7 +251,7 @@ private fun TripsCreateSheet(
                                     )
                                 )
                             }) {
-                                Text(text = "-")
+                                Text(text = stringResource(R.string.symbol_minus))
                             }
 
                             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
@@ -260,7 +263,7 @@ private fun TripsCreateSheet(
                                     )
                                 )
                             }) {
-                                Text(text = "+")
+                                Text(text = stringResource(R.string.symbol_plus))
                             }
                         }
                     }
@@ -276,17 +279,17 @@ private fun TripsCreateSheet(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     ElevatedButton(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty - 1) }) {
-                        Text(text = "-")
+                        Text(text = stringResource(R.string.symbol_minus))
                     }
 
                     Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
-                    Text(TripFactory.convertTripDifficultyFromIntToString(tripState.createTripDifficulty))
+                    Text(TripFactory.convertTripDifficultyFromIntToString(tripState.createTripDifficulty, language))
 
                     Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
                     ElevatedButton(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty + 1) }) {
-                        Text(text = "+")
+                        Text(text = stringResource(R.string.symbol_plus))
                     }
                 }
             }
@@ -310,7 +313,7 @@ private fun TripsCreateSheet(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add",
+                    contentDescription = stringResource(R.string.add),
                 )
                 Text(
                     stringResource(R.string.trips_create_create_trip),
@@ -331,7 +334,7 @@ private fun TripsCreateSheet(
             ) {
                 Icon(
                     imageVector = Icons.Default.Clear,
-                    contentDescription = "Clear",
+                    contentDescription = stringResource(R.string.trips_create_clear),
                 )
                 Text(
                     stringResource(R.string.trips_create_clear_trip),
@@ -415,7 +418,7 @@ fun InfoButtonWithPopup() {
     ) {
         Icon(
             imageVector = Icons.Default.Info,
-            contentDescription = "Info",
+            contentDescription = stringResource(R.string.trips_create_info),
         )
         Text(
             stringResource(R.string.trips_create_how_to_use_the_map),

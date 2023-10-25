@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.data.network.Result
 import no.hiof.friluftslivcompanionapp.data.states.AutoCompleteState
 import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
@@ -54,9 +55,9 @@ class WeatherViewModel @Inject constructor(
 
     // Options available to the Bottom Sheet radio buttons.
     val radioOptions = mapOf(
-        WeatherUnit.METRIC to "Metric (°C & m/s)",
-        WeatherUnit.IMPERIAL to "Imperial (°F & mi/s)",
-        WeatherUnit.DEFAULT to "Default (K & m/s)"
+        WeatherUnit.METRIC to R.string.weather_metric,
+        WeatherUnit.IMPERIAL to R.string.weather_imperial,
+        WeatherUnit.DEFAULT to R.string.weather_default
     )
 
     // Retrieves a WeatherForecast object composed of a Location and a List<Weather> wrapped by

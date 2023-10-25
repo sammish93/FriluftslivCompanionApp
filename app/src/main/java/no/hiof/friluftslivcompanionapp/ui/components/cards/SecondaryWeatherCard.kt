@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import no.hiof.friluftslivcompanionapp.domain.DateFormatter
 import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.Weather
+import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.models.enums.WeatherType
 import no.hiof.friluftslivcompanionapp.models.enums.WeatherUnit
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
@@ -41,6 +42,7 @@ fun SecondaryWeatherCard(
     weather: Weather,
     units: WeatherUnit = WeatherUnit.METRIC,
     current: Boolean = false,
+    language: SupportedLanguage = SupportedLanguage.ENGLISH,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
@@ -60,7 +62,8 @@ fun SecondaryWeatherCard(
                 .weight(1f)) {
                 Text(
                     text = if (weather.date == LocalDate.now() && current) "Current Weather" else DateFormatter.formatToPrettyStringWithoutYear(
-                        weather.date
+                        weather.date,
+                        language
                     ),
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
