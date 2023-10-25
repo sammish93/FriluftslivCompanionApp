@@ -65,4 +65,6 @@
     <string name="oops">Oops!</string>
     <string name="okay">Okay</string>
     <string name="loc_permission_declined">You seem to have declined permission to share your location one too many times. If you wish to share your location with this application then please enable permissions manually via your phone\'s settings.</string>
+    <string name="lang_german" translatable="false">German</string>
+    <string name="lang_spanish" translatable="false">Spanish</string>
 </resources>
