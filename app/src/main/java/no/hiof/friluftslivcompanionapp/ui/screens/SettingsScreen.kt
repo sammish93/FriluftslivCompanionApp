@@ -444,117 +444,51 @@ fun ProfileAlertDialogue(
 ) {
     val (selectedDisplayPicture, onDisplayPictureSelected) = remember { mutableStateOf(userViewModel.getDisplayPicture()) }
 
-
     AlertDialog(
         title = {
             Text("Select Profile Picture")
         },
         text = {
             Column(
-                Modifier
-                    .selectableGroup()
+                Modifier.selectableGroup()
             ) {
-                Row(
-                    Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    for (i in 0..2) {
-                        val picture = userViewModel.displayPictures[i]
+                for (i in 0 until 3) {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        for (j in i * 3 until (i + 1) * 3) {
+                            val picture = userViewModel.displayPictures[j]
+                            val isPictureSelected = picture == selectedDisplayPicture
 
-                        Image(
-                            painter = painterResource(picture.defaultResolution),
-                            contentDescription = "Display Picture",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .size(64.dp)
-                                .clip(CircleShape)
-                                .border(4.dp, if (picture == selectedDisplayPicture) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary, CircleShape)
-                                .selectable(
-                                    selected = (picture == selectedDisplayPicture),
-                                    onClick = {
-                                        onDisplayPictureSelected(picture)
-                                    },
-                                    role = Role.RadioButton
-                                )
-                        )
+                            Image(
+                                painter = painterResource(picture.defaultResolution),
+                                contentDescription = "Display Picture",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .clip(CircleShape)
+                                    .border(
+                                        4.dp,
+                                        if (isPictureSelected) MaterialTheme.colorScheme.primary
+                                        else MaterialTheme.colorScheme.secondary,
+                                        CircleShape
+                                    )
+                                    .selectable(
+                                        selected = isPictureSelected,
+                                        onClick = { onDisplayPictureSelected(picture) },
+                                        role = Role.RadioButton
+                                    )
+                            )
 
-                        when (i) {
-                            0, 1 -> Spacer(modifier = Modifier.padding(horizontal = 4.dp))
-                            else -> {}
+                            if (j % 3 != 2) {
+                                Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+                            }
                         }
                     }
-                }
 
-                Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-                Row(
-                    Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    for (i in 3..5) {
-                        val picture = userViewModel.displayPictures[i]
-
-                        Image(
-                            painter = painterResource(picture.defaultResolution),
-                            contentDescription = "Display Picture",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .size(64.dp)
-                                .clip(CircleShape)
-                                .border(4.dp, if (picture == selectedDisplayPicture) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary, CircleShape)
-                                .selectable(
-                                    selected = (picture == selectedDisplayPicture),
-                                    onClick = {
-                                        onDisplayPictureSelected(picture)
-                                    },
-                                    role = Role.RadioButton
-                                )
-                        )
-
-                        when (i) {
-                            3, 4 -> Spacer(modifier = Modifier.padding(horizontal = 4.dp))
-                            else -> {}
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-                Row(
-                    Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    for (i in 6..8) {
-                        val picture = userViewModel.displayPictures[i]
-
-                        Image(
-                            painter = painterResource(picture.defaultResolution),
-                            contentDescription = "Display Picture",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .size(64.dp)
-                                .clip(CircleShape)
-                                .border(4.dp, if (picture == selectedDisplayPicture) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary, CircleShape)
-                                .selectable(
-                                    selected = (picture == selectedDisplayPicture),
-                                    onClick = {
-                                        onDisplayPictureSelected(picture)
-                                    },
-                                    role = Role.RadioButton
-                                )
-                        )
-
-                        when (i) {
-                            6, 7 -> Spacer(modifier = Modifier.padding(horizontal = 4.dp))
-                            else -> {}
-                        }
-                    }
+                    Spacer(modifier = Modifier.padding(vertical = 4.dp))
                 }
             }
         },
