@@ -48,6 +48,7 @@ import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Switch
@@ -84,12 +85,13 @@ fun SettingsScreen(
         Box(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize()
+                .fillMaxSize(),
         ) {
 
             Column(
                 modifier = Modifier
                     .padding(20.dp)
+                    .align(Alignment.TopCenter)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
@@ -228,6 +230,53 @@ fun SettingsScreen(
                     )
                 }
             }
+
+            when (userState.currentUser?.isAnonymous) {
+                true -> {
+
+                    Column(
+                        modifier = Modifier
+                            .padding(20.dp)
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Bottom
+                    ) {
+
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
+
+                        // Button to register an anonymous account.
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Button(
+                                    onClick = {
+                                              //TODO Implement click behaviour that handles
+                                              // registering of an anonymous account.
+                                    },
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = "Register Account",
+                                    )
+                                    Text(
+                                        "Register Account",
+                                        modifier = Modifier.padding(start = 4.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                else -> {}
+            }
         }
 
         when (openLanguageDialogue.value) {
@@ -256,12 +305,12 @@ fun SettingsScreen(
             else -> {}
         }
 
-        when (openLanguageDialogue.value) {
+        when (openProfileDialogue.value) {
             true -> {
                 ProfileAlertDialogue(
-                    onDismissRequest = { openLanguageDialogue.value = false },
+                    onDismissRequest = { openProfileDialogue.value = false },
                     onConfirmation = {
-                        openLanguageDialogue.value = false
+                        openProfileDialogue.value = false
                     },
                     userViewModel = userViewModel
                 )
@@ -385,61 +434,20 @@ fun ProfileAlertDialogue(
     onConfirmation: () -> Unit,
 ) {
 
-    val coroutineScope = rememberCoroutineScope()
-    val (selectedLanguage, onLanguageSelected) = remember { mutableStateOf(userViewModel.getLanguage()) }
-
     AlertDialog(
         title = {
-            Text(text = stringResource(R.string.lang_select_language))
+            Text("Select Profile Picture")
         },
         text = {
-            Column(
-                Modifier
-                    .selectableGroup()
-            ) {
-                userViewModel.supportedLanguages.forEach { option ->
-                    val langLabel = stringResource(option.nameLocalized)
-
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 12.dp)
-                            .selectable(
-                                selected = (option == selectedLanguage),
-                                onClick = {
-                                    onLanguageSelected(option)
-                                },
-                                role = Role.RadioButton
-                            ),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = (option == selectedLanguage),
-                            onClick = null // null recommended for accessibility with screenreaders
-                        )
-                        Text(
-                            text = langLabel,
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
-                    }
-                }
-            }
+               Text("Change things")
         },
         onDismissRequest = {
             onDismissRequest()
         },
         confirmButton = {
             Button(onClick = {
-                userViewModel.updateLanguage(selectedLanguage)
+                //TODO Update profile picture
                 onConfirmation()
-                coroutineScope.launch {
-                    AppCompatDelegate.setApplicationLocales(
-                        LocaleListCompat.forLanguageTags(
-                            userViewModel.getLanguage().code
-                        )
-                    )
-                }
             }) {
                 Text(stringResource(R.string.confirm))
             }
