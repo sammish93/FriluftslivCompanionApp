@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import no.hiof.friluftslivcompanionapp.ui.components.Carousel
 import no.hiof.friluftslivcompanionapp.ui.components.Carousel2
 import no.hiof.friluftslivcompanionapp.ui.components.items.cardItems
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
