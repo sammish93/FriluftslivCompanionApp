@@ -17,6 +17,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import no.hiof.friluftslivcompanionapp.ui.components.Carousel2
@@ -27,7 +29,7 @@ import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 fun HomeScreen(userViewModel: UserViewModel = viewModel(), modifier: Modifier = Modifier) {
     val listState = rememberLazyListState()
 
-/*
+    /*
 
     Column(
         modifier = modifier
@@ -37,7 +39,7 @@ fun HomeScreen(userViewModel: UserViewModel = viewModel(), modifier: Modifier = 
     ) {
 
         Text(text = "Happening now")
-        
+
         Row{
             Text(text = "Berries in Season!")
         }
@@ -50,7 +52,7 @@ fun HomeScreen(userViewModel: UserViewModel = viewModel(), modifier: Modifier = 
         ) {
             Carousel(cards = cardItems)
         }
-        
+
         Text(text = "Sightings in your Area")
         Box(
             modifier = Modifier
@@ -58,32 +60,6 @@ fun HomeScreen(userViewModel: UserViewModel = viewModel(), modifier: Modifier = 
                 .height(200.dp)
         ) {
             Carousel(cards = cardItems)
-        }
-
-    }
-    
-
-
- */
-    /*
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-        //contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-    ){
-
-
-
-        item {
-            Text(
-                text = "Trips in your areas:",
-                style = MaterialTheme.typography.titleSmall,
-
-                )
-            Carousel(cards = cardItems)
-            Spacer(modifier = Modifier.height(16.dp))
-        }
 
         item {
             Text(
@@ -96,15 +72,16 @@ fun HomeScreen(userViewModel: UserViewModel = viewModel(), modifier: Modifier = 
         }
 
 
+
     }
-    
+
     */
     Carousel2(cards = cardItems)
 
 
-    
 
-}    
+
+}
 
 
 
