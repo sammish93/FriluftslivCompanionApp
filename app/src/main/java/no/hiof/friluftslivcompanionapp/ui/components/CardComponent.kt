@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -165,6 +166,78 @@ fun ElevatedCardComponent(cardItem: CardItem, isHero: Boolean = false) {
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier
                     .padding(top = paddingValue)
+                    .fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+fun Carousel2(cards: List<CardItem>) {
+    val scrollState = rememberLazyListState()
+
+    // Calculate the center item based on the current scroll position
+    val centerIndex = (scrollState.firstVisibleItemIndex + scrollState.firstVisibleItemScrollOffset / 200)
+
+    LazyRow(
+        state = scrollState,
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        itemsIndexed(cards) { index, card ->
+            val scale = when {
+                index == centerIndex -> 1.3f
+                index == centerIndex + 1 -> 1.1f
+                else -> 1f
+            }
+
+
+            val animatedScale = animateFloatAsState(targetValue = scale).value
+
+            Box(modifier = Modifier.padding(8.dp)) {
+                ElevatedCardComponent2(cardItem = card, scaleFactor = animatedScale)
+            }
+        }
+    }
+}
+
+
+
+@OptIn(ExperimentalCoilApi::class)
+@Composable
+fun ElevatedCardComponent2(cardItem: CardItem, scaleFactor: Float) {
+
+
+    Card(
+        modifier = Modifier
+            .graphicsLayer {
+                scaleX = scaleFactor
+                scaleY = scaleFactor
+            }
+            .padding(vertical = 16.dp)
+            .width(120.dp)
+            .height(220.dp)
+    ) {
+        Column {
+            Image(
+                painter = rememberImagePainter(
+                    data = cardItem.imageResourceId,
+                    builder = {
+                        crossfade(true)
+                        placeholder(R.drawable.ic_launcher_background)
+                    }
+                ),
+                contentDescription = cardItem.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .height(180.dp)
+                    .fillMaxWidth()
+            )
+            Text(
+                text = cardItem.title,
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier
+                    .padding(top = 10.dp)
                     .fillMaxWidth()
             )
         }
