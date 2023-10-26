@@ -109,13 +109,17 @@ class MainActivity : AppCompatActivity() {
         if (currentUser != null) {
 
             // Updates the userViewModel to the current user.
+            //TODO Update values for isDarkMode, language, etc.
             userViewModel.updateCurrentUser(currentUser)
 
             // User is signed in, shows the main content.
             setContent {
+                // State to be present in a composable so that theme updates on value change.
+                val userState by userViewModel.state.collectAsState()
+
                 FriluftslivCompanionAppTheme(
                     typography = CustomTypography,
-                    //useDarkTheme = true
+                    useDarkTheme = userState.isDarkMode
                 ) {
                     Surface(
                         tonalElevation = 5.dp,
@@ -126,11 +130,11 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                //TODO Set the default locale to be set according to a user's already-saved
-                // preference. Settings screen has a TO-DO explaining a bug.
+                //TODO Update the UserViewModel's state language value in accordance with the
+                // logged in user - it's defaulted to ENGLISH right now.
                 // Code was based on examples shown here -
                 // https://medium.com/@fierydinesh/multi-language-support-android-localization-in-app-and-system-settings-change-language-e00957e9c48c
-                //AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(SupportedLanguage.ENGLISH.code))
+                AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(userViewModel.getLanguage().code))
             }
         } else {
             // No user signed in, start SignInActivity

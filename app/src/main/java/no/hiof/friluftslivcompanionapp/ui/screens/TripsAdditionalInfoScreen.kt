@@ -64,10 +64,12 @@ fun TripsAdditionalInfoScreen(
 
     Scaffold(
         topBar = {
-            TopBar(title = "Back To Trip Log", onBackClick = { navController.popBackStack() })
+            TopBar(title = stringResource(R.string.navigation_back_to_trips), onBackClick = { navController.popBackStack() })
         },
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding).fillMaxSize()) {
+        Box(modifier = Modifier
+            .padding(innerPadding)
+            .fillMaxSize()) {
             when (tripsState.selectedTrip) {
                 null -> NoTripFoundScreen()
 
@@ -115,7 +117,8 @@ fun TripsAdditionalInfoScreen(
 
                         //TODO add if (!tripsState.isSelectedTripRecentActivity) then show this.
                         Row(
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
                                 .padding(vertical = 8.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
@@ -167,7 +170,7 @@ fun NoTripFoundScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Error retrieving trip information.",
+            text = stringResource(R.string.trip_additional_info_error_retrieving_trip_information),
             style = CustomTypography.headlineMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier.wrapContentSize(Alignment.Center)
