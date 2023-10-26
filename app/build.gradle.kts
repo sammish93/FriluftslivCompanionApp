@@ -106,7 +106,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
-    testImplementation ("org.mockito:mockito-core:3.11.2")
+    testImplementation ("org.mockito:mockito-core:5.5.0")
+    androidTestImplementation("androidx.navigation:navigation-testing:2.7.4")
 
 
     // Retrofit
