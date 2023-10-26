@@ -1,13 +1,18 @@
 package no.hiof.friluftslivcompanionapp.ui.components
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
@@ -25,9 +30,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.paging.ExperimentalPagingApi
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import kotlinx.coroutines.delay
@@ -94,7 +102,7 @@ fun CardComponent(cardItem: CardItem) {
     }
 }
 
-
+/*
 
 @Composable
 fun Carousel(cards: List<CardItem>) {
@@ -132,20 +140,20 @@ fun Carousel(cards: List<CardItem>) {
     }
 }
 
+
+ */
 @OptIn(ExperimentalCoilApi::class)
 @Composable
-fun ElevatedCardComponent(cardItem: CardItem, isHero: Boolean = false) {
+fun ElevatedCardComponent(cardItem: CardItem) {
     val paddingValue = 10.dp
-    val iconSize = 24.dp
-
-
-    val width = if (isHero) 150.dp else 120.dp
-    val height = if (isHero) 250.dp else 220.dp
 
     Card(
+        shape = RoundedCornerShape(8.dp),
         modifier = Modifier
-            .height(height)
-            .width(width),
+            .padding(4.dp)
+            .fillMaxWidth()
+
+
 
     ) {
         Column {
@@ -177,7 +185,7 @@ fun Carousel2(cards: List<CardItem>) {
     val scrollState = rememberLazyListState()
 
     // Calculate the center item based on the current scroll position
-    val centerIndex = (scrollState.firstVisibleItemIndex + scrollState.firstVisibleItemScrollOffset / 200)
+    val centerIndex = (scrollState.firstVisibleItemIndex + scrollState.firstVisibleItemScrollOffset / 100)
 
     LazyRow(
         state = scrollState,
@@ -186,7 +194,7 @@ fun Carousel2(cards: List<CardItem>) {
     ) {
         itemsIndexed(cards) { index, card ->
             val scale = when {
-                index == centerIndex -> 1.3f
+                index == centerIndex -> 1.4f
                 index == centerIndex + 1 -> 1.1f
                 else -> 1f
             }
@@ -244,3 +252,50 @@ fun ElevatedCardComponent2(cardItem: CardItem, scaleFactor: Float) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class, ExperimentalPagingApi::class)
+@Composable
+fun ImageCardCarousel(cards: List<CardItem>) {
+    val pagerState: PagerState = rememberPagerState(pageCount = { cards.size })
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val itemWidth = screenWidth / 3
+    HorizontalPager(
+        state = pagerState,
+        modifier = Modifier.fillMaxWidth()
+    ) { page ->
+        ElevatedCardComponent3(cardItem = cards[page], width = itemWidth)
+    }
+}
+
+@OptIn(ExperimentalCoilApi::class)
+@Composable
+fun ElevatedCardComponent3(cardItem: CardItem, width: Dp) {
+    val paddingValue = 10.dp
+
+    Card(
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier
+            .width(width)
+            .padding(horizontal = 4.dp)  // Adjusted padding here
+    ) {
+        Column {
+            Image(
+                painter = rememberImagePainter(data = cardItem.imageResourceId, builder = {
+                    crossfade(true)
+                    placeholder(R.drawable.ic_launcher_background)
+                }),
+                contentDescription = cardItem.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .height(180.dp)
+                    .fillMaxWidth()
+            )
+            Text(
+                text = cardItem.title,
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier
+                    .padding(top = paddingValue)
+                    .fillMaxWidth()
+            )
+        }
+    }
+}
