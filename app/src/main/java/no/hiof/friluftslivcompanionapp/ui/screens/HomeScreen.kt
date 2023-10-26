@@ -21,7 +21,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import no.hiof.friluftslivcompanionapp.ui.components.Carousel
 import no.hiof.friluftslivcompanionapp.ui.components.Carousel2
 import no.hiof.friluftslivcompanionapp.ui.components.items.cardItems
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
