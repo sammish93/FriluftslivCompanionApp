@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -92,4 +93,81 @@ fun CardComponent(cardItem: CardItem) {
     }
 }
 
+
+
+@Composable
+fun Carousel(cards: List<CardItem>) {
+    var index by remember { mutableStateOf(0) }
+    val scrollState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
+    // Auto-scrolling logic
+    LaunchedEffect(key1 = true, block = {
+        while (isActive) {
+            delay(3000)
+            if (index == cards.size - 1) index = 0
+            else index++
+            scrollState.animateScrollToItem(index)
+        }
+    })
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.padding(16.dp)) {
+            LazyRow(
+                state = scrollState,
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                itemsIndexed(cards) { idx, card ->
+                    if (idx == index) {
+                        // This is the Hero card.
+                        ElevatedCardComponent(cardItem = card, isHero = true)
+                    } else {
+                        ElevatedCardComponent(cardItem = card)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalCoilApi::class)
+@Composable
+fun ElevatedCardComponent(cardItem: CardItem, isHero: Boolean = false) {
+    val paddingValue = 10.dp
+    val iconSize = 24.dp
+
+
+    val width = if (isHero) 150.dp else 120.dp
+    val height = if (isHero) 250.dp else 220.dp
+
+    Card(
+        modifier = Modifier
+            .height(height)
+            .width(width),
+
+    ) {
+        Column {
+            Image(
+                painter = rememberImagePainter(data = cardItem.imageResourceId, builder = {
+                    crossfade(true)
+                    placeholder(R.drawable.ic_launcher_background)
+                }),
+                contentDescription = cardItem.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .height(180.dp)
+                    .fillMaxWidth()
+
+            )
+            Text(
+                text = cardItem.title,
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier
+                    .padding(top = paddingValue)
+                    .fillMaxWidth()
+            )
+        }
+    }
+}
 
