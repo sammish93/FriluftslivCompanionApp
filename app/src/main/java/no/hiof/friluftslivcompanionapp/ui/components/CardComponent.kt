@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -130,22 +131,21 @@ fun Carousel(cards: List<CardItem>) {
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun ElevatedCardComponent(cardItem: CardItem, isHero: Boolean = false) {
     val paddingValue = 10.dp
     val iconSize = 24.dp
 
 
-    val width = if (isHero) 180.dp else 150.dp
-    val height = if (isHero) 280.dp else 250.dp
+    val width = if (isHero) 150.dp else 120.dp
+    val height = if (isHero) 250.dp else 220.dp
 
     Card(
         modifier = Modifier
             .height(height)
             .width(width),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 6.dp
-        )
+
     ) {
         Column {
             Image(
@@ -154,12 +154,18 @@ fun ElevatedCardComponent(cardItem: CardItem, isHero: Boolean = false) {
                     placeholder(R.drawable.ic_launcher_background)
                 }),
                 contentDescription = cardItem.title,
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .height(180.dp)
+                    .fillMaxWidth()
+
             )
             Text(
                 text = cardItem.title,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(top = paddingValue)
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier
+                    .padding(top = paddingValue)
+                    .fillMaxWidth()
             )
         }
     }
