@@ -95,58 +95,6 @@ fun CardComponent(cardItem: CardItem) {
 
 
 @Composable
-fun ImageCardComponent(item: CardItem, modifier: Modifier = Modifier) {
-    Card(
-        shape = RoundedCornerShape(8.dp),
-        elevation =CardDefaults.cardElevation(
-            defaultElevation = 4.dp
-        ),
-        modifier = modifier
-            .graphicsLayer {
-
-            }
-    ) {
-        Image(
-            painter = painterResource(id = item.imageResourceId),
-            contentDescription = item.title,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
-    }
-}
-
-@Composable
-fun ElevatedCardComponent(cardItem: CardItem, scaleFactor: Float = 1f) {
-    val paddingValue = 10.dp
-
-    Card(
-        modifier = Modifier
-            .scale(scaleFactor)
-            .height(250.dp)
-            .width(150.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-    ) {
-        Column {
-            Image(
-                painter = rememberImagePainter(data = cardItem.imageResourceId, builder = {
-                    crossfade(true)
-                    placeholder(R.drawable.ic_launcher_background)
-                }),
-                contentDescription = cardItem.title,
-                contentScale = ContentScale.Crop
-            )
-
-            Text(
-                text = cardItem.title,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(top = paddingValue)
-            )
-        }
-    }
-}
-
-
-@Composable
 fun Carousel(cards: List<CardItem>) {
     var index by remember { mutableStateOf(0) }
     val scrollState = rememberLazyListState()
@@ -170,9 +118,12 @@ fun Carousel(cards: List<CardItem>) {
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 itemsIndexed(cards) { idx, card ->
-
-                    val scaleFactor = calculateScaleFactor(scrollState, idx)
-                    ElevatedCardComponent(cardItem = card, scaleFactor = scaleFactor)
+                    if (idx == index) {
+                        // This is the Hero card.
+                        ElevatedCardComponent(cardItem = card, isHero = true)
+                    } else {
+                        ElevatedCardComponent(cardItem = card)
+                    }
                 }
             }
         }
@@ -180,10 +131,37 @@ fun Carousel(cards: List<CardItem>) {
 }
 
 @Composable
-fun calculateScaleFactor(scrollState: LazyListState, index: Int): Float {
-    val firstVisibleItemIndex = scrollState.firstVisibleItemIndex
-    return when (index) {
-        firstVisibleItemIndex -> 1.2f
-        else -> 1f
+fun ElevatedCardComponent(cardItem: CardItem, isHero: Boolean = false) {
+    val paddingValue = 10.dp
+    val iconSize = 24.dp
+
+
+    val width = if (isHero) 180.dp else 150.dp
+    val height = if (isHero) 280.dp else 250.dp
+
+    Card(
+        modifier = Modifier
+            .height(height)
+            .width(width),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 6.dp
+        )
+    ) {
+        Column {
+            Image(
+                painter = rememberImagePainter(data = cardItem.imageResourceId, builder = {
+                    crossfade(true)
+                    placeholder(R.drawable.ic_launcher_background)
+                }),
+                contentDescription = cardItem.title,
+                contentScale = ContentScale.Crop
+            )
+            Text(
+                text = cardItem.title,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(top = paddingValue)
+            )
+        }
     }
 }
+
