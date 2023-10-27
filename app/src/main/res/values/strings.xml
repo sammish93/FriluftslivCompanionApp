@@ -114,4 +114,5 @@
     <string name="profile_year_leaderboard">%1$s Leaderboard</string>
     <string name="profile_trips_taken">Trips Taken</string>
     <string name="profile_species_spotted">Species Spotted</string>
+    <string name="log_out">Log out</string>
 </resources>

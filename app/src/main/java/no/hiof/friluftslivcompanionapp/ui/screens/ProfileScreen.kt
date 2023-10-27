@@ -25,6 +25,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -196,6 +199,24 @@ fun ProfileScreen(
 
                         LeaderboardRow(DisplayPicture.DP_DEFAULT, "Colm", 82, 3, 8, 0.8F)
                     }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
+
+                Button(modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        //TODO Implement logout behaviour so the user is returned to
+                        // the login page.
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.log_out),
+                    )
+                    Text(
+                        stringResource(R.string.log_out),
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
                 }
             }
         }
