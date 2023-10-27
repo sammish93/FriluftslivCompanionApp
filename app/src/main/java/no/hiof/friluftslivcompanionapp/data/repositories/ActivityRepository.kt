@@ -5,6 +5,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import no.hiof.friluftslivcompanionapp.models.Trip
+import no.hiof.friluftslivcompanionapp.models.TripActivity
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -45,6 +47,37 @@ class ActivityRepository @Inject constructor(
                 Result.failure(e)
             }
         }
+
+    suspend fun getAllUserActivities(): Result<TripActivity> {
+        return withContext(Dispatchers.IO) {
+            try {
+
+                val userId = auth.currentUser?.uid
+                    ?: return@withContext Result.failure(Exception("No user logged in"))
+
+
+                val activitySubcollectionRef = firestore.collection("users").document(userId).collection("activity")
+
+
+                val querySnapshot = activitySubcollectionRef.get().await()
+
+
+                val tripActivityMap: MutableMap<Date, Trip> = mutableMapOf()
+                for (document in querySnapshot.documents) {
+                    val dateKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(document.id)
+                    val tripValue = document.toObject(Trip::class.java)
+                    if (dateKey != null && tripValue != null) {
+                        tripActivityMap[dateKey] = tripValue
+                    }
+                }
+
+                Result.success(TripActivity(tripActivityMap))
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
 
 
 
