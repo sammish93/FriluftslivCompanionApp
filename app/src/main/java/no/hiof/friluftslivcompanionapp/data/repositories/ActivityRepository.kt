@@ -174,9 +174,12 @@ class ActivityRepository @Inject constructor(
             try {
 
                 val userId = auth.currentUser?.uid
-                    ?: return@withContext OperationResult.Error(Exception("No user logged in"))
+                    ?: return@withContext Result.failure(Exception("No user logged in"))
 
-                val activitySubcollectionRef = firestore.collection("users").document(userId).collection("tripActivity")
+
+                val activitySubcollectionRef = firestore.collection("users").document(userId).collection("activity")
+
+
                 val querySnapshot = activitySubcollectionRef.get().await()
 
 
@@ -185,14 +188,11 @@ class ActivityRepository @Inject constructor(
                     val dateKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(document.id)
                     val tripValue = document.toObject(Trip::class.java)
                     if (dateKey != null && tripValue != null) {
-                        val tripActivityMap: MutableMap<Date, Trip> = mutableMapOf()
                         tripActivityMap[dateKey] = tripValue
-                        tripActivities.add(TripActivity(tripActivityMap))
                     }
                 }
 
-                OperationResult.Success(tripActivities)
-
+                Result.success(TripActivity(tripActivityMap))
             } catch (e: Exception) {
                 OperationResult.Error(e)
             }
