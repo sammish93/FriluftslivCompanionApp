@@ -189,8 +189,8 @@ class ActivityRepository @Inject constructor(
 
                 val querySnapshot = activitySubcollectionRef.get().await()
 
-                val tripActivities: MutableList<TripActivity> = mutableListOf()
 
+                val tripActivityMap: MutableMap<Date, Trip> = mutableMapOf()
                 for (document in querySnapshot.documents) {
                     Log.d(logTag, "Processing document: ${document.id}")
 
