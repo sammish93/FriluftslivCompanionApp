@@ -74,6 +74,7 @@ object TripFactory {
         } else null
     }
 
+    // This seems to be a duplication of 'createTrip'. Can we delete it?
     private fun createHike(
         tripRoute: List<LatLng>,
         tripDescription: String,
