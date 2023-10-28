@@ -20,53 +20,50 @@ class ActivityRepository @Inject constructor(
     private val auth: FirebaseAuth
 ) {
 
-        //Use this to add an activity to recent activity
-        suspend fun addTripActivityToUser(tripId: String) {
-            val functionTag = "AddTripActivity"
-            try {
-                val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
-                Log.d(functionTag, "User is logged in with ID: $userId")
+    suspend fun addTripActivityToUser(tripId: String, selectedDate: Date) {
+        val functionTag = "AddTripActivity"
+        try {
+            val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
+            Log.d(functionTag, "User is logged in with ID: $userId")
 
-                // Reference to the trip that the user has selected.
-                val tripDocumentRef = firestore.collection("trips").document(tripId)
 
-                // Get the specific trip document from Firestore.
-                val tripDocument = tripDocumentRef.get().await()
+            val tripDocumentRef = firestore.collection("trips").document(tripId)
 
-                if (!tripDocument.exists()) {
-                    Log.w(functionTag, "Trip document does not exist")
-                    throw IllegalStateException("Trip not found")
-                }
 
-                Log.d(functionTag, "Trip document retrieved successfully")
+            val tripDocument = tripDocumentRef.get().await()
 
-                // Extract data from the document, and if it's null, throw an exception.
-                val tripData = tripDocument.data ?: throw IllegalStateException("Data is missing from the trip")
-
-                // Convert the retrieved data to a Trip object (Hike).
-                val trip = Hike.fromMap(tripData)
-
-                // Get today's date.
-                val today = Date()
-                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                val dateString = dateFormat.format(today)
-
-                // Create a TripActivity object.
-                val tripActivity = TripActivity(trip, today)
-
-                // Log the operation
-                Log.d(functionTag, "Creating a new TripActivity for date: $dateString")
-
-                // Add to the user's 'tripActivity' collection in Firestore.
-                val userTripActivityRef = firestore.collection("users").document(userId).collection("tripActivity")
-                userTripActivityRef.document(dateString).set(tripActivity.toMap()).await()
-
-                Log.d(functionTag, "TripActivity added successfully to Firestore for user: $userId")
-            } catch (e: Exception) {
-                Log.e(functionTag, "Error adding trip activity: ${e.message}", e)
-                throw e // Rethrow or handle the exception as needed.
+            if (!tripDocument.exists()) {
+                Log.w(functionTag, "Trip document does not exist")
+                throw IllegalStateException("Trip not found")
             }
+
+            Log.d(functionTag, "Trip document retrieved successfully")
+
+
+            val tripData = tripDocument.data ?: throw IllegalStateException("Data is missing from the trip")
+
+
+            val trip = Hike.fromMap(tripData)
+
+
+            val tripActivity = TripActivity(trip, selectedDate)
+
+
+            Log.d(functionTag, "Creating a new TripActivity")
+
+
+            val userTripActivityRef = firestore.collection("users").document(userId).collection("tripActivity")
+
+
+            userTripActivityRef.add(tripActivity.toMap()).await()
+
+            Log.d(functionTag, "TripActivity added successfully to Firestore for user: $userId")
+        } catch (e: Exception) {
+            Log.e(functionTag, "Error adding trip activity: ${e.message}", e)
+            throw e
         }
+    }
+
     suspend fun getUserTripActivities(): OperationResult<List<TripActivity>> {
         val functionTag = "GetUserTripActivities"
 
@@ -84,34 +81,28 @@ class ActivityRepository @Inject constructor(
                 val querySnapshot = activityCollectionRef.get().await()
 
                 val tripActivities: MutableList<TripActivity> = mutableListOf()
-                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+
                 Log.d(functionTag, "Processing documents from Firestore")
 
                 for (document in querySnapshot.documents) {
                     Log.d(functionTag, "Processing document ID: ${document.id}")
 
-                    val date = try {
-                        dateFormat.parse(document.id) // Parsing date from the document ID
-                    } catch (e: ParseException) {
-                        Log.w(functionTag, "Date parsing failed for document ID: ${document.id}", e)
-                        null
-                    }
+
+                    val dateTimestamp = document.data?.get("date") as? com.google.firebase.Timestamp
+                    val date = dateTimestamp?.toDate()
 
                     val tripMap = document.data?.get("trip") as? Map<String, Any?>
-                    if (tripMap == null) {
-                        Log.w(functionTag, "No 'trip' data found or invalid data type in document: ${document.id}")
-                        continue // Skip this iteration if we encounter an issue here
+                    if (tripMap == null || date == null) {
+                        Log.w(functionTag, "Data missing or invalid data type in document: ${document.id}")
+                        continue
                     }
 
-                    if (date != null && tripMap != null) {
-                        Log.d(functionTag, "Creating Trip object from document data")
-                        val trip = Hike.fromMap(tripMap) // Constructing Hike from map data
+                    Log.d(functionTag, "Creating Trip object from document data")
+                    val trip = Hike.fromMap(tripMap)
 
-                        Log.d(functionTag, "Adding new TripActivity for date: ${document.id}")
-                        tripActivities.add(TripActivity(trip, date)) // Using Date object here
-                    } else {
-                        Log.w(functionTag, "Data missing for creating TripActivity in document: ${document.id}")
-                    }
+                    Log.d(functionTag, "Adding new TripActivity")
+                    tripActivities.add(TripActivity(trip, date))
                 }
 
                 Log.d(functionTag, "Successfully compiled list of TripActivities. Total count: ${tripActivities.size}")
