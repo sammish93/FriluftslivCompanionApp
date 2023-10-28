@@ -30,27 +30,32 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.models.DummyTrip
+import no.hiof.friluftslivcompanionapp.models.TripActivity
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import java.time.LocalDate
+import java.util.Date
 import java.util.Locale
 
 @Composable
 fun TripCard(
     navController: NavController,
-    trip: DummyTrip,
+    trip: TripActivity,
     tripsViewModel: TripsViewModel = viewModel(),
     userViewModel: UserViewModel = viewModel()
 ) {
 
     //var showDialog by remember { mutableStateOf(false) }
+    /*
     val imageResource = when (trip.type.lowercase(Locale.ROOT)) {
         "hike" -> R.drawable.hike
         "climb" -> R.drawable.climb
         else -> R.drawable.ski
     }
 
+     */
+    val imageResource = R.drawable.hike
     Card(
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
@@ -83,16 +88,20 @@ fun TripCard(
                     .padding(start = 12.dp, top = 8.dp, end = 12.dp, bottom = 8.dp)
             ) {
                 Text(
-                    text = "${trip.type} in ${trip.city}",
+                    text = "${trip.tripActivity.entries}",
                     style = MaterialTheme.typography.headlineMedium
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
 
+
+                Spacer(modifier = Modifier.height(8.dp))
+                /*
                 Text(
                     text = "County: ${trip.county}",
                     style = MaterialTheme.typography.bodyMedium
                 )
+
+                 */
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -114,7 +123,7 @@ fun TripCard(
                         onClick = { //showDialog = true
                             // Updates the trip selected in the view model so that the page can
                             // access various trips dynamically.
-                            tripsViewModel.updateSelectedTrip(trip)
+                            //tripsViewModel.updateSelectedTrip(trip)
                             navController.navigate(Screen.TRIPS_ADDITIONAL_INFO.name)
                         },
                         colors = ButtonColors(
@@ -147,3 +156,4 @@ fun TripCard(
     }
      */
 }
+

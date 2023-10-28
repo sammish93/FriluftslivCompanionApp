@@ -23,6 +23,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -61,6 +64,10 @@ fun TripsRecentActivityScreen(
     tripsViewModel: TripsViewModel = viewModel(),
     userViewModel: UserViewModel = viewModel()
 ) {
+    LaunchedEffect(key1 = "loadRecentActivities") {
+        tripsViewModel.recentActivity()
+    }
+    val recentActivities by tripsViewModel.recentActivity.collectAsState()
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -68,9 +75,9 @@ fun TripsRecentActivityScreen(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
 
     ) {
-        items(dummyTrips) { trip ->
+        items(recentActivities ?: emptyList()) { activity ->
             //TODO send RecentActivity to trip instead of dummy data.
-            TripCard(navController, trip, tripsViewModel, userViewModel)
+            TripCard(navController, activity, tripsViewModel, userViewModel)
         }
     }
 }
