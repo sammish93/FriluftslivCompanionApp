@@ -10,9 +10,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import no.hiof.friluftslivcompanionapp.ui.components.Sensors
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
+import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 
 @Composable
-fun HomeScreen(userViewModel: UserViewModel = viewModel(), modifier: Modifier = Modifier) {
+fun HomeScreen(
+    userViewModel: UserViewModel = viewModel(),
+    tripsViewModel: TripsViewModel = viewModel(),
+    modifier: Modifier = Modifier
+) {
     Sensors(userViewModel)
 }
