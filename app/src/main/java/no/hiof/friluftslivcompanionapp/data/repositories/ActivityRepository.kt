@@ -171,48 +171,29 @@ class ActivityRepository @Inject constructor(
 
     suspend fun getAllUserActivities(): OperationResult<List<TripActivity>> {
         return withContext(Dispatchers.IO) {
-            val logTag = "UserActivitiesLog" // Define a log tag
-
             try {
-                Log.d(logTag, "Starting retrieval of user activities")
 
                 val userId = auth.currentUser?.uid
-                if (userId == null) {
-                    Log.e(logTag, "No user logged in")
-                    return@withContext OperationResult.Error(Exception("No user logged in"))
-                }
-
-                Log.d(logTag, "Logged-in user ID: $userId")
+                    ?: return@withContext OperationResult.Error(Exception("No user logged in"))
 
                 val activitySubcollectionRef = firestore.collection("users").document(userId).collection("tripActivity")
-                Log.d(logTag, "Retrieving activities from Firestore for user: $userId")
-
                 val querySnapshot = activitySubcollectionRef.get().await()
 
 
                 val tripActivityMap: MutableMap<Date, Trip> = mutableMapOf()
                 for (document in querySnapshot.documents) {
-                    Log.d(logTag, "Processing document: ${document.id}")
-
                     val dateKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(document.id)
-                    val tripValue = document.toObject(Hike::class.java)
-
+                    val tripValue = document.toObject(Trip::class.java)
                     if (dateKey != null && tripValue != null) {
-                        Log.d(logTag, "Creating TripActivity for date: $dateKey")
                         val tripActivityMap: MutableMap<Date, Trip> = mutableMapOf()
                         tripActivityMap[dateKey] = tripValue
                         tripActivities.add(TripActivity(tripActivityMap))
-                    } else {
-                        Log.w(logTag, "Missing date or trip data in document: ${document.id}")
                     }
                 }
-
-                Log.d(logTag, "Successfully compiled list of TripActivities. Total count: ${tripActivities.size}")
 
                 OperationResult.Success(tripActivities)
 
             } catch (e: Exception) {
-                Log.e(logTag, "Error retrieving trip activities", e)
                 OperationResult.Error(e)
             }
         }

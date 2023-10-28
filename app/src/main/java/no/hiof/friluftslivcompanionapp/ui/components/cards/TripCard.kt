@@ -126,6 +126,7 @@ fun TripCard(
                             //Updates the trip selected in the view model so that the page can
                             // access various trips dynamically.
                            // tripsViewModel.updateSelectedTrip(trip)
+                            //tripsViewModel.updateSelectedTrip(trip)
                             navController.navigate(Screen.TRIPS_ADDITIONAL_INFO.name)
                         },
                         colors = ButtonColors(
