@@ -1,6 +1,9 @@
 package no.hiof.friluftslivcompanionapp.data.repositories
 
+import android.media.VolumeShaper.Operation
 import android.util.Log
+import com.firebase.geofire.GeoFireUtils
+import com.firebase.geofire.GeoLocation
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -85,7 +88,37 @@ class TripsRepository @Inject constructor(
     }
 
     //TODO get trips based on user location??
+    suspend fun updateAllTripsWithGeoHashes(): OperationResult<Unit> {
+        return try {
+            val tripCollectionRef = firestore.collection("trips")
+            val querySnapshot = tripCollectionRef.get().await()
+            val batch = firestore.batch()
 
+            for (document in querySnapshot.documents) {
+                val routeValue = document.get("route")
+                if (routeValue !is List<*> || routeValue.isEmpty()) continue
 
+                val startNode = routeValue[0]
+                if (startNode !is Map<*, *>) continue
+
+                val lat = startNode["latitude"] as? Double ?: continue
+                val lng = startNode["longitude"] as? Double ?: continue
+                val geoHash = GeoFireUtils.getGeoHashForLocation(GeoLocation(lat, lng))
+
+                val updates = mapOf(
+                    "startGeoHash" to geoHash,
+                    "startLat" to lat,
+                    "startLng" to lng
+                )
+                val docRef = tripCollectionRef.document(document.id)
+                batch.update(docRef, updates)
+            }
+            batch.commit().await()
+            OperationResult.Success(Unit)
+
+        } catch (e: Exception) {
+            OperationResult.Error(e)
+        }
+    }
 
 }
