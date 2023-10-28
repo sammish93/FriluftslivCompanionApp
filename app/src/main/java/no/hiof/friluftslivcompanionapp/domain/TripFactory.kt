@@ -74,7 +74,25 @@ object TripFactory {
         } else null
     }
 
-    private fun createHike(tripRoute: List<LatLng>, tripDescription: String, tripDuration: Duration, tripDistance: Double, tripDifficulty: Int) : Hike {
-        return Hike(route = tripRoute, description = tripDescription, duration = tripDuration, distanceKm = tripDistance, difficulty = tripDifficulty)
+    private fun createHike(
+        tripRoute: List<LatLng>,
+        tripDescription: String,
+        tripDuration: Duration,
+        tripDistance: Double,
+        tripDifficulty: Int,
+        startGeoHash: String?,
+        startLat: Double?,
+        startLng: Double?
+    ) : Hike {
+        return Hike(
+            route = tripRoute,
+            description = tripDescription,
+            duration = tripDuration,
+            distanceKm = tripDistance,
+            difficulty = tripDifficulty,
+            startGeoHash = startGeoHash,
+            startLat = startLat,
+            startLng = startLng
+        )
     }
 }
