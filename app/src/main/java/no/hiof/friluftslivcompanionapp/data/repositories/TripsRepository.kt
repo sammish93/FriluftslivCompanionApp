@@ -18,21 +18,26 @@ class TripsRepository @Inject constructor(
             val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
 
 
+            val hikeData = when (hike) {
+                is Hike -> hike.toMap()
+                else -> throw IllegalArgumentException("Unsupported trip type or trip is null")
+            }
+
+
             val tripDocument = firestore.collection("trips").document()
 
 
-            if (hike != null) {
-                tripDocument.set(hike.toMap()).await()
-            }  else {
-                throw IllegalStateException("Trip is null")
-            }
+            tripDocument.set(hikeData).await()
+
 
             OperationResult.Success(Unit)
         } catch (e: Exception) {
 
+            Log.e("CreateTrip", "Error creating trip: ${e.message}", e)
             OperationResult.Error(e)
         }
     }
+
 
     suspend fun getTripById(tripId: String): OperationResult<Hike> {
             return try {
