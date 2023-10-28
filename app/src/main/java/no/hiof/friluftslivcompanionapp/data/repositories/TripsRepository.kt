@@ -1,6 +1,5 @@
 package no.hiof.friluftslivcompanionapp.data.repositories
 
-import android.media.VolumeShaper.Operation
 import android.util.Log
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
@@ -144,12 +143,12 @@ class TripsRepository @Inject constructor(
      * @param limit The maximum number of trips to retrieve per query.
      * @return An OperationResult containing a list of Trip objects if successful, or an exception if failed.
      */
-    fun getTripsNearUsersLocation(geoPoint: GeoPoint, radiusInKm: Double, limit: Int): OperationResult<List<Trip>> {
+    suspend fun getTripsNearUsersLocation(geoPoint: GeoPoint, radiusInKm: Double, limit: Int): OperationResult<List<Hike>> {
         return try {
             val radiusInMeter = radiusInKm * 1000
             val center = GeoLocation(geoPoint.latitude, geoPoint.longitude)
             val bounds = GeoFireUtils.getGeoHashQueryBounds(center, radiusInMeter)
-            val tasks: MutableList<Task<QuerySnapshot>> = ArrayList()
+            val matchingDocs: MutableList<Hike> = ArrayList()
 
             for (bound in bounds) {
                 val trips = firestore.collection("trips")
@@ -157,14 +156,9 @@ class TripsRepository @Inject constructor(
                     .startAt(bound.startHash)
                     .endAt(bound.endHash)
                     .limit(limit.toLong())
-                tasks.add(trips.get())
-            }
+                val querySnapshot = trips.get().await()
 
-            val completedTask = Tasks.await(Tasks.whenAllComplete(tasks))
-            val matchingDocs: MutableList<Trip> = ArrayList()
-            for (task in completedTask) {
-                val snap = task.result as QuerySnapshot
-                for (doc in snap.documents) {
+                for (doc in querySnapshot.documents) {
                     val lat = doc.getDouble("startLat") ?: continue
                     val lng = doc.getDouble("startLng") ?: continue
                     val docLocation = GeoLocation(lat, lng)
@@ -176,6 +170,7 @@ class TripsRepository @Inject constructor(
                     }
                 }
             }
+
             OperationResult.Success(matchingDocs)
         } catch (e: Exception) {
             OperationResult.Error(e)
@@ -195,9 +190,7 @@ class TripsRepository @Inject constructor(
      */
     private fun convertDocumentToHike(document: DocumentSnapshot): Hike {
         val routeList = convertRouteDataToLatLngList(document.get("route"))
-        val durationValue = document.getLong("duration")
-        val duration = durationValue?.let { Duration.ofMinutes(it) }
-
+        val duration = convertMapToDuration(document)
 
         return Hike(
             documentId = document.id,
@@ -236,5 +229,12 @@ class TripsRepository @Inject constructor(
                 } else null
             }
         } else emptyList()
+    }
+
+    private fun convertMapToDuration(document: DocumentSnapshot): Duration? {
+        val durationMap = document["duration"] as? Map<*, *>
+        val seconds = durationMap?.get("seconds") as? Long ?: 0L
+        val nanos = durationMap?.get("nano") as? Long ?: 0L
+        return Duration.ofSeconds(seconds, nanos)
     }
 }

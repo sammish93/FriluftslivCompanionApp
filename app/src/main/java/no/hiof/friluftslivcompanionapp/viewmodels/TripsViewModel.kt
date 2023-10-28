@@ -18,6 +18,7 @@ import no.hiof.friluftslivcompanionapp.data.states.TripsState
 import no.hiof.friluftslivcompanionapp.domain.LocationFormatter
 import no.hiof.friluftslivcompanionapp.domain.TripFactory
 import no.hiof.friluftslivcompanionapp.models.DummyTrip
+import no.hiof.friluftslivcompanionapp.models.Hike
 import no.hiof.friluftslivcompanionapp.models.Trip
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.enums.TripType
@@ -53,8 +54,8 @@ class TripsViewModel @Inject constructor(
     val nodes: StateFlow<List<LatLng>> = _nodes.asStateFlow()
 
     // State related to trips from the database.
-    private val _dbTrips = MutableStateFlow<List<Trip>>(emptyList())
-    val trips: StateFlow<List<Trip>> = _dbTrips.asStateFlow()
+    private val _dbHikes = MutableStateFlow<List<Hike>>(emptyList())
+    val hikes: StateFlow<List<Hike>> = _dbHikes.asStateFlow()
 
     override var tabDestinations = mapOf(
         Screen.TRIPS to Screen.TRIPS.navBarLabel,
@@ -71,11 +72,14 @@ class TripsViewModel @Inject constructor(
     // Used to get trips from the db which is near the users location.
     fun getTripsNearUsersLocation(geoPoint: GeoPoint, radiusInKm: Double, limit: Int) {
         viewModelScope.launch {
+            Log.d("TripsViewModel", "Getting trips near user location: $geoPoint")
             when (val result = tripsRepository.getTripsNearUsersLocation(geoPoint, radiusInKm, limit)) {
                 is OperationResult.Success -> {
-                    _dbTrips.value = result.data
+                    Log.d("TripsViewModel", "Fetched ${result.data.size} hikes")
+                    _dbHikes.value = result.data
                 }
                 is OperationResult.Error -> {
+                    Log.e("TripsViewModel", "Error fetching hikes: ${result.exception}")
                     // TODO: Show error message to the user.
                 }
             }
