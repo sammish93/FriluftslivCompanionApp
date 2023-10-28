@@ -131,7 +131,20 @@ class TripsRepository @Inject constructor(
         }
     }
 
-    suspend fun getTripsNearUsersLocation(geoPoint: GeoPoint, radiusInKm: Double, limit: Int): OperationResult<List<Trip>> {
+    /**
+     * Fetches trips near a given location from Firestore.
+     *
+     * This function queries Firestore for trips that are within a specified radius
+     * from a given location. It makes use of Geohashes to approximate area queries.
+     * The query is performed in several steps to ensure correctness and performance.
+     * The results are then converted to Trip objects and returned.
+     *
+     * @param geoPoint The center point from where to search for nearby trips.
+     * @param radiusInKm The radius in kilometers around the center point to search for trips.
+     * @param limit The maximum number of trips to retrieve per query.
+     * @return An OperationResult containing a list of Trip objects if successful, or an exception if failed.
+     */
+    fun getTripsNearUsersLocation(geoPoint: GeoPoint, radiusInKm: Double, limit: Int): OperationResult<List<Trip>> {
         return try {
             val radiusInMeter = radiusInKm * 1000
             val center = GeoLocation(geoPoint.latitude, geoPoint.longitude)
