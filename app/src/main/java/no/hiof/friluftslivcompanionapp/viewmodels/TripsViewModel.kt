@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.firestore.GeoPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +18,7 @@ import no.hiof.friluftslivcompanionapp.data.states.TripsState
 import no.hiof.friluftslivcompanionapp.domain.LocationFormatter
 import no.hiof.friluftslivcompanionapp.domain.TripFactory
 import no.hiof.friluftslivcompanionapp.models.DummyTrip
+import no.hiof.friluftslivcompanionapp.models.Trip
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
@@ -50,6 +52,10 @@ class TripsViewModel @Inject constructor(
     private val _nodes = MutableStateFlow<List<LatLng>>(listOf())
     val nodes: StateFlow<List<LatLng>> = _nodes.asStateFlow()
 
+    // State related to trips from the database.
+    private val _dbTrips = MutableStateFlow<List<Trip>>(emptyList())
+    val trips: StateFlow<List<Trip>> = _dbTrips.asStateFlow()
+
     override var tabDestinations = mapOf(
         Screen.TRIPS to Screen.TRIPS.navBarLabel,
         Screen.TRIPS_RECENT_ACTIVITY to Screen.TRIPS_RECENT_ACTIVITY.navBarLabel,
@@ -61,6 +67,20 @@ class TripsViewModel @Inject constructor(
         TripType.SKI,
         TripType.CLIMB
     )
+
+    // Used to get trips from the db which is near the users location.
+    fun getTripsNearUsersLocation(geoPoint: GeoPoint, radiusInKm: Double, limit: Int) {
+        viewModelScope.launch {
+            when (val result = tripsRepository.getTripsNearUsersLocation(geoPoint, radiusInKm, limit)) {
+                is OperationResult.Success -> {
+                    _dbTrips.value = result.data
+                }
+                is OperationResult.Error -> {
+                    // TODO: Show error message to the user.
+                }
+            }
+        }
+    }
 
     override fun changeHighlightedTab(index: Int) {
         _uiState.update { currentState ->
