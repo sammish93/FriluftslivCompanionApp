@@ -4,11 +4,18 @@ import android.media.VolumeShaper.Operation
 import android.util.Log
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
+import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.tasks.await
 import no.hiof.friluftslivcompanionapp.models.Hike
 import no.hiof.friluftslivcompanionapp.models.Trip
+import java.time.Duration
 import javax.inject.Inject
 
 class TripsRepository @Inject constructor(
@@ -87,7 +94,10 @@ class TripsRepository @Inject constructor(
         }
     }
 
-    //TODO get trips based on user location??
+    // This method will update all the documents in the database with these new values if it is called:
+    // startGeoHash - needed for getting trips based on location.
+    // startLat, startLng - the lat/lng of the first node in the 'route' list. I just added these
+    // so its easier to get the start node, but its not necessary.
     suspend fun updateAllTripsWithGeoHashes(): OperationResult<Unit> {
         return try {
             val tripCollectionRef = firestore.collection("trips")
@@ -121,4 +131,97 @@ class TripsRepository @Inject constructor(
         }
     }
 
+    suspend fun getTripsNearUsersLocation(geoPoint: GeoPoint, radiusInKm: Double, limit: Int): OperationResult<List<Trip>> {
+        return try {
+            val radiusInMeter = radiusInKm * 1000
+            val center = GeoLocation(geoPoint.latitude, geoPoint.longitude)
+            val bounds = GeoFireUtils.getGeoHashQueryBounds(center, radiusInMeter)
+            val tasks: MutableList<Task<QuerySnapshot>> = ArrayList()
+
+            for (bound in bounds) {
+                val trips = firestore.collection("trips")
+                    .orderBy("startGeoHash")
+                    .startAt(bound.startHash)
+                    .endAt(bound.endHash)
+                    .limit(limit.toLong())
+                tasks.add(trips.get())
+            }
+
+            val completedTask = Tasks.await(Tasks.whenAllComplete(tasks))
+            val matchingDocs: MutableList<Trip> = ArrayList()
+            for (task in completedTask) {
+                val snap = task.result as QuerySnapshot
+                for (doc in snap.documents) {
+                    val lat = doc.getDouble("startLat") ?: continue
+                    val lng = doc.getDouble("startLng") ?: continue
+                    val docLocation = GeoLocation(lat, lng)
+                    val distanceInM = GeoFireUtils.getDistanceBetween(docLocation, center)
+
+                    if (distanceInM <= radiusInMeter) {
+                        val trip = convertDocumentToHike(doc)
+                        matchingDocs.add(trip)
+                    }
+                }
+            }
+            OperationResult.Success(matchingDocs)
+        } catch (e: Exception) {
+            OperationResult.Error(e)
+        }
+    }
+
+    /**
+     * Converts a DocumentSnapshot to a Hike object.
+     *
+     * This function extracts various fields from the provided DocumentSnapshot,
+     * and creates a Hike object from the extracted values. It uses the
+     * convertRouteDataToLatLngList function to convert the route data from the
+     * document to a List of LatLng objects.
+     *
+     * @param document The DocumentSnapshot to convert.
+     * @return A Hike object containing the data from the document.
+     */
+    private fun convertDocumentToHike(document: DocumentSnapshot): Hike {
+        val routeList = convertRouteDataToLatLngList(document.get("route"))
+        val durationValue = document.getLong("duration")
+        val duration = durationValue?.let { Duration.ofMinutes(it) }
+
+
+        return Hike(
+            documentId = document.id,
+            route = routeList,
+            description = document.getString("description"),
+            duration = duration,
+            distanceKm = document.getDouble("distanceKm"),
+            difficulty = document.getLong("difficulty")?.toInt(),
+            startGeoHash = document.getString("startGeoHash"),
+            startLat = document.getDouble("startLat"),
+            startLng = document.getDouble("startLng")
+        )
+    }
+
+    /**
+     * Converts route data to a List of LatLng objects.
+     *
+     * This function takes an object which is expected to be a List of Maps,
+     * where each Map contains latitude and longitude values. It iterates through
+     * the list and the maps, extracting the latitude and longitude values, and
+     * creates LatLng objects from those values. The resulting List of LatLng
+     * objects is then returned.
+     *
+     * @param routeData The object containing route data.
+     * @return A List of LatLng objects representing the route.
+     */
+    private fun convertRouteDataToLatLngList(routeData: Any?): List<LatLng> {
+        return if (routeData is List<*>) {
+            routeData.mapNotNull { item ->
+                if (item is Map<*, *>) {
+                    val lat = item["latitude"] as? Double
+                    val lng = item["longitude"] as? Double
+                    if (lat != null && lng != null) {
+                        LatLng(lat, lng)
+                    } else null
+                } else null
+            }
+        } else emptyList()
+    }
 }
