@@ -16,4 +16,14 @@ abstract class Trip(
     open val difficulty: Int?,
 ) {
     abstract fun toMap(): Map<String, Any?>
+
+    companion object {
+        fun fromMap(type: String, map: Map<String, Any?>): Trip {
+            return when (type) {
+                "hike" -> Hike.fromMap(map)
+
+                else -> throw IllegalArgumentException("Unknown trip type")
+            }
+        }
+    }
 }

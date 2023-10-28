@@ -40,6 +40,7 @@ import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import java.time.LocalDate
+import java.util.Date
 import java.util.Locale
 
 @Composable

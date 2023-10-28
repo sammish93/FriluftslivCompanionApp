@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import no.hiof.friluftslivcompanionapp.data.repositories.ActivityRepository
 import no.hiof.friluftslivcompanionapp.data.repositories.OperationResult
 import no.hiof.friluftslivcompanionapp.data.repositories.TripsRepository
 import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
@@ -22,6 +23,7 @@ import no.hiof.friluftslivcompanionapp.domain.TripFactory
 import no.hiof.friluftslivcompanionapp.models.DummyTrip
 import no.hiof.friluftslivcompanionapp.models.Hike
 import no.hiof.friluftslivcompanionapp.models.Trip
+import no.hiof.friluftslivcompanionapp.models.TripActivity
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
@@ -42,7 +44,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TripsViewModel @Inject constructor(
     // Communication with the data layer can be injected as dependencies here.
-    private val tripsRepository: TripsRepository
+    private val tripsRepository: TripsRepository,
+    private val activityRepository : ActivityRepository
 ) : ViewModel(), TabNavigation {
 
     private val _uiState = MutableStateFlow(TabsUiState())
@@ -222,6 +225,27 @@ class TripsViewModel @Inject constructor(
         }
     }
 
+    private val _recentActivity = MutableStateFlow<List<TripActivity>?>(null)
+    val recentActivity: StateFlow<List<TripActivity>?> = _recentActivity
+    fun recentActivity(){
+        viewModelScope.launch{
+            try{
+                val result = activityRepository.getAllUserActivities()
+                when (result){
+                    is OperationResult.Success -> _recentActivity.value = result.data
+                    is OperationResult.Error -> {
+
+                        Log.e(TAG, "Error fetching recent activity: ${result.exception.message}")
+
+                    }
+                }
+
+            }catch (e: Exception){
+                Log.e(TAG, "Exception fetching recent activities: ${e.message}")
+            }
+        }
+
+    }
     companion object {
         private const val TAG = "TripsViewModel"
     }

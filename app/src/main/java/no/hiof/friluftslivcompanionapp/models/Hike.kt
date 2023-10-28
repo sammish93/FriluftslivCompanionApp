@@ -44,6 +44,32 @@ data class Hike(
        this.startLng?.let { resultMap["startLng"] = it }
 
         return resultMap
+   }
+
+    companion object {
+        fun fromMap(map: Map<String, Any?>): Hike {
+            val routeList = map["route"] as? List<Map<String, Double>> ?: emptyList()
+            val route = routeList.mapNotNull {
+                val latitude = it["latitude"]
+                val longitude = it["longitude"]
+                if (latitude != null && longitude != null) {
+                    LatLng(latitude, longitude)
+                } else {
+                    null
+                }
+            }
+
+            // Constructing the Hike object with other properties as well.
+            return Hike(
+                documentId = map["documentId"] as? String ?: "",
+                route = route,
+                description = map["description"] as? String,
+                duration = map["duration"] as? Duration,
+                distanceKm = (map["distanceKm"] as? Number)?.toDouble(),
+                difficulty = (map["difficulty"] as? Number)?.toInt()
+            )
+        }
     }
+
 
 }
