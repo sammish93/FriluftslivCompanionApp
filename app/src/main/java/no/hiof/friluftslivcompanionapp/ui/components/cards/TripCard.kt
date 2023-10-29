@@ -102,7 +102,7 @@ fun TripCard(
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-
+                 */
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -126,7 +126,6 @@ fun TripCard(
                             //Updates the trip selected in the view model so that the page can
                             // access various trips dynamically.
                            // tripsViewModel.updateSelectedTrip(trip)
-                            //tripsViewModel.updateSelectedTrip(trip)
                             navController.navigate(Screen.TRIPS_ADDITIONAL_INFO.name)
                         },
                         colors = ButtonColors(
