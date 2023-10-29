@@ -102,7 +102,7 @@ fun TripCard(
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-                 */
+
 
                 Spacer(modifier = Modifier.height(8.dp))
 
