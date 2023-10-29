@@ -231,6 +231,12 @@ class TripsRepository @Inject constructor(
         } else emptyList()
     }
 
+    /**
+     * Converts a map from a Firestore document to a Duration object.
+     *
+     * @param document The Firestore document containing the duration map.
+     * @return A Duration object or null if the conversion is not possible.
+     */
     private fun convertMapToDuration(document: DocumentSnapshot): Duration? {
         val durationMap = document["duration"] as? Map<*, *>
         val seconds = durationMap?.get("seconds") as? Long ?: 0L
