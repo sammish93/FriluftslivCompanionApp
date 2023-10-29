@@ -230,8 +230,7 @@ class TripsViewModel @Inject constructor(
     fun recentActivity(){
         viewModelScope.launch{
             try{
-                val result = activityRepository.getAllUserActivities()
-                when (result){
+                when (val result = activityRepository.getUserTripActivities()){
                     is OperationResult.Success -> _recentActivity.value = result.data
                     is OperationResult.Error -> {
 
