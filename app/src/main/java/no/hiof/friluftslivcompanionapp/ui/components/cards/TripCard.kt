@@ -34,6 +34,7 @@ import no.hiof.friluftslivcompanionapp.models.TripActivity
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
 import java.util.Locale
@@ -88,20 +89,20 @@ fun TripCard(
                     .padding(start = 12.dp, top = 8.dp, end = 12.dp, bottom = 8.dp)
             ) {
                 Text(
-                    text = "${trip.tripActivity.entries}",
+                    text = "${trip.trip.description}",
                     style = MaterialTheme.typography.headlineMedium
                 )
 
 
 
                 Spacer(modifier = Modifier.height(8.dp))
-                /*
+                val dateString = formatDate(trip.date)
                 Text(
-                    text = "County: ${trip.county}",
+                    text = "County: $dateString ",
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-                 */
+
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -110,8 +111,9 @@ fun TripCard(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     val lightGreen = 0xFF88E088
+
                     Text(
-                        text = "Date: ${LocalDate.now()}",
+                        text = "Date:  ",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.weight(1f)
                     )
@@ -121,9 +123,9 @@ fun TripCard(
                             defaultElevation = 6.dp
                         ),
                         onClick = { //showDialog = true
-                            // Updates the trip selected in the view model so that the page can
+                            //Updates the trip selected in the view model so that the page can
                             // access various trips dynamically.
-                            //tripsViewModel.updateSelectedTrip(trip)
+                           // tripsViewModel.updateSelectedTrip(trip)
                             navController.navigate(Screen.TRIPS_ADDITIONAL_INFO.name)
                         },
                         colors = ButtonColors(
@@ -155,5 +157,11 @@ fun TripCard(
         }
     }
      */
+}
+
+//TODO: Add the formatDate to DateFormatter class
+fun formatDate(date: Date): String {
+    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    return formatter.format(date)
 }
 
