@@ -146,7 +146,7 @@ class TripsRepository @Inject constructor(
             val radiusInMeter = radiusInKm * 1000
             val center = GeoLocation(geoPoint.latitude, geoPoint.longitude)
             val bounds = GeoFireUtils.getGeoHashQueryBounds(center, radiusInMeter)
-            val matchingDocs = getTripsFromTripsCollection(bounds, limit, radiusInMeter, center)
+            val matchingDocs = getTripsWithinGeoHashBounds(bounds, limit, radiusInMeter, center)
 
             OperationResult.Success(matchingDocs)
         } catch (e: Exception) {
@@ -154,7 +154,7 @@ class TripsRepository @Inject constructor(
         }
     }
 
-    private suspend fun getTripsFromTripsCollection(
+    private suspend fun getTripsWithinGeoHashBounds(
         bounds: List<GeoQueryBounds>,
         limit: Int,
         radius: Double,
@@ -169,13 +169,13 @@ class TripsRepository @Inject constructor(
                 .limit(limit.toLong())
 
             val querySnapshot = trips.get().await()
-            val hikesFromSnapshot = getPositionFromQuerySnapshotDocument(querySnapshot, radius, center)
+            val hikesFromSnapshot = getHikesFromQuerySnapshot(querySnapshot, radius, center)
             matchingDocs.addAll(hikesFromSnapshot)
         }
         return matchingDocs
     }
 
-    private fun getPositionFromQuerySnapshotDocument(
+    private fun getHikesFromQuerySnapshot(
         querySnapshot: QuerySnapshot,
         radius: Double,
         center: GeoLocation
