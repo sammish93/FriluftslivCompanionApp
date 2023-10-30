@@ -22,14 +22,14 @@ import no.hiof.friluftslivcompanionapp.models.Hike
 @Composable
 fun GoogleMapTripStartNodes(trips: List<Hike>) {
 
+    val mapLoadedState = remember { mutableStateOf(false) }
     val bounds = computeBounds(trips)
-    val mapReadyState = remember { mutableStateOf(false) }
     val latestBoundsState = rememberUpdatedState(bounds)
     val cameraPositionState = rememberCameraPositionState()
 
     GoogleMap(
         cameraPositionState = cameraPositionState,
-        onMapLoaded = { mapReadyState.value = true },
+        onMapLoaded = { mapLoadedState.value = true },
         modifier = Modifier.fillMaxWidth(),
         uiSettings = MapUiSettings(zoomControlsEnabled = false, zoomGesturesEnabled = false)
         ) {
@@ -47,8 +47,8 @@ fun GoogleMapTripStartNodes(trips: List<Hike>) {
             }
         }
     }
-    LaunchedEffect(mapReadyState.value) {
-        if (mapReadyState.value) {
+    LaunchedEffect(mapLoadedState.value) {
+        if (mapLoadedState.value) {
             val cameraUpdate =
                 latestBoundsState.value.let { CameraUpdateFactory.newLatLngBounds(it, 100) }
             cameraUpdate.let { cameraPositionState.move(it) }
