@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import no.hiof.friluftslivcompanionapp.models.Hike
 import no.hiof.friluftslivcompanionapp.ui.components.items.TripItem
 
+// Inspiration taken from: https://levelup.gitconnected.com/animated-carousel-with-jetpack-compose-7406a5a2b246
+
 @Composable
 fun Carousel(
     trips: List<Hike>,
