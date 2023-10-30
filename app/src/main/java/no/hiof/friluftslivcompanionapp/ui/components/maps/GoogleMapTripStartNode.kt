@@ -40,7 +40,7 @@ fun GoogleMapTripStartNodes(trips: List<Hike>) {
                     val tripStartPosition = LatLng(lat, lng)
                     Marker(
                         MarkerState(position = tripStartPosition),
-                        icon = BitmapDescriptorFactory.fromResource(R.drawable.baseline_hiking_black_48),
+                        icon = BitmapDescriptorFactory.fromResource(R.drawable.baseline_hiking_black_36),
                         onClick = { TODO() }
                     )
                 }
