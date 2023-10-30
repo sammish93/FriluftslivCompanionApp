@@ -3,9 +3,11 @@ package no.hiof.friluftslivcompanionapp.data.repositories
 import android.util.Log
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
+import com.firebase.geofire.GeoQueryBounds
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
+import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.tasks.await
 import no.hiof.friluftslivcompanionapp.models.Hike
 import no.hiof.friluftslivcompanionapp.models.Trip
@@ -144,28 +146,7 @@ class TripsRepository @Inject constructor(
             val radiusInMeter = radiusInKm * 1000
             val center = GeoLocation(geoPoint.latitude, geoPoint.longitude)
             val bounds = GeoFireUtils.getGeoHashQueryBounds(center, radiusInMeter)
-            val matchingDocs: MutableList<Hike> = ArrayList()
-
-            for (bound in bounds) {
-                val trips = firestore.collection("trips")
-                    .orderBy("startGeoHash")
-                    .startAt(bound.startHash)
-                    .endAt(bound.endHash)
-                    .limit(limit.toLong())
-                val querySnapshot = trips.get().await()
-
-                for (doc in querySnapshot.documents) {
-                    val lat = doc.getDouble("startLat") ?: continue
-                    val lng = doc.getDouble("startLng") ?: continue
-                    val docLocation = GeoLocation(lat, lng)
-                    val distanceInM = GeoFireUtils.getDistanceBetween(docLocation, center)
-
-                    if (distanceInM <= radiusInMeter) {
-                        val trip = convertDocumentToHike(doc)
-                        matchingDocs.add(trip)
-                    }
-                }
-            }
+            val matchingDocs = getTripsFromTripsCollection(bounds, limit, radiusInMeter, center)
 
             OperationResult.Success(matchingDocs)
         } catch (e: Exception) {
@@ -173,4 +154,41 @@ class TripsRepository @Inject constructor(
         }
     }
 
+    private suspend fun getTripsFromTripsCollection(
+        bounds: List<GeoQueryBounds>,
+        limit: Int,
+        radius: Double,
+        center: GeoLocation
+    ): List<Hike> {
+        val matchingDocs: MutableList<Hike> = ArrayList()
+        for (bound in bounds) {
+            val trips = firestore.collection("trips")
+                .orderBy("startGeoHash")
+                .startAt(bound.startHash)
+                .endAt(bound.endHash)
+                .limit(limit.toLong())
+
+            val querySnapshot = trips.get().await()
+            val hikesFromSnapshot = getPositionFromQuerySnapshotDocument(querySnapshot, radius, center)
+            matchingDocs.addAll(hikesFromSnapshot)
+        }
+        return matchingDocs
+    }
+
+    private fun getPositionFromQuerySnapshotDocument(
+        querySnapshot: QuerySnapshot,
+        radius: Double,
+        center: GeoLocation
+    ): List<Hike> {
+        val hikes: MutableList<Hike> = ArrayList()
+        for (doc in querySnapshot.documents) {
+            val lat = doc.getDouble("startLat") ?: continue
+            val lng = doc.getDouble("startLng") ?: continue
+
+            val docLocation = GeoLocation(lat, lng)
+            val distanceInM = GeoFireUtils.getDistanceBetween(docLocation, center)
+            if (distanceInM <= radius) hikes.add(convertDocumentToHike(doc))
+        }
+        return hikes
+    }
 }

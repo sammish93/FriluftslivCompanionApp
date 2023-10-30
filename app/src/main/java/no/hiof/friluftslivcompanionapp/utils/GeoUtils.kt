@@ -5,17 +5,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import no.hiof.friluftslivcompanionapp.models.Hike
 import java.time.Duration
 
-/**
- * Converts a DocumentSnapshot to a Hike object.
- *
- * This function extracts various fields from the provided DocumentSnapshot,
- * and creates a Hike object from the extracted values. It uses the
- * convertRouteDataToLatLngList function to convert the route data from the
- * document to a List of LatLng objects.
- *
- * @param document The DocumentSnapshot to convert.
- * @return A Hike object containing the data from the document.
- */
+
 fun convertDocumentToHike(document: DocumentSnapshot): Hike {
     val routeList = convertRouteDataToLatLngList(document.get("route"))
     val duration = convertMapToDuration(document)
@@ -33,18 +23,6 @@ fun convertDocumentToHike(document: DocumentSnapshot): Hike {
     )
 }
 
-/**
- * Converts route data to a List of LatLng objects.
- *
- * This function takes an object which is expected to be a List of Maps,
- * where each Map contains latitude and longitude values. It iterates through
- * the list and the maps, extracting the latitude and longitude values, and
- * creates LatLng objects from those values. The resulting List of LatLng
- * objects is then returned.
- *
- * @param routeData The object containing route data.
- * @return A List of LatLng objects representing the route.
- */
 fun convertRouteDataToLatLngList(routeData: Any?): List<LatLng> {
     return if (routeData is List<*>) {
         routeData.mapNotNull { item ->
