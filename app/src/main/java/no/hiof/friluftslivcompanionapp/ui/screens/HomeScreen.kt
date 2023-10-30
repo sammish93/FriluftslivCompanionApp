@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,6 +33,13 @@ fun HomeScreen(
     // Sensors(userViewModel)
     val userLocation by userViewModel.state.collectAsState()
     val hikes by tripsViewModel.hikes.collectAsState()
+    val error = tripsViewModel.errorMessage.value
+
+    if (error != null) {
+        Snackbar(modifier = Modifier.padding(16.dp)) {
+            Text(text = error)
+        }
+    }
     
     LaunchedEffect(userLocation) {
         val geoPoint = userLocation.lastKnownLocation?.let { GeoPoint(it.latitude, it.longitude) }

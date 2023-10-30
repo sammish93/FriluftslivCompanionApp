@@ -1,6 +1,8 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
@@ -57,6 +59,9 @@ class TripsViewModel @Inject constructor(
     private val _dbHikes = MutableStateFlow<List<Hike>>(emptyList())
     val hikes: StateFlow<List<Hike>> = _dbHikes.asStateFlow()
 
+    // Used to show error message related to hike fetches.
+    val errorMessage: MutableState<String?> = mutableStateOf(null)
+
     override var tabDestinations = mapOf(
         Screen.TRIPS to Screen.TRIPS.navBarLabel,
         Screen.TRIPS_RECENT_ACTIVITY to Screen.TRIPS_RECENT_ACTIVITY.navBarLabel,
@@ -80,7 +85,7 @@ class TripsViewModel @Inject constructor(
                 }
                 is OperationResult.Error -> {
                     Log.e("TripsViewModel", "Error fetching hikes: ${result.exception}")
-                    // TODO: Show error message to the user.
+                    errorMessage.value = "There are currently no trips near your location."
                 }
             }
         }
