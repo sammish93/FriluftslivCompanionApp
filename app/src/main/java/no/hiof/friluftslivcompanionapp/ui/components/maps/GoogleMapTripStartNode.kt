@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -19,11 +20,14 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.models.Hike
+import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.utils.getCameraPosition
+import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 
 @Composable
 fun GoogleMapTripStartNodes(
     navController: NavController,
+    tripsViewModel: TripsViewModel = viewModel(),
     trips: List<Hike>) {
 
     val mapLoadedState = remember { mutableStateOf(false) }
@@ -40,7 +44,11 @@ fun GoogleMapTripStartNodes(
         modifier = Modifier.fillMaxWidth(),
         uiSettings = MapUiSettings(zoomControlsEnabled = false, zoomGesturesEnabled = false)
         ) {
-        HikerMarker(trips = trips, navController = navController)
+        HikerMarker(
+            trips = trips,
+            tripsViewModel = tripsViewModel,
+            navController = navController
+        )
     }
 
     LaunchedEffect(mapLoadedState.value) {
@@ -52,7 +60,10 @@ fun GoogleMapTripStartNodes(
 }
 
 @Composable
-fun HikerMarker(navController: NavController, trips: List<Hike>) {
+fun HikerMarker(
+    navController: NavController,
+    tripsViewModel: TripsViewModel = viewModel(),
+    trips: List<Hike>) {
     for (trip in trips) {
         trip.startLat?.let { lat ->
             trip.startLng?.let { lng ->
@@ -60,7 +71,11 @@ fun HikerMarker(navController: NavController, trips: List<Hike>) {
                 Marker(
                     MarkerState(position = tripStartPosition),
                     icon = BitmapDescriptorFactory.fromResource(R.drawable.baseline_hiking_black_36),
-                    onClick = { TODO() }
+                    onClick = {
+                        tripsViewModel.updateSelectedTrip(trip)
+                        navController.navigate(Screen.TRIPS_ADDITIONAL_INFO.name)
+                        true
+                    }
                 )
             }
         }
