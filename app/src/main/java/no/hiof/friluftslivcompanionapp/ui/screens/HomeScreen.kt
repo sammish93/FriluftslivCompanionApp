@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.firestore.GeoPoint
@@ -55,15 +56,25 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "Trips in your area",
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Medium,
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Carousel(
-            trips = hikes,
-            currentPage = currentPage
-        )
+        if (hikes.isNullOrEmpty()) {
+            Text(
+                text = "There are currently no trips in your area",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Medium,
+                textAlign = TextAlign.Center
+            )
+        }
+        else {
+            Text(
+                text = "Trips in your area",
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Medium,
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Carousel(
+                trips = hikes,
+                currentPage = currentPage
+            )
+        }
     }
 }
