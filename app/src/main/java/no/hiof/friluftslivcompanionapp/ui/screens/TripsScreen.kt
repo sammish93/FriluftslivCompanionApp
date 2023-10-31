@@ -79,6 +79,7 @@ fun TripsScreen(
             ) {
                 GoogleMapTripStartNodes(
                     navController = navController,
+                    tripsViewModel = viewModel,
                     trips = tripsInArea
                 )
             }
