@@ -10,7 +10,10 @@ data class Hike(
     override val description: String? = null,
     override val duration: Duration? = null,
     override val distanceKm: Double? = null,
-    override val difficulty: Int? = null
+    override val difficulty: Int? = null,
+    val startGeoHash: String? = null,
+    val startLat: Double? = null,
+    val startLng: Double? = null
 ) : Trip(
     route,
     description,
@@ -35,6 +38,10 @@ data class Hike(
         this.duration?.let { resultMap["duration"] = it }
         this.distanceKm?.let { resultMap["distanceKm"] = it }
         this.difficulty?.let { resultMap["difficulty"] = it }
+
+       this.startGeoHash?.let { resultMap["startGeoHash"] = it }
+       this.startLat?.let { resultMap["startLat"] = it }
+       this.startLng?.let { resultMap["startLng"] = it }
 
         return resultMap
     }

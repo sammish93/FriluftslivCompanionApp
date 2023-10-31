@@ -163,7 +163,10 @@ dependencies {
 
     // Permissions
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
-
     testImplementation ("org.robolectric:robolectric:4.7.1")
+
+    // Geofire
+    implementation("com.firebase:geofire-android-common:3.2.0")
+
 
 }

@@ -1,9 +1,12 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.firestore.GeoPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +20,8 @@ import no.hiof.friluftslivcompanionapp.data.states.TripsState
 import no.hiof.friluftslivcompanionapp.domain.LocationFormatter
 import no.hiof.friluftslivcompanionapp.domain.TripFactory
 import no.hiof.friluftslivcompanionapp.models.DummyTrip
+import no.hiof.friluftslivcompanionapp.models.Hike
+import no.hiof.friluftslivcompanionapp.models.Trip
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
@@ -50,6 +55,13 @@ class TripsViewModel @Inject constructor(
     private val _nodes = MutableStateFlow<List<LatLng>>(listOf())
     val nodes: StateFlow<List<LatLng>> = _nodes.asStateFlow()
 
+    // State related to trips from the database.
+    private val _dbHikes = MutableStateFlow<List<Hike>>(emptyList())
+    val hikes: StateFlow<List<Hike>> = _dbHikes.asStateFlow()
+
+    // Used to show error message related to hike fetches.
+    val errorMessage: MutableState<String?> = mutableStateOf(null)
+
     override var tabDestinations = mapOf(
         Screen.TRIPS to Screen.TRIPS.navBarLabel,
         Screen.TRIPS_RECENT_ACTIVITY to Screen.TRIPS_RECENT_ACTIVITY.navBarLabel,
@@ -61,6 +73,23 @@ class TripsViewModel @Inject constructor(
         TripType.SKI,
         TripType.CLIMB
     )
+
+    // Used to get trips from the db which is near the users location.
+    fun getTripsNearUsersLocation(geoPoint: GeoPoint, radiusInKm: Double, limit: Int) {
+        viewModelScope.launch {
+            Log.d("TripsViewModel", "Getting trips near user location: $geoPoint")
+            when (val result = tripsRepository.getTripsNearUsersLocation(geoPoint, radiusInKm, limit)) {
+                is OperationResult.Success -> {
+                    Log.d("TripsViewModel", "Fetched ${result.data.size} hikes")
+                    _dbHikes.value = result.data
+                }
+                is OperationResult.Error -> {
+                    Log.e("TripsViewModel", "Error fetching hikes: ${result.exception}")
+                    errorMessage.value = "There are currently no trips near your location."
+                }
+            }
+        }
+    }
 
     override fun changeHighlightedTab(index: Int) {
         _uiState.update { currentState ->
@@ -197,7 +226,7 @@ class TripsViewModel @Inject constructor(
         private const val TAG = "TripsViewModel"
     }
 
-    fun updateSelectedTrip(trip: DummyTrip) {
+    fun updateSelectedTrip(trip: Trip) {
         _tripsState.update { currentState ->
             currentState.copy(
                 selectedTrip = trip

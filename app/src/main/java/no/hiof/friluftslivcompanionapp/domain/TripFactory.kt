@@ -1,5 +1,7 @@
 package no.hiof.friluftslivcompanionapp.domain
 
+import com.firebase.geofire.GeoFireUtils
+import com.firebase.geofire.GeoLocation
 import com.google.android.gms.maps.model.LatLng
 import no.hiof.friluftslivcompanionapp.models.Hike
 import no.hiof.friluftslivcompanionapp.models.Trip
@@ -53,13 +55,45 @@ object TripFactory {
     }
 
     fun createTrip(tripType: TripType, tripRoute: List<LatLng>, tripDescription: String, tripDuration: Duration, tripDistance: Double, tripDifficulty: Int) : Trip? {
-        if (tripType == TripType.HIKE) {
-            return Hike(route = tripRoute, description = tripDescription, duration = tripDuration, distanceKm = tripDistance, difficulty = tripDifficulty)
-        }
-        else return null
+        val startNode = tripRoute.firstOrNull()
+        val startGeoHash = startNode?.let { GeoFireUtils.getGeoHashForLocation(GeoLocation(it.latitude, it.longitude)) }
+        val startLat = startNode?.latitude
+        val startLng = startNode?.longitude
+
+        return if (tripType == TripType.HIKE) {
+            Hike(
+                route = tripRoute,
+                description = tripDescription,
+                duration = tripDuration,
+                distanceKm = tripDistance,
+                difficulty = tripDifficulty,
+                startGeoHash = startGeoHash,
+                startLat = startLat,
+                startLng = startLng
+            )
+        } else null
     }
 
-    private fun createHike(tripRoute: List<LatLng>, tripDescription: String, tripDuration: Duration, tripDistance: Double, tripDifficulty: Int) : Hike {
-        return Hike(route = tripRoute, description = tripDescription, duration = tripDuration, distanceKm = tripDistance, difficulty = tripDifficulty)
+    // This seems to be a duplication of 'createTrip'. Can we delete it?
+    private fun createHike(
+        tripRoute: List<LatLng>,
+        tripDescription: String,
+        tripDuration: Duration,
+        tripDistance: Double,
+        tripDifficulty: Int,
+        startGeoHash: String?,
+        startLat: Double?,
+        startLng: Double?
+    ) : Hike {
+        return Hike(
+            route = tripRoute,
+            description = tripDescription,
+            duration = tripDuration,
+            distanceKm = tripDistance,
+            difficulty = tripDifficulty,
+            startGeoHash = startGeoHash,
+            startLat = startLat,
+            startLng = startLng
+        )
     }
 }
