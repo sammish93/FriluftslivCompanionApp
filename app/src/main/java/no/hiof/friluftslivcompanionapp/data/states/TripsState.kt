@@ -1,7 +1,6 @@
 package no.hiof.friluftslivcompanionapp.data.states
 
-import android.location.Location
-import no.hiof.friluftslivcompanionapp.models.DummyTrip
+import no.hiof.friluftslivcompanionapp.models.Trip
 import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import java.time.Duration
 import java.time.LocalDate
@@ -21,7 +20,7 @@ data class TripsState(
     val createTripDescription: String = "",
     val createTripDistanceKm: Double = 0.0,
     //TODO Swap DummyTrip with actual Trip object.
-    val selectedTrip: DummyTrip? = null,
+    val selectedTrip: Trip? = null,
     val selectedTripDate: LocalDate? = null,
     // If trip is from RecentActivity object then true, if trip is from map of all trips then false.
     val isSelectedTripRecentActivity: Boolean = false
