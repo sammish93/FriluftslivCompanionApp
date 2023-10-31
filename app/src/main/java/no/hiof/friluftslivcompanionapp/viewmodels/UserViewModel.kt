@@ -175,12 +175,12 @@ class UserViewModel @Inject constructor(
     }
 
     // FUNCTIONS USED FOR PLACES API.
-    fun searchPlaces(query: String) {
+    fun searchPlaces(query: String, countryLimit: String = "") {
 
         // Empty old result.
         locationAutoFill.clear()
 
-        val request = getAutocompleteRequester(query)
+        val request = getAutocompleteRequester(query, countryLimit)
         handleAutocompletePrediction(request)
     }
 
@@ -188,7 +188,7 @@ class UserViewModel @Inject constructor(
         locationAutoFill.clear()
     }
 
-    private fun getAutocompleteRequester(query: String): FindAutocompletePredictionsRequest {
+    private fun getAutocompleteRequester(query: String, countryLimit: String = ""): FindAutocompletePredictionsRequest {
         val bounds = LocationFormatter.createRectangularBoundsFromLatLng(
             _state.value.lastKnownLocation?.latitude ?: DefaultLocation.OSLO.lat,
             _state.value.lastKnownLocation?.longitude ?: DefaultLocation.OSLO.lon
@@ -197,6 +197,7 @@ class UserViewModel @Inject constructor(
         return FindAutocompletePredictionsRequest.builder()
             .setLocationBias(bounds)
             .setQuery(query)
+            .setCountries(countryLimit)
             .build()
     }
 

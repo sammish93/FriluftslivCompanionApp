@@ -32,6 +32,7 @@ import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.domain.LocationFormatter
 import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
+import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
 import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
 import no.hiof.friluftslivcompanionapp.ui.components.LocationAutoFillList
@@ -79,7 +80,7 @@ fun FloraFaunaSearchScreen(
                 value = text,
                 onValueChange = {
                     text = it
-                    userViewModel.searchPlaces(it)
+                    userViewModel.searchPlaces(it, SupportedLanguage.NORWEGIAN.code)
                     birdResultsShown = false
                     resultListShown = true
                 },
@@ -139,6 +140,7 @@ fun FloraFaunaSearchScreen(
                         onClick = {
                             if (!locations.isNullOrEmpty()) {
                                 val location = locations[0]
+
                                 val locality = location.adminArea ?: "Oslo"
 
                                 viewModel.viewModelScope.launch {
@@ -171,7 +173,10 @@ fun FloraFaunaSearchScreen(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
-                            .height(40.dp)
+                            .height(40.dp),
+                        enabled = if (!locations.isNullOrEmpty()) {
+                            locations[0].countryCode == "NO"
+                        } else false
                     ) {
                         Text(text = "Use my location")
                     }
