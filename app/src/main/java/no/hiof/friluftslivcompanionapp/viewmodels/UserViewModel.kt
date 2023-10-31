@@ -52,7 +52,7 @@ class UserViewModel @Inject constructor(
     val locationAutoFill = mutableStateListOf<AutoCompleteState>()
 
     private val _placeInfoState = MutableStateFlow<PlaceInfoState?>(null)
-    private val placeInfoState: StateFlow<PlaceInfoState?> = _placeInfoState
+    val placeInfoState: StateFlow<PlaceInfoState?> = _placeInfoState
 
     var supportedLanguages = listOf(
         SupportedLanguage.ENGLISH,
@@ -74,6 +74,7 @@ class UserViewModel @Inject constructor(
     // Used to get city, county, country and coordinates.
     fun fetchPlaceInfo(placeId: String) {
         viewModelScope.launch {
+            updateIsLocationSearchUpdating(true)
             try {
                 val placeInfo = placesApi.fetchPlaceInfo(placeId)
                 _placeInfoState.value = placeInfo
@@ -84,6 +85,7 @@ class UserViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.i("PlaceInfo", "Could not find the place: ${e.message}")
             }
+            updateIsLocationSearchUpdating(false)
         }
     }
 
@@ -216,6 +218,15 @@ class UserViewModel @Inject constructor(
         Log.i("PlaceInfo", "County: ${info.value?.county}")
         Log.i("PlaceInfo", "Country: ${info.value?.country}")
         Log.i("PlaceInfo", "Coordinates: ${info.value?.coordinates}")
+    }
+
+    // Updates the last known location in the map's state.
+    fun updateIsLocationSearchUpdating(isLocationSearchUpdating: Boolean) {
+        _state.update { currentState ->
+            currentState.copy(
+                isLocationSearchUpdating = isLocationSearchUpdating
+            )
+        }
     }
 
 }

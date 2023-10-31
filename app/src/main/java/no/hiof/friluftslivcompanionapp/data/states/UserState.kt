@@ -22,4 +22,5 @@ data class UserState(
     val isLocationManagerCalled: Boolean = false,
     val isLocationPermissionGranted: Boolean = false,
     val isInitiallyNavigatedTo: Boolean = false,
+    val isLocationSearchUpdating: Boolean = false
 )

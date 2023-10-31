@@ -211,6 +211,7 @@ private fun ForecastCards(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Top
         ) {
+            Spacer(modifier = Modifier.height(8.dp))
 
             weatherState.todayPlusOneWeather?.let {
                 SecondaryWeatherCard(

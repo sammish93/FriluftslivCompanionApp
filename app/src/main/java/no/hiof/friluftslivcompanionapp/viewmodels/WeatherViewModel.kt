@@ -62,7 +62,7 @@ class WeatherViewModel @Inject constructor(
 
     // Retrieves a WeatherForecast object composed of a Location and a List<Weather> wrapped by
     // a Result.
-    suspend fun getWeatherForecast(lat: Double?, lon: Double?) {
+    suspend fun getWeatherForecast(lat: Double?, lon: Double?, isForSearch: Boolean = false) {
         // Makes sure to reset failure state to false so request can be retried.
         updateFailureWeatherResponse(false)
         updateNoGps(false)
@@ -81,7 +81,8 @@ class WeatherViewModel @Inject constructor(
 
             if (result is Result.Success) {
                 // Updates individual Weather objects from a single WeatherForecast
-                updateWeatherState(result.value)
+                if (isForSearch) updateWeatherStateForSearch(result.value)
+                else updateWeatherState(result.value)
             } else {
                 updateFailureWeatherResponse(true)
             }
@@ -118,6 +119,22 @@ class WeatherViewModel @Inject constructor(
                 todayPlusFiveWeather = weatherForecast.forecast[6],
                 todayPlusSixWeather = weatherForecast.forecast[7],
                 todayPlusSevenWeather = weatherForecast.forecast[8]
+            )
+        }
+    }
+
+    fun updateWeatherStateForSearch(weatherForecast: WeatherForecast) {
+        _weatherState.update { currentState ->
+            currentState.copy(
+                currentWeatherForSearch = weatherForecast.forecast[0],
+                todayWeatherForSearch = weatherForecast.forecast[1],
+                todayPlusOneWeatherForSearch = weatherForecast.forecast[2],
+                todayPlusTwoWeatherForSearch = weatherForecast.forecast[3],
+                todayPlusThreeWeatherForSearch = weatherForecast.forecast[4],
+                todayPlusFourWeatherForSearch = weatherForecast.forecast[5],
+                todayPlusFiveWeatherForSearch = weatherForecast.forecast[6],
+                todayPlusSixWeatherForSearch = weatherForecast.forecast[7],
+                todayPlusSevenWeatherForSearch = weatherForecast.forecast[8]
             )
         }
     }
