@@ -1,6 +1,5 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
-import android.location.Geocoder
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,13 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,26 +25,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import androidx.navigation.NavController
 import no.hiof.friluftslivcompanionapp.R
+import no.hiof.friluftslivcompanionapp.domain.DateFormatter
 import no.hiof.friluftslivcompanionapp.domain.TripFactory
-import no.hiof.friluftslivcompanionapp.models.DummyTrip
-import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.ui.components.TopBar
 import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapTripAdditionalInfo
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
+import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import java.time.LocalDate
-import java.util.Locale
 
 @Composable
 fun TripsAdditionalInfoScreen(
@@ -95,24 +83,32 @@ fun TripsAdditionalInfoScreen(
                             Text(LocalDate.now().toString())
 
                             Text(stringResource(R.string.duration))
-                            //TODO The real Trips is Duration - use DateFormatter class to make it
-                            // pretty.
-                            Text(tripsState.selectedTrip!!.duration)
+                            tripsState.selectedTrip?.duration?.let {
+                                DateFormatter.formatDurationToPrettyString(it, "Hour", "Minute")
+                            }?.let { formattedDuration ->
+                                Text(text = formattedDuration)
+                            }
 
                             Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
                             Text(stringResource(R.string.distance))
-                            Text(tripsState.selectedTrip!!.distance)
+                            Text(tripsState.selectedTrip!!.distanceKm.toString())
 
                             Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
                             Text(stringResource(R.string.difficulty))
-                            Text(TripFactory.convertTripDifficultyFromIntToString(tripsState.selectedTrip!!.difficulty))
+                            tripsState.selectedTrip?.difficulty?.let {
+                                TripFactory.convertTripDifficultyFromIntToString(it)
+                            }?.let { formattedDifficulty ->
+                                Text(text = formattedDifficulty)
+                            }
 
                             Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
                             Text(stringResource(R.string.trips_create_description))
-                            Text(tripsState.selectedTrip!!.description)
+                            tripsState.selectedTrip!!.description?.let { it ->
+                                Text(it.replaceFirstChar { it.uppercase() })
+                            }
                         }
 
                         //TODO add if (!tripsState.isSelectedTripRecentActivity) then show this.
@@ -149,7 +145,7 @@ fun TripsAdditionalInfoScreen(
                             verticalArrangement = Arrangement.Bottom
                         ) {
 
-                            GoogleMapTripAdditionalInfo(nodes = tripsState.selectedTrip!!.nodes)
+                            GoogleMapTripAdditionalInfo(nodes = tripsState.selectedTrip!!.route)
                         }
                     }
                 }
