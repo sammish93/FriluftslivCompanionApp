@@ -77,7 +77,10 @@ fun TripsScreen(
                 modifier = Modifier.clip(RoundedCornerShape(20.dp)),
                 verticalArrangement = Arrangement.Bottom
             ) {
-                GoogleMapTripStartNodes(trips = tripsInArea)
+                GoogleMapTripStartNodes(
+                    navController = navController,
+                    trips = tripsInArea
+                )
             }
         }
     }

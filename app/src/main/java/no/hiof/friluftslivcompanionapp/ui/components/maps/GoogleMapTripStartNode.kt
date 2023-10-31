@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
@@ -21,7 +22,9 @@ import no.hiof.friluftslivcompanionapp.models.Hike
 import no.hiof.friluftslivcompanionapp.utils.getCameraPosition
 
 @Composable
-fun GoogleMapTripStartNodes(trips: List<Hike>) {
+fun GoogleMapTripStartNodes(
+    navController: NavController,
+    trips: List<Hike>) {
 
     val mapLoadedState = remember { mutableStateOf(false) }
     val bounds = computeBounds(trips)
@@ -37,7 +40,7 @@ fun GoogleMapTripStartNodes(trips: List<Hike>) {
         modifier = Modifier.fillMaxWidth(),
         uiSettings = MapUiSettings(zoomControlsEnabled = false, zoomGesturesEnabled = false)
         ) {
-        HikerMarker(trips = trips)
+        HikerMarker(trips = trips, navController = navController)
     }
 
     LaunchedEffect(mapLoadedState.value) {
@@ -49,7 +52,7 @@ fun GoogleMapTripStartNodes(trips: List<Hike>) {
 }
 
 @Composable
-fun HikerMarker(trips: List<Hike>) {
+fun HikerMarker(navController: NavController, trips: List<Hike>) {
     for (trip in trips) {
         trip.startLat?.let { lat ->
             trip.startLng?.let { lng ->
