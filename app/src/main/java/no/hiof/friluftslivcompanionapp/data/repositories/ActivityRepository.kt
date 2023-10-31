@@ -150,6 +150,28 @@ class ActivityRepository @Inject constructor(
         }
     }
 
+    suspend fun getTotalKilometersForYear(): Double {
+        val allTrips = getUserTripActivities()
+        if (allTrips is OperationResult.Success) {
+
+            return allTrips.data
+                .filter { it.date.after(getStartOfYear()) }
+                .sumOf { it.trip.distanceKm?: 0.0 }
+        }
+        return 0.0
+    }
+
+    private fun getStartOfYear(): Date {
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.DAY_OF_YEAR, 1)
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        return calendar.time
+    }
+
+
 
 
     /*

@@ -108,6 +108,17 @@ class UserViewModel @Inject constructor(
         }
     }
 
+    private val _totalKilometers = MutableStateFlow(0.0)
+    val totalKilometers: StateFlow<Double> = _totalKilometers.asStateFlow()
+
+    fun fetchTotalKilometersForTheYear() {
+        viewModelScope.launch {
+            val totalKm = activityRepository.getTotalKilometersForYear()
+            _totalKilometers.value = roundToOneDecimalPlace(totalKm)
+        }
+    }
+
+
 
     // Updates the last known location in the map's state.
     fun updateLocation(location: Location?) {
@@ -239,5 +250,10 @@ class UserViewModel @Inject constructor(
         Log.i("PlaceInfo", "Country: ${info.value?.country}")
         Log.i("PlaceInfo", "Coordinates: ${info.value?.coordinates}")
     }
+
+    fun roundToOneDecimalPlace(value: Double): Double {
+        return String.format("%.1f", value).toDouble()
+    }
+
 
 }

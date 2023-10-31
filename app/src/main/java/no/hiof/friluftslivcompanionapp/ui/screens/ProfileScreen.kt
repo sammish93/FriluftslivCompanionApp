@@ -89,8 +89,13 @@ fun ProfileScreen(
     val userState by userViewModel.state.collectAsState()
     val tripCount by userViewModel.tripCountForTheYear.collectAsState()
 
+    val totalDistance by userViewModel.totalKilometers.collectAsState()
+
+
+
     LaunchedEffect(true) {
         userViewModel.fetchTripCountForTheYear()
+        userViewModel.fetchTotalKilometersForTheYear()
     }
 
     Scaffold(
@@ -140,7 +145,7 @@ fun ProfileScreen(
                         Text(
                             text = stringResource(
                                 R.string.profile_number_kilometers_travelled,
-                                "#"
+                                "$totalDistance"
                             )
                         )
 
