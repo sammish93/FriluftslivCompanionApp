@@ -106,7 +106,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
-
+    testImplementation ("org.mockito:mockito-core:5.5.0")
+    androidTestImplementation("androidx.navigation:navigation-testing:2.7.4")
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -116,6 +117,7 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.47")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     ksp("com.google.dagger:hilt-compiler:2.47")
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.38.1")
 
     // Navigation Compose - required to inject viewModels into NavHost routes
     implementation("androidx.navigation:navigation-compose:2.7.3")
@@ -161,4 +163,7 @@ dependencies {
 
     // Permissions
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+
+    testImplementation ("org.robolectric:robolectric:4.7.1")
+
 }

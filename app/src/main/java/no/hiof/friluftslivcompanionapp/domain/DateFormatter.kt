@@ -72,7 +72,7 @@ object DateFormatter {
         return ""
     }
 
-    //TODO Test this function.
+
     /**
      * Takes a duration and two localised strings and outputs a 'pretty' string.
      * @param duration A time measurement as type Duration

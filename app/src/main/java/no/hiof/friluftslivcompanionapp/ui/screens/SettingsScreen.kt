@@ -63,6 +63,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
@@ -460,7 +461,8 @@ fun LangAlertDialogue(
                     ) {
                         RadioButton(
                             selected = (option == selectedLanguage),
-                            onClick = null // null recommended for accessibility with screenreaders
+                            onClick = null, // null recommended for accessibility with screenreaders
+                            modifier = Modifier.testTag("RadioButton")
                         )
                         Text(
                             text = langLabel,

@@ -65,6 +65,8 @@
     <string name="oops">Oops!</string>
     <string name="okay">Okay</string>
     <string name="loc_permission_declined">You seem to have declined permission to share your location one too many times. If you wish to share your location with this application then please enable permissions manually via your phone\'s settings.</string>
+    <string name="lang_german" translatable="false">German</string>
+    <string name="lang_spanish" translatable="false">Spanish</string>
     <string name="display_picture">Profile Picture</string>
     <string name="profile_your_year_so_far">Your %1$s So Far</string>
     <string name="profile_number_trails_completed">%1$s trails completed</string>

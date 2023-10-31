@@ -1,18 +1,12 @@
 package no.hiof.friluftslivcompanionapp.data.repositories
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
-import no.hiof.friluftslivcompanionapp.models.Lifelist
-import no.hiof.friluftslivcompanionapp.models.TripActivity
 import no.hiof.friluftslivcompanionapp.models.User
-import no.hiof.friluftslivcompanionapp.models.UserPreferences
 import javax.inject.Inject
+
 class UserRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth

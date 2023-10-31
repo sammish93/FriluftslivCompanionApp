@@ -1,21 +1,10 @@
 package no.hiof.friluftslivcompanionapp.domain
 
 import kotlinx.coroutines.runBlocking
-import no.hiof.friluftslivcompanionapp.data.network.Result
-import no.hiof.friluftslivcompanionapp.domain.BirdObservations
-import no.hiof.friluftslivcompanionapp.models.Bird
-import no.hiof.friluftslivcompanionapp.models.Location
-import no.hiof.friluftslivcompanionapp.models.Weather
-import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
-import no.hiof.friluftslivcompanionapp.models.enums.WeatherType
-
-
 import org.junit.Assert.*
-import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.*
 import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.Duration
 
 
 class DateFormatterTest {
@@ -48,5 +37,20 @@ class DateFormatterTest {
 
         // Assert
         assertEquals(NumberFormatException::class, exception::class)
+    }
+
+    @Test
+    fun formatDurationToPrettyString_returnsExpectedResult() {
+        // Arrange
+        val duration = Duration.ofHours(1).plusMinutes(30)
+        val hoursLocalised = "Hours"
+        val minutesLocalised = "Minutes"
+
+        // Act
+        val result = DateFormatter.formatDurationToPrettyString(duration, hoursLocalised, minutesLocalised)
+
+        // Assert
+        val expected = "1 Hours 30 Minutes"
+        assertEquals(expected, result)
     }
 }
