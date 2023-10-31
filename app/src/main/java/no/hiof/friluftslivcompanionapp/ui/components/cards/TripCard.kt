@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.components.cards
 
+import android.location.Geocoder
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,16 +21,21 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.models.DummyTrip
+import no.hiof.friluftslivcompanionapp.models.Trip
+import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
@@ -39,17 +45,21 @@ import java.util.Locale
 @Composable
 fun TripCard(
     navController: NavController,
-    trip: DummyTrip,
+    trip: Trip,
     tripsViewModel: TripsViewModel = viewModel(),
     userViewModel: UserViewModel = viewModel()
 ) {
 
     //var showDialog by remember { mutableStateOf(false) }
-    val imageResource = when (trip.type.lowercase(Locale.ROOT)) {
-        "hike" -> R.drawable.hike
-        "climb" -> R.drawable.climb
-        else -> R.drawable.ski
-    }
+    val userState by userViewModel.state.collectAsState()
+    val geocoder = Geocoder(LocalContext.current, Locale.getDefault())
+    val location = geocoder.getFromLocation(
+        userState.lastKnownLocation?.latitude ?: DefaultLocation.OSLO.lat,
+        userState.lastKnownLocation?.longitude ?: DefaultLocation.OSLO.lon,
+        1
+    )
+
+    val imageResource = R.drawable.hike
 
     Card(
         shape = RoundedCornerShape(12.dp),
@@ -83,14 +93,14 @@ fun TripCard(
                     .padding(start = 12.dp, top = 8.dp, end = 12.dp, bottom = 8.dp)
             ) {
                 Text(
-                    text = "${trip.type} in ${trip.city}",
+                    text = "${trip.description}".replaceFirstChar { it.uppercase() },
                     style = MaterialTheme.typography.headlineMedium
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "County: ${trip.county}",
+                    text = "Duration: ${trip.duration}",
                     style = MaterialTheme.typography.bodyMedium
                 )
 
