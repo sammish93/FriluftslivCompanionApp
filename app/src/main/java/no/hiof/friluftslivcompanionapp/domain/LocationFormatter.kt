@@ -98,4 +98,58 @@ object LocationFormatter {
 
         return RectangularBounds.newInstance(southWest, northEast)
     }
+
+    //TODO Test this.
+    fun getRegionCodeByLocation(location: String): Pair<String, String> {
+        return try {
+            val regionCode = when (location) {
+                //I need the previous region code and the current region name,
+                // as Ebird uses the previous region codes,
+                // and the geocode API uses the current region name.
+
+                "Østfold" -> "NO-01"
+                "Buskerud" -> "NO-06"
+                "Akershus" -> "NO-02"
+                "Viken" -> "NO-01,NO-02,NO-06"
+
+                "Hedemark" -> "NO-04"
+                "Oppland" -> "NO-05"
+                "Innlandet" -> "NO-04,NO-05"
+
+                "Oslo" -> "NO-03"
+
+                "Telemark" -> "NO-08"
+                "Vestfold" -> "NO-07"
+                "Vestfold og Telemark" -> "NO-07,NO-08"
+
+                "Aust-Agder" -> "NO-09"
+                "Vest-Agder" -> "NO-10"
+                "Agder" -> "NO-09, NO-10"
+
+                "Rogaland" -> "NO-11"
+
+                "Hordaland" -> "NO-12"
+                "Sogn og Fjordane" -> "NO-14"
+                "Vestland" -> "NO-12, NO-14"
+
+                "Møre og Romsdal" -> "NO-15"
+
+                "Sør-Trøndelag" -> "NO-16"
+                "Nord-Trøndelag" -> "NO-17"
+                "Trøndelag" -> "NO-16,NO-17"
+
+                "Nordland" -> "NO-18"
+
+                "Troms" -> "NO-19"
+                "Finnmark" -> "NO-20"
+                "Troms og Finnmark" -> "NO-19,NO-20"
+
+                else -> "NO-03"
+            }
+            regionCode to "Success" // Returner både regionkoden og en suksessmelding
+        } catch (e: Exception) {
+            println("Error: ${e.message}")
+            "NO-03" to "Error: ${e.message}" // Standardverdi og en feilmelding i tilfelle det oppstår feil
+        }
+    }
 }

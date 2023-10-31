@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import no.hiof.friluftslivcompanionapp.domain.LocationFormatter
 import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
@@ -82,7 +83,7 @@ fun FloraFaunaSearchScreen(
                         val locality = location.adminArea ?: "Oslo"
 
                         viewModel.viewModelScope.launch {
-                            val (regionCode, message) = viewModel.searchBirdsByYourLocation(locality)
+                            val (regionCode, message) = LocationFormatter.getRegionCodeByLocation(locality)
                             println("Found your location: $regionCode")
                             println(message)
                             viewModel.searchBirdsByLocation(regionCode)
@@ -90,7 +91,7 @@ fun FloraFaunaSearchScreen(
                     } else {
                         println("Unable to get location. Using default location: Oslo")
                         viewModel.viewModelScope.launch {
-                            val (regionCode, message) = viewModel.searchBirdsByYourLocation("Oslo")
+                            val (regionCode, message) = LocationFormatter.getRegionCodeByLocation("Oslo")
                             println(message)
                             viewModel.searchBirdsByLocation(regionCode)
                         }

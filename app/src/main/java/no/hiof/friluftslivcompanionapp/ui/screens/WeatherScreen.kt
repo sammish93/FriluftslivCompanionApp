@@ -42,6 +42,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
@@ -77,7 +78,7 @@ fun WeatherScreen(
 
     // On screen creation (first navigation) the following code is executed.
     LaunchedEffect(true) {
-        CoroutineScope(Dispatchers.Default).launch {
+        viewModel.viewModelScope.launch {
             viewModel.getWeatherForecast(
                 userState.lastKnownLocation?.latitude,
                 userState.lastKnownLocation?.longitude
@@ -136,7 +137,7 @@ fun WeatherScreen(
                         modifier = modifier.wrapContentSize(Alignment.Center)
                     )
                     IconButton(onClick = {
-                        CoroutineScope(Dispatchers.Default).launch {
+                        viewModel.viewModelScope.launch {
                             //TODO Add functionality to prompt the user to share their location if
                             // permissions aren't currently given.
                             viewModel.getWeatherForecast(
@@ -310,7 +311,7 @@ fun WeatherBottomSheet(
                         selected = (unitEnum == weatherState.unitChoice),
                         onClick = {
                             viewModel.updateWeatherUnit(unitEnum)
-                            CoroutineScope(Dispatchers.Default).launch {
+                            viewModel.viewModelScope.launch {
                                 viewModel.getWeatherForecast(
                                     userState.lastKnownLocation?.latitude,
                                     userState.lastKnownLocation?.longitude
@@ -337,7 +338,7 @@ fun WeatherBottomSheet(
                 .padding(vertical = 8.dp)
                 .fillMaxWidth(),
             onClick = {
-                CoroutineScope(Dispatchers.Default).launch {
+                viewModel.viewModelScope.launch{
                     viewModel.getWeatherForecast(
                         userState.lastKnownLocation?.latitude,
                         userState.lastKnownLocation?.longitude

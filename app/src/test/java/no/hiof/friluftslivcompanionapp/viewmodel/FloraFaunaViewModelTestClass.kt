@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.viewmodel
 
+import no.hiof.friluftslivcompanionapp.domain.LocationFormatter
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import org.junit.Assert
 import org.junit.Test
@@ -10,7 +11,7 @@ class FloraFaunaViewModelTestClass {
         val viewModel = FloraFaunaViewModel()
         val testLocations = listOf("Oslo", "Viken", "Innlandet", "Trøndelag")
         for (location in testLocations) {
-            val result = viewModel.searchBirdsByYourLocation(location)
+            val result = LocationFormatter.getRegionCodeByLocation(location)
             val regionCode = result.first
             val message = result.second
 
