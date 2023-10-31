@@ -18,6 +18,7 @@ import no.hiof.friluftslivcompanionapp.data.states.FloraFaunaState
 import no.hiof.friluftslivcompanionapp.data.states.WeatherState
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.BirdInfo
+import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import java.time.LocalDate
 
 // NOTE: Composable Screens in app/ui/screens can communicate with this viewmodel (and thus the data
@@ -87,12 +88,12 @@ class FloraFaunaViewModel @Inject constructor(
      *
      * @param location The location or region code to search for bird observations.
      */
-    suspend fun searchBirdsByLocation(location: String, maxResults: Int = 20) {
+    suspend fun searchBirdsByLocation(location: String, maxResults: Int = 20, language: SupportedLanguage) {
         viewModelScope.launch {
             try {
                 updateLoadingBirdResponse(true)
 
-                val result = api.getRecentObservations(regionCode = location, maxResult = maxResults)
+                val result = api.getRecentObservations(languageCode = language, regionCode = location, maxResult = maxResults)
 
                 if (result is Result.Success) {
                     val birdList = result.value
@@ -102,7 +103,7 @@ class FloraFaunaViewModel @Inject constructor(
                         }
                         updateBirdResults(processedList)
                     } else {
-                        val secondaryResult = performSecondaryRequest(location)
+                        val secondaryResult = performSecondaryRequest(language = language, location = location, maxResults = maxResults)
 
                         if (secondaryResult is Result.Success) {
                             val secondaryBirdList = secondaryResult.value
@@ -127,10 +128,11 @@ class FloraFaunaViewModel @Inject constructor(
         }
     }
 
-    private suspend fun performSecondaryRequest(location: String, maxResults: Int = 20): Result<List<Bird>> {
+    private suspend fun performSecondaryRequest(location: String, language: SupportedLanguage, maxResults: Int = 20): Result<List<Bird>> {
         println("No enough bird observations found for the specified location. Making a secondary request...")
 
         return api.getObservationsBetweenDates(
+            languageCode = language,
             startDate = LocalDate.now().minusWeeks(1),
             endDate = LocalDate.now(),
             regionCode = location,

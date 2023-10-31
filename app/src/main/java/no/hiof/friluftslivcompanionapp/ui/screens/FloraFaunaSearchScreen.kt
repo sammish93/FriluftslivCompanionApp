@@ -70,10 +70,12 @@ fun FloraFaunaSearchScreen(
             )
 
         }
+
+        Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Button(
@@ -86,14 +88,14 @@ fun FloraFaunaSearchScreen(
                             val (regionCode, message) = LocationFormatter.getRegionCodeByLocation(locality)
                             println("Found your location: $regionCode")
                             println(message)
-                            viewModel.searchBirdsByLocation(regionCode)
+                            viewModel.searchBirdsByLocation(regionCode, 20, userState.language)
                         }
                     } else {
                         println("Unable to get location. Using default location: Oslo")
                         viewModel.viewModelScope.launch {
                             val (regionCode, message) = LocationFormatter.getRegionCodeByLocation("Oslo")
                             println(message)
-                            viewModel.searchBirdsByLocation(regionCode)
+                            viewModel.searchBirdsByLocation(regionCode, 20, userState.language)
                         }
                     }
                 },
@@ -110,7 +112,7 @@ fun FloraFaunaSearchScreen(
             Button(
                 onClick = {
                     viewModel.viewModelScope.launch {
-                        viewModel.searchBirdsByLocation(locationName)
+                        viewModel.searchBirdsByLocation(locationName, 20, userState.language)
                     }
                 },
                 modifier = Modifier

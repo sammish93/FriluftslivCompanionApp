@@ -25,6 +25,9 @@ class WikipediaApi {
     private var _language: SupportedLanguage = SupportedLanguage.ENGLISH
 
     // Wikipedia API Service instance.
+    //TODO Possibly change this to create a new builder whenever user language is changed.
+    // If the user makes a bird query and then changes to another language in the same lifetime
+    // then wikipedia returns the first language.
     private val wikipediaApiService: WikipediaApiService by lazy {
         val retrofit = RetrofitBuilder.buildWikipediaApi(_language.code)
         retrofit.create(WikipediaApiService::class.java)
