@@ -99,6 +99,11 @@ fun ProfileScreen(
         userViewModel.fetchTotalKilometersForTheYear()
         userViewModel.fetchSpeciesCountForThisYear()
     }
+    val tripCount by userViewModel.tripCountForTheYear.collectAsState()
+
+    LaunchedEffect(true) {
+        userViewModel.fetchTripCountForTheYear()
+    }
 
 
     Scaffold(
