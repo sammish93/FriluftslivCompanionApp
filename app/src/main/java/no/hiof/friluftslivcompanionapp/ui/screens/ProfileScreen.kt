@@ -176,11 +176,11 @@ fun ProfileScreen(
 
                         Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
-                        LeaderboardRow(DisplayPicture.DP_DEFAULT, "Joris", 38, 2, 4, 0.9F)
+                        LeaderboardRow(DisplayPicture.DP_ONE, "Joris", 38, 2, 4, 0.9F)
 
                         Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
-                        LeaderboardRow(DisplayPicture.DP_DEFAULT, "Jonas", 34, 3, 8, 0.8F)
+                        LeaderboardRow(DisplayPicture.DP_TWO, "Jonas", 34, 3, 8, 0.8F)
 
                         HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
@@ -189,15 +189,15 @@ fun ProfileScreen(
 
                         Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
-                        LeaderboardRow(DisplayPicture.DP_DEFAULT, "Paddy", 104, 1)
+                        LeaderboardRow(DisplayPicture.DP_THREE, "Paddy", 104, 1)
 
                         Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
-                        LeaderboardRow(DisplayPicture.DP_DEFAULT, "Feargal", 97, 2, 4, 0.9F)
+                        LeaderboardRow(DisplayPicture.DP_FOUR, "Feargal", 97, 2, 4, 0.9F)
 
                         Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
-                        LeaderboardRow(DisplayPicture.DP_DEFAULT, "Colm", 82, 3, 8, 0.8F)
+                        LeaderboardRow(DisplayPicture.DP_FIVE, "Colm", 82, 3, 8, 0.8F)
                     }
                 }
 
@@ -241,14 +241,11 @@ private fun LeaderboardRow(
     ) {
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                painter = painterResource(displayPicture.defaultResolution),
-                contentDescription = stringResource(R.string.display_picture),
-                contentScale = ContentScale.Crop,
+            Box(
                 modifier = Modifier
-                    .clip(CircleShape)
                     .size(64.dp)
                     .scale(scale)
+                    .clip(CircleShape)
                     .border(
                         4.dp,
                         if (placement == 1) {
@@ -260,7 +257,13 @@ private fun LeaderboardRow(
                         },
                         CircleShape
                     )
-            )
+            ) {
+                Image(
+                    painter = painterResource(displayPicture.defaultResolution),
+                    contentDescription = stringResource(R.string.display_picture),
+                    contentScale = ContentScale.Crop
+                )
+            }
 
             if (placement == 1) {
                 Spacer(modifier = Modifier.padding(horizontal = 2.dp))
