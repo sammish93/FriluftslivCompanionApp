@@ -85,12 +85,12 @@ class FloraFaunaViewModel @Inject constructor(
      *
      * @param location The location or region code to search for bird observations.
      */
-    suspend fun searchBirdsByLocation(location: String) {
+    suspend fun searchBirdsByLocation(location: String, maxResults: Int = 20) {
         viewModelScope.launch {
             try {
                 _isLoading.value = true
 
-                val result = api.getRecentObservations(regionCode = location, maxResult = 10)
+                val result = api.getRecentObservations(regionCode = location, maxResult = maxResults)
 
                 if (result is Result.Success) {
                     val birdList = result.value
@@ -105,6 +105,8 @@ class FloraFaunaViewModel @Inject constructor(
                         if (secondaryResult is Result.Success) {
                             val secondaryBirdList = secondaryResult.value
                             if (secondaryBirdList.isNotEmpty()) {
+                                var counter = 0;
+
                                 val processedList = api.processBirdList(secondaryBirdList) { bird ->
                                     bird
                                 }
@@ -124,16 +126,15 @@ class FloraFaunaViewModel @Inject constructor(
             } finally { _isLoading.value = false }
         }
     }
-
-    //TODO: Solve why it returns more or less than the set maxResult.
-    private suspend fun performSecondaryRequest(location: String): Result<List<Bird>> {
+    
+    private suspend fun performSecondaryRequest(location: String, maxResults: Int = 20): Result<List<Bird>> {
         println("No enough bird observations found for the specified location. Making a secondary request...")
 
         return api.getObservationsBetweenDates(
             startDate = LocalDate.now().minusWeeks(1),
             endDate = LocalDate.now(),
             regionCode = location,
-            maxResult = 5
+            maxResult = maxResults
         )
     }
 

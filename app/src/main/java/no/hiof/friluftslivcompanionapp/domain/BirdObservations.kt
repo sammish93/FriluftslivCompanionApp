@@ -22,6 +22,7 @@ import javax.inject.Inject
 class BirdObservations private constructor() {
 
     private val eBirdApi = EBirdApi()
+
     companion object {
 
         @Volatile
@@ -47,12 +48,12 @@ class BirdObservations private constructor() {
      * observations in the specified region, or an error if the operation fails.
      */
     suspend fun getRecentObservations(
-        languageCode: SupportedLanguage=SupportedLanguage.ENGLISH,
-        regionCode: String="NO-03",
-        year: Int=LocalDate.now().year,
-        month: Int=LocalDate.now().monthValue,
-        day: Int=LocalDate.now().dayOfMonth,
-        maxResult: Int=1
+        languageCode: SupportedLanguage = SupportedLanguage.ENGLISH,
+        regionCode: String = "NO-03",
+        year: Int = LocalDate.now().year,
+        month: Int = LocalDate.now().monthValue,
+        day: Int = LocalDate.now().dayOfMonth,
+        maxResult: Int = 1
     ): Result<List<Bird>> {
 
         eBirdApi.language = languageCode
@@ -69,10 +70,10 @@ class BirdObservations private constructor() {
      * @return A `Result` object containing a list of `Bird` objects.
      */
     suspend fun getObservationsBetweenDates(
-        languageCode: SupportedLanguage=SupportedLanguage.ENGLISH,
+        languageCode: SupportedLanguage = SupportedLanguage.ENGLISH,
         startDate: LocalDate,
         endDate: LocalDate,
-        regionCode: String="NO-03",
+        regionCode: String = "NO-03",
         maxResult: Int = 1
     ): Result<List<Bird>> {
 
@@ -108,6 +109,8 @@ class BirdObservations private constructor() {
         return ChronoUnit.DAYS.between(startDate, endDate).toInt()
     }
 
+    // Sam changed this code to force this function to return 'maxResults' no matter what.
+    // If less than 20 results are found for the past week then the past 5 years are queried also.
     private suspend fun iterateOverDays(
         languageCode: SupportedLanguage,
         startDate: LocalDate,
@@ -115,13 +118,29 @@ class BirdObservations private constructor() {
         regionCode: String,
         maxResult: Int
     ): List<Bird> {
-
         val allObservations = mutableListOf<Bird>()
-        for (day in 0..daysBetween) {
-            val date = startDate.plusDays(day.toLong())
-            val result = getObservationsForDate(languageCode, date, regionCode, maxResult)
-            if (result is Result.Success) allObservations.addAll(result.value)
+        var counter = 0
+
+        for (yearOffset in 0 until 5) {
+            if (counter >= maxResult) break
+
+            for (day in 0 until daysBetween) {
+                if (counter >= maxResult) break
+
+                val date = startDate.minusYears(yearOffset.toLong()).plusDays(day.toLong())
+                val result = getObservationsForDate(languageCode, date, regionCode, maxResult)
+
+                if (result is Result.Success) {
+                    result.value.forEach { bird ->
+                        if (counter < maxResult) {
+                            allObservations.add(bird)
+                            counter++
+                        }
+                    }
+                }
+            }
         }
+
         return allObservations.toList()
     }
 
