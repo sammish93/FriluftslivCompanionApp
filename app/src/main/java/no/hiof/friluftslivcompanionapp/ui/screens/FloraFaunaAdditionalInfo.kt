@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,7 +36,8 @@ fun FloraFaunaAdditionalInfo (
     viewModel: FloraFaunaViewModel = viewModel(),
     navController: NavController
 ){
-    val birdInfo: BirdInfo? = viewModel.selectedBirdInfo.collectAsState().value
+    val floraFaunaState by viewModel.floraFaunaState.collectAsState()
+
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -54,7 +56,7 @@ fun FloraFaunaAdditionalInfo (
         ) {
             item {
                 Text("Extra Information", style = CustomTypography.titleLarge)
-                birdInfo?.let {
+                floraFaunaState.selectedBirdInfo?.let {
                     Image(
                         painter = rememberImagePainter(data = it.imageUrl),
                         contentDescription = "Photo of ${it.speciesName}",

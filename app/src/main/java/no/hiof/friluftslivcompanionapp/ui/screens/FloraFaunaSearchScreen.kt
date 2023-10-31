@@ -37,6 +37,8 @@ fun FloraFaunaSearchScreen(
     userViewModel: UserViewModel = viewModel()
 ) {
     val userState by userViewModel.state.collectAsState()
+    val floraFaunaState by viewModel.floraFaunaState.collectAsState()
+
     val geocoder = Geocoder(LocalContext.current, Locale.getDefault())
     val locations = geocoder.getFromLocation(
         userState.lastKnownLocation?.latitude ?: DefaultLocation.OSLO.lat,
@@ -45,8 +47,6 @@ fun FloraFaunaSearchScreen(
     )
 
     var locationName by remember { mutableStateOf("") }
-    val birdResults by viewModel.birdResults.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
 
     Column(
         modifier = modifier
@@ -134,10 +134,10 @@ fun FloraFaunaSearchScreen(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxSize()
         ) {
-            if (isLoading) {
+            if (floraFaunaState.isLoading) {
                 CustomLoadingScreen()
             } else {
-                ListComponent(birdResults) { bird, textStyle ->
+                ListComponent(floraFaunaState.birdResults) { bird, textStyle ->
                     CardList(
                         bird,
                         textStyle,
@@ -152,7 +152,3 @@ fun FloraFaunaSearchScreen(
         }
     }
 }
-
-
-//GoogleMapsView(locationName, viewModel)
-

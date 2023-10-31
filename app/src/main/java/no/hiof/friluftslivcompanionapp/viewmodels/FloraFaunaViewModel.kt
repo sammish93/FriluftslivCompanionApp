@@ -14,6 +14,8 @@ import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
 import javax.inject.Inject
 import no.hiof.friluftslivcompanionapp.data.network.Result
+import no.hiof.friluftslivcompanionapp.data.states.FloraFaunaState
+import no.hiof.friluftslivcompanionapp.data.states.WeatherState
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.BirdInfo
 import java.time.LocalDate
@@ -38,6 +40,11 @@ class FloraFaunaViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(TabsUiState())
     override val uiState: StateFlow<TabsUiState> = _uiState.asStateFlow()
 
+    private val _floraFaunaState = MutableStateFlow(FloraFaunaState())
+    val floraFaunaState: StateFlow<FloraFaunaState> = _floraFaunaState.asStateFlow()
+
+    private val api = BirdObservations.getInstance()
+
     override var tabDestinations = mapOf(
         Screen.FLORA_FAUNA to Screen.FLORA_FAUNA.navBarLabel,
         Screen.FLORA_FAUNA_SEARCH_LOCATION to Screen.FLORA_FAUNA_SEARCH_LOCATION.navBarLabel
@@ -56,11 +63,6 @@ class FloraFaunaViewModel @Inject constructor(
         return _uiState.value.currentTabIndex
     }
 
-    private val api = BirdObservations.getInstance()
-
-    private val _birdResults = MutableStateFlow<List<Bird>>(emptyList())
-    val birdResults: StateFlow<List<Bird>> = _birdResults
-
     /**
      * Updates the bird results with the provided list of bird observations.
      *
@@ -70,12 +72,12 @@ class FloraFaunaViewModel @Inject constructor(
      * @param results The list of bird observations to update the bird results with.
      */
     private fun updateBirdResults(results: List<Bird>) {
-        _birdResults.value = results
+        _floraFaunaState.update { currentState ->
+            currentState.copy(
+                birdResults = results
+            )
+        }
     }
-
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
-
 
     /**
      * Searches for birds based on the specified location.
@@ -88,7 +90,7 @@ class FloraFaunaViewModel @Inject constructor(
     suspend fun searchBirdsByLocation(location: String, maxResults: Int = 20) {
         viewModelScope.launch {
             try {
-                _isLoading.value = true
+                updateLoadingBirdResponse(true)
 
                 val result = api.getRecentObservations(regionCode = location, maxResult = maxResults)
 
@@ -121,7 +123,7 @@ class FloraFaunaViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 println("Error: ${e.message}")
-            } finally { _isLoading.value = false }
+            } finally { updateLoadingBirdResponse(false) }
         }
     }
 
@@ -136,9 +138,6 @@ class FloraFaunaViewModel @Inject constructor(
         )
     }
 
-    private val _selectedBirdInfo = MutableStateFlow<BirdInfo?>(null)
-    val selectedBirdInfo: StateFlow<BirdInfo?> = _selectedBirdInfo
-
     /**
      * Method to update the information about the selected bird.
      *
@@ -146,6 +145,20 @@ class FloraFaunaViewModel @Inject constructor(
      */
     fun updateSelectedBirdInfo(bird: Bird) {
         val birdInfo = bird.getBirdInfo()
-        _selectedBirdInfo.value = birdInfo
+
+        _floraFaunaState.update { currentState ->
+            currentState.copy(
+                selectedBirdInfo = birdInfo
+            )
+        }
+    }
+
+    // Changes a Boolean value used to show/hide a progress bar.
+    fun updateLoadingBirdResponse(isLoading: Boolean) {
+        _floraFaunaState.update { currentState ->
+            currentState.copy(
+                isLoading = isLoading
+            )
+        }
     }
 }
