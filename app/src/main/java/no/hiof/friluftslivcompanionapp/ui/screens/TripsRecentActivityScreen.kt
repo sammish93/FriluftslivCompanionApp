@@ -6,10 +6,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.firebase.firestore.GeoPoint
 import no.hiof.friluftslivcompanionapp.models.DummyTrip
 import no.hiof.friluftslivcompanionapp.ui.components.cards.TripCard
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
@@ -25,6 +29,15 @@ fun TripsRecentActivityScreen(
     tripsViewModel: TripsViewModel = viewModel(),
     userViewModel: UserViewModel = viewModel()
 ) {
+    val userState by userViewModel.state.collectAsState()
+    val tripsInArea by tripsViewModel.hikes.collectAsState()
+
+    LaunchedEffect(userState) {
+        val geoPoint = userState.lastKnownLocation?.let { GeoPoint(it.latitude, it.longitude) }
+        if (geoPoint != null) {
+            tripsViewModel.getTripsNearUsersLocation(geoPoint, 50.0, 5)
+        }
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -32,7 +45,7 @@ fun TripsRecentActivityScreen(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
 
     ) {
-        items(dummyTrips) { trip ->
+        items(tripsInArea) { trip ->
             //TODO send RecentActivity to trip instead of dummy data.
             TripCard(navController, trip, tripsViewModel, userViewModel)
         }
