@@ -90,12 +90,14 @@ fun ProfileScreen(
     val tripCount by userViewModel.tripCountForTheYear.collectAsState()
 
     val totalDistance by userViewModel.totalKilometers.collectAsState()
+    val totalSpeciesCount by userViewModel.speciesCount.collectAsState()
 
 
 
     LaunchedEffect(true) {
         userViewModel.fetchTripCountForTheYear()
         userViewModel.fetchTotalKilometersForTheYear()
+        userViewModel.fetchSpeciesCountForThisYear()
     }
 
     Scaffold(
@@ -154,7 +156,7 @@ fun ProfileScreen(
                         Text(
                             text = stringResource(
                                 R.string.profile_number_individual_species_identified,
-                                "#"
+                                "$totalSpeciesCount"
                             )
                         )
                     }

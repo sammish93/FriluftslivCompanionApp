@@ -15,8 +15,16 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import no.hiof.friluftslivcompanionapp.data.repositories.ActivityRepository
+import no.hiof.friluftslivcompanionapp.data.repositories.LifelistRepository
 import no.hiof.friluftslivcompanionapp.data.repositories.UserRepository
+import no.hiof.friluftslivcompanionapp.models.Bird
+import no.hiof.friluftslivcompanionapp.models.FloraFaunaSighting
+import no.hiof.friluftslivcompanionapp.models.Lifelist
+import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.UserPreferences
+import java.time.LocalDateTime
+import java.util.Date
 
 @AndroidEntryPoint
 class SignInActivity : AppCompatActivity() {
@@ -29,6 +37,12 @@ class SignInActivity : AppCompatActivity() {
 
     @Inject
     lateinit var userRepository: UserRepository
+
+    @Inject
+    lateinit var lifeListRepository: LifelistRepository
+
+    @Inject
+    lateinit var activityRepository: ActivityRepository
 
     private val signInLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(FirebaseAuthUIActivityResultContract()) { res ->
@@ -63,20 +77,44 @@ class SignInActivity : AppCompatActivity() {
             val user = auth.currentUser
 
             if (user != null) {
-                // Create or update the user document using the UserRepository
-                val userData = no.hiof.friluftslivcompanionapp.models.User(
-                    userId = user.uid,
-                    email = user.email,
-                    username = "default_username",
-                    preferences = UserPreferences(),
-                    lifelist = null,
-                    tripActivity = null
-                )
                 launch {
+                    // You can define these values as needed or get them dynamically
+                    val location = Location(58.99107, 6.137688)
+                  //  val bird = Bird(null, "Big bird", 2, "Big yellow bird", null, LocalDateTime.now(),location)
+                   // val bird2 = Bird(null, "Big bird2", 2, "Big yellow bird", null, LocalDateTime.now(),location)
+                    /*
+                    val sampleSighting = FloraFaunaSighting(
+                        species = bird,
+                        date = Date(),
+                        location = location
+                    )
+                    val anotherSample = FloraFaunaSighting(
+                        species = bird2,
+                        date = Date(),
+                        location = location
+                    )
+                    
+                     */
+                    //val lifelist = Lifelist()
+                   // val waht = lifeListRepository.addSightingToLifeList(anotherSample)
+
+                    val sampleDate = Date()
+                    val sampleTripId = "qtSfnEnJutxgJqCc94l0"
+
+                    val userData = no.hiof.friluftslivcompanionapp.models.User(
+                        userId = user.uid,
+                        email = user.email,
+                        username = "this user name",
+                        preferences = UserPreferences(),
+
+
+                    )
+
                     userRepository.createUser(userData)
 
-                    navigateToMainActivity()
+                    activityRepository.addTripActivityToUser(sampleTripId,sampleDate)
 
+                    navigateToMainActivity()
                 }
 
             } else {

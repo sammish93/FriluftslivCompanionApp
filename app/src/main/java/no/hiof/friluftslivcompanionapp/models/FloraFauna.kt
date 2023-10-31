@@ -8,5 +8,7 @@ abstract class FloraFauna(
     description: String?,
     photoUrl: String?
 ) {
+    abstract fun toMap(): Map<String, Any?>
 
 }
+

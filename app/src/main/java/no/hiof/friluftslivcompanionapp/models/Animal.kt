@@ -13,4 +13,10 @@ abstract class Animal(
     description,
     photoUrl
 ) {
+
+    companion object {
+        fun fromMap(map: Map<String, Any?>): Animal {
+            return Bird.fromMap(map)
+        }
+    }
 }

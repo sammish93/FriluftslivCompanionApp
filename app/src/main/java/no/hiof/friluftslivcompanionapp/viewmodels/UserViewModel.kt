@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.data.api.PlacesApi
 import no.hiof.friluftslivcompanionapp.data.repositories.ActivityRepository
+import no.hiof.friluftslivcompanionapp.data.repositories.LifelistRepository
 import no.hiof.friluftslivcompanionapp.data.repositories.OperationResult
 import no.hiof.friluftslivcompanionapp.data.states.AutoCompleteState
 import no.hiof.friluftslivcompanionapp.data.states.PlaceInfoState
@@ -45,7 +46,8 @@ import kotlin.math.sqrt
 class UserViewModel @Inject constructor(
     private val placesApi: PlacesApi,
     private val placesClient: PlacesClient,
-    private val activityRepository: ActivityRepository
+    private val activityRepository: ActivityRepository,
+    private val lifeListRepository: LifelistRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UserState(lastKnownLocation = null))
@@ -117,6 +119,17 @@ class UserViewModel @Inject constructor(
             _totalKilometers.value = roundToOneDecimalPlace(totalKm)
         }
     }
+
+
+    private val _speciesCount = MutableStateFlow<Int?>(null)
+    val speciesCount: StateFlow<Int?> get() = _speciesCount
+
+    fun fetchSpeciesCountForThisYear() {
+        viewModelScope.launch {
+            _speciesCount.value = lifeListRepository.countUniqueSpeciesSightedThisYear()
+        }
+    }
+
 
 
 

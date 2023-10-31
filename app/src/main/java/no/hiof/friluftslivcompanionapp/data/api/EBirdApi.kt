@@ -88,10 +88,11 @@ class EBirdApi {
             number = sighting.howMany,
             description = additionalInfo?.extract,
             photoUrl = additionalInfo?.thumbnail,
-            observationDate = formatObservationDate(sighting.obsDt),
+           // observationDate = formatObservationDate(sighting.obsDt),
             coordinates = Location(sighting.lat, sighting.lng)
         )
     }
+
 
     private fun formatObservationDate(observationDate: String): LocalDateTime {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")

@@ -124,14 +124,7 @@ class ActivityRepository @Inject constructor(
                 val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
                 Log.d(functionTag, "User is logged in with ID: $userId")
 
-                val startOfYear = Calendar.getInstance().apply {
-                    set(Calendar.MONTH, Calendar.JANUARY)
-                    set(Calendar.DAY_OF_MONTH, 1)
-                    set(Calendar.HOUR_OF_DAY, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }.time
+                val startOfYear = getStartOfYear()
 
                 val activityCollectionRef = firestore.collection("users").document(userId).collection("tripActivity")
                     .whereGreaterThanOrEqualTo("date", startOfYear)  // Filters to get activities from the start of the year
