@@ -121,7 +121,7 @@ class BirdObservations private constructor() {
         val allObservations = mutableListOf<Bird>()
         var counter = 0
 
-        for (yearOffset in 0 until 5) {
+        for (yearOffset in 0 until 10) {
             if (counter >= maxResult) break
 
             for (day in 0 until daysBetween) {

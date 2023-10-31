@@ -88,12 +88,22 @@ class FloraFaunaViewModel @Inject constructor(
      *
      * @param location The location or region code to search for bird observations.
      */
-    suspend fun searchBirdsByLocation(location: String, maxResults: Int = 20, language: SupportedLanguage) {
+    suspend fun searchBirdsByLocation(
+        location: String,
+        maxResults: Int = 20,
+        language: SupportedLanguage
+    ) {
         viewModelScope.launch {
+            updateBirdResults(emptyList())
+
             try {
                 updateLoadingBirdResponse(true)
 
-                val result = api.getRecentObservations(languageCode = language, regionCode = location, maxResult = maxResults)
+                val result = performSecondaryRequest(
+                    language = language,
+                    location = location,
+                    maxResults = maxResults
+                )
 
                 if (result is Result.Success) {
                     val birdList = result.value
@@ -103,32 +113,24 @@ class FloraFaunaViewModel @Inject constructor(
                         }
                         updateBirdResults(processedList)
                     } else {
-                        val secondaryResult = performSecondaryRequest(language = language, location = location, maxResults = maxResults)
-
-                        if (secondaryResult is Result.Success) {
-                            val secondaryBirdList = secondaryResult.value
-                            if (secondaryBirdList.isNotEmpty()) {
-                                val processedList = api.processBirdList(secondaryBirdList) { bird ->
-                                    bird
-                                }
-                                updateBirdResults(processedList)
-                            } else {
-                                println("No bird observations found in the past week in the specified location.")
-                            }
-                        } else if (secondaryResult is Result.Failure) {
-                            println("Secondary API call failed: ${secondaryResult.message}")
-                        }
+                        println("No bird observations found in the past week in the specified location.")
                     }
                 } else if (result is Result.Failure) {
                     println("API call failed: ${result.message}")
                 }
             } catch (e: Exception) {
                 println("Error: ${e.message}")
-            } finally { updateLoadingBirdResponse(false) }
+            } finally {
+                updateLoadingBirdResponse(false)
+            }
         }
     }
 
-    private suspend fun performSecondaryRequest(location: String, language: SupportedLanguage, maxResults: Int = 20): Result<List<Bird>> {
+    private suspend fun performSecondaryRequest(
+        location: String,
+        language: SupportedLanguage,
+        maxResults: Int = 20
+    ): Result<List<Bird>> {
         println("No enough bird observations found for the specified location. Making a secondary request...")
 
         return api.getObservationsBetweenDates(
