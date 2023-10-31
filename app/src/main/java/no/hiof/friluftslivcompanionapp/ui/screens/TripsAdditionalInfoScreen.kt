@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +17,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemColors
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +30,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -76,38 +84,46 @@ fun TripsAdditionalInfoScreen(
                                 .verticalScroll(rememberScrollState()),
                             verticalArrangement = Arrangement.Top
                         ) {
-
+                            // Inspired from: https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#ListItem(kotlin.Function0,androidx.compose.ui.Modifier,kotlin.Function0,kotlin.Function0,kotlin.Function0,kotlin.Function0,androidx.compose.material3.ListItemColors,androidx.compose.ui.unit.Dp,androidx.compose.ui.unit.Dp)
                             //TODO Use DateFormatter and modify a function to include year.
                             // also add if (tripsState.isSelectedTripRecentActivity) then show date.
-                            Text(stringResource(R.string.date))
-                            Text(LocalDate.now().toString())
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.date)) },
+                                supportingContent = { Text(LocalDate.now().toString()) },
+                            )
+                            HorizontalDivider()
 
-                            Text(stringResource(R.string.duration))
                             tripsState.selectedTrip?.duration?.let {
                                 DateFormatter.formatDurationToPrettyString(it, "Hour", "Minute")
                             }?.let { formattedDuration ->
-                                Text(text = formattedDuration)
+                                ListItem(
+                                    headlineContent = { Text(stringResource(R.string.duration)) },
+                                    supportingContent = { Text(formattedDuration) }
+                                )
                             }
+                            HorizontalDivider()
 
-                            Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                            ListItem(
+                                headlineContent = { Text(stringResource(R.string.distance)) },
+                                supportingContent = { Text(tripsState.selectedTrip!!.distanceKm.toString()) }
+                            )
+                            HorizontalDivider()
 
-                            Text(stringResource(R.string.distance))
-                            Text(tripsState.selectedTrip!!.distanceKm.toString())
-
-                            Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-                            Text(stringResource(R.string.difficulty))
                             tripsState.selectedTrip?.difficulty?.let {
                                 TripFactory.convertTripDifficultyFromIntToString(it)
                             }?.let { formattedDifficulty ->
-                                Text(text = formattedDifficulty)
+                                ListItem(
+                                    headlineContent = { Text(stringResource(R.string.difficulty)) },
+                                    supportingContent = { Text(formattedDifficulty) }
+                                )
                             }
+                            HorizontalDivider()
 
-                            Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-                            Text(stringResource(R.string.trips_create_description))
-                            tripsState.selectedTrip!!.description?.let { it ->
-                                Text(it.replaceFirstChar { it.uppercase() })
+                            tripsState.selectedTrip!!.description?.let { description ->
+                                ListItem(
+                                    headlineContent = { Text(stringResource(R.string.trips_create_description)) },
+                                    supportingContent = { Text(description.replaceFirstChar { it.uppercase() }) }
+                                )
                             }
                         }
 
