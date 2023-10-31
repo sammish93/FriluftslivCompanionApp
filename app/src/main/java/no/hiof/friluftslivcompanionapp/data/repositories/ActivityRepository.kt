@@ -11,6 +11,7 @@ import no.hiof.friluftslivcompanionapp.models.Trip
 import no.hiof.friluftslivcompanionapp.models.TripActivity
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
@@ -113,6 +114,42 @@ class ActivityRepository @Inject constructor(
             }
         }
     }
+    suspend fun getUserTripCountForTheYear(): OperationResult<Int> {
+        val functionTag = "GetUserTripCountForTheYear"
+
+        return withContext(Dispatchers.IO) {
+            try {
+                Log.d(functionTag, "Initiating retrieval of user trip count for the year")
+
+                val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
+                Log.d(functionTag, "User is logged in with ID: $userId")
+
+                val startOfYear = Calendar.getInstance().apply {
+                    set(Calendar.MONTH, Calendar.JANUARY)
+                    set(Calendar.DAY_OF_MONTH, 1)
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }.time
+
+                val activityCollectionRef = firestore.collection("users").document(userId).collection("tripActivity")
+                    .whereGreaterThanOrEqualTo("date", startOfYear)  // Filters to get activities from the start of the year
+
+                Log.d(functionTag, "Fetching trip count from Firestore")
+                val querySnapshot = activityCollectionRef.get().await()
+
+                val tripCount = querySnapshot.size()
+
+                Log.d(functionTag, "Successfully retrieved trip count for the year: $tripCount")
+                OperationResult.Success(tripCount)
+            } catch (e: Exception) {
+                Log.e(functionTag, "Exception occurred while retrieving trip count for the year: ${e.message}", e)
+                OperationResult.Error(e)
+            }
+        }
+    }
+
 
 
     /*
