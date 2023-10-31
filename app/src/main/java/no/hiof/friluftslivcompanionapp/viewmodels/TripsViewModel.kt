@@ -226,7 +226,7 @@ class TripsViewModel @Inject constructor(
         private const val TAG = "TripsViewModel"
     }
 
-    fun updateSelectedTrip(trip: DummyTrip) {
+    fun updateSelectedTrip(trip: Trip) {
         _tripsState.update { currentState ->
             currentState.copy(
                 selectedTrip = trip
