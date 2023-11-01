@@ -81,23 +81,6 @@ fun TripsAdditionalInfoScreen(
     var showBottomSheet by remember { mutableStateOf(false) }
 
     Scaffold(
-        floatingActionButton = {
-            if (tripsState.selectedTrip != null) {
-                ExtendedFloatingActionButton(
-                    text = { Text(stringResource(R.string.trips_add_to_trip_log)) },
-                    icon = {
-                        Icon(
-                            Icons.Filled.Add,
-                            contentDescription = stringResource(id = R.string.add)
-                        )
-                    },
-                    onClick = {
-                        showBottomSheet = true
-                    }
-                )
-            }
-        },
-        floatingActionButtonPosition = FabPosition.End,
         topBar = {
             TopBar(
                 title = stringResource(R.string.navigation_back_to_trips),
@@ -170,16 +153,17 @@ fun TripsAdditionalInfoScreen(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Button(
-                                onClick = { //TODO Do this.
+                                onClick = {
+                                    showBottomSheet = true
                                 },
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Add,
-                                    contentDescription = stringResource(R.string.trips_add_to_recent_activity),
+                                    contentDescription = stringResource(R.string.add),
                                 )
                                 Text(
-                                    stringResource(R.string.trips_recent_activity_add_trip),
+                                    stringResource(R.string.trips_add_to_trip_log),
                                     modifier = Modifier.padding(start = 4.dp)
                                 )
                             }
