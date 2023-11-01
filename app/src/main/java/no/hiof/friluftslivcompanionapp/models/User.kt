@@ -10,8 +10,8 @@ data class User(
     // or just settling fo a user's first name). Additionally, how does Firebase handle a GUID/UUID?
     @DocumentId val userId : String = "",
     var username : String = "",
-    var email: String?,
-    var preferences: UserPreferences,
+    var email: String? = null,
+    var preferences: UserPreferences = UserPreferences(),
     var lifelist: Lifelist? = null,
     var tripActivity: TripActivity? = null,
     var yearlyTripCount: Int = 0,
