@@ -178,7 +178,7 @@ fun FloraFaunaSearchScreen(
                             locations[0].countryCode == "NO"
                         } else false
                     ) {
-                        Text(text = "Use my location")
+                        Text(text = stringResource(R.string.flora_fauna_use_my_location))
                     }
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -208,7 +208,9 @@ fun FloraFaunaSearchScreen(
 
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Search, contentDescription = "Search",
+                            imageVector = Icons.Default.Search, contentDescription = stringResource(
+                                R.string.search
+                            ),
                             modifier = Modifier
                                 .height(40.dp)
                                 .width(40.dp)
@@ -233,7 +235,7 @@ fun FloraFaunaSearchScreen(
 
                         val subclass = FloraFaunaMapper.mapClassToEnum(species)
                         val subclassToString =
-                            subclass?.let { stringResource(it.label) } ?: "Unknown"
+                            subclass?.let { stringResource(it.label) } ?: stringResource(R.string.unknown)
 
                         Spacer(modifier = Modifier.height(6.dp))
 
@@ -241,7 +243,7 @@ fun FloraFaunaSearchScreen(
                             species,
                             textStyle,
                             title = subclassToString,
-                            header = species.speciesName ?: "Unknown Common Name",
+                            header = species.speciesName ?: stringResource(R.string.flora_fauna_unknown_common_name),
                             subHeader = species.speciesNameScientific,
                             fetchImage = { it.photoUrl ?: "Photo of ${it.speciesName}" },
                             onMoreInfoClick = {
