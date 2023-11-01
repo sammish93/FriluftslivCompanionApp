@@ -20,10 +20,12 @@ import no.hiof.friluftslivcompanionapp.data.api.PlacesApi
 import no.hiof.friluftslivcompanionapp.data.repositories.ActivityRepository
 import no.hiof.friluftslivcompanionapp.data.repositories.LifelistRepository
 import no.hiof.friluftslivcompanionapp.data.repositories.OperationResult
+import no.hiof.friluftslivcompanionapp.data.repositories.UserRepository
 import no.hiof.friluftslivcompanionapp.data.states.AutoCompleteState
 import no.hiof.friluftslivcompanionapp.data.states.PlaceInfoState
 import no.hiof.friluftslivcompanionapp.data.states.UserState
 import no.hiof.friluftslivcompanionapp.domain.LocationFormatter
+import no.hiof.friluftslivcompanionapp.models.User
 import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.DisplayPicture
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
@@ -47,7 +49,8 @@ class UserViewModel @Inject constructor(
     private val placesApi: PlacesApi,
     private val placesClient: PlacesClient,
     private val activityRepository: ActivityRepository,
-    private val lifeListRepository: LifelistRepository
+    private val lifeListRepository: LifelistRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UserState(lastKnownLocation = null))
@@ -128,9 +131,25 @@ class UserViewModel @Inject constructor(
 
     fun fetchSpeciesCountForThisYear() {
         viewModelScope.launch {
-            _speciesCount.value = lifeListRepository.countUniqueSpeciesSightedThisYear()
+            _speciesCount.value = lifeListRepository.countSpeciesSightedThisYear()
         }
     }
+
+    private val _topThreeUsersByTripCount = MutableStateFlow<List<User>?>(null)
+    val topThreeUsersByTripCount: StateFlow<List<User>?> get() = _topThreeUsersByTripCount
+
+    fun fetchTopThreeUsersByTripCount() {
+        viewModelScope.launch {
+            val result = userRepository.getTopThreeUsersByTripCount()
+            if (result is OperationResult.Success) {
+                _topThreeUsersByTripCount.value = result.data
+            } else {
+                // Handle the error or set a default value
+                _topThreeUsersByTripCount.value = null
+            }
+        }
+    }
+
 
 
 
