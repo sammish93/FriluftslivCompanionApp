@@ -92,12 +92,15 @@ fun ProfileScreen(
     val totalDistance by userViewModel.totalKilometers.collectAsState()
     val totalSpeciesCount by userViewModel.speciesCount.collectAsState()
 
+    val topThreeTrips by userViewModel.topThreeUsersByTripCount.collectAsState()
+
 
 
     LaunchedEffect(true) {
         userViewModel.fetchTripCountForTheYear()
         userViewModel.fetchTotalKilometersForTheYear()
         userViewModel.fetchSpeciesCountForThisYear()
+        userViewModel.fetchTopThreeUsersByTripCount()
     }
 
 
@@ -181,20 +184,20 @@ fun ProfileScreen(
                         modifier = Modifier
                             .padding(12.dp)
                     ) {
+
                         //TODO Implement functionality to get top 3 people with most recentactivity.
                         Text(text = stringResource(R.string.profile_trips_taken))
 
-                        Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                        topThreeTrips?.forEachIndexed { index, user ->
+                            Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                            LeaderboardRow(
 
-                        LeaderboardRow(DisplayPicture.DP_DEFAULT, "Jim", 42, 1)
-
-                        Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-                        LeaderboardRow(DisplayPicture.DP_ONE, "Joris", 38, 2, 4, 0.9F)
-
-                        Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-                        LeaderboardRow(DisplayPicture.DP_TWO, "Jonas", 34, 3, 8, 0.8F)
+                                displayPicture = DisplayPicture.DP_DEFAULT,
+                                username = user.username,
+                                numberToDisplay = user.yearlyTripCount,
+                                placement = index + 1
+                            )
+                        }
 
                         HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
