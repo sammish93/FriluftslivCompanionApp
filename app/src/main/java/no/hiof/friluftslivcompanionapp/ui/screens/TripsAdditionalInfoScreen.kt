@@ -1,6 +1,5 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,11 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemColors
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,9 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,11 +35,11 @@ import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.domain.DateFormatter
 import no.hiof.friluftslivcompanionapp.domain.TripFactory
 import no.hiof.friluftslivcompanionapp.ui.components.TopBar
+import no.hiof.friluftslivcompanionapp.ui.components.items.Item
 import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapTripAdditionalInfo
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
-import java.time.LocalDate
 
 @Composable
 fun TripsAdditionalInfoScreen(
@@ -85,44 +78,41 @@ fun TripsAdditionalInfoScreen(
                             verticalArrangement = Arrangement.Top
                         ) {
                             // Inspired from: https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#ListItem(kotlin.Function0,androidx.compose.ui.Modifier,kotlin.Function0,kotlin.Function0,kotlin.Function0,kotlin.Function0,androidx.compose.material3.ListItemColors,androidx.compose.ui.unit.Dp,androidx.compose.ui.unit.Dp)
-                            //TODO Use DateFormatter and modify a function to include year.
-                            // also add if (tripsState.isSelectedTripRecentActivity) then show date.
-                            ListItem(
-                                headlineContent = { Text(stringResource(R.string.date)) },
-                                supportingContent = { Text(LocalDate.now().toString()) },
-                            )
-                            HorizontalDivider()
-
                             tripsState.selectedTrip?.duration?.let {
                                 DateFormatter.formatDurationToPrettyString(it, "Hour", "Minute")
                             }?.let { formattedDuration ->
-                                ListItem(
-                                    headlineContent = { Text(stringResource(R.string.duration)) },
-                                    supportingContent = { Text(formattedDuration) }
+                                Item(
+                                    headline = stringResource(R.string.duration),
+                                    support = formattedDuration,
+                                    icon = painterResource(id = R.drawable.timer),
+                                    iconDescription = "Duration"
                                 )
                             }
-                            HorizontalDivider()
-
-                            ListItem(
-                                headlineContent = { Text(stringResource(R.string.distance)) },
-                                supportingContent = { Text(tripsState.selectedTrip!!.distanceKm.toString()) }
+                            val roundedDistance = tripsState.selectedTrip!!.distanceKm?.let {
+                                kotlin.math.round(it * 10) / 10
+                            }
+                            Item(
+                                headline = stringResource(R.string.distance),
+                                support = "${roundedDistance.toString()} km",
+                                icon = painterResource(id = R.drawable.distance),
+                                iconDescription = "Distance"
                             )
-                            HorizontalDivider()
-
                             tripsState.selectedTrip?.difficulty?.let {
                                 TripFactory.convertTripDifficultyFromIntToString(it)
                             }?.let { formattedDifficulty ->
-                                ListItem(
-                                    headlineContent = { Text(stringResource(R.string.difficulty)) },
-                                    supportingContent = { Text(formattedDifficulty) }
+                                Item(
+                                    headline = stringResource(R.string.difficulty),
+                                    support = formattedDifficulty,
+                                    icon = painterResource(id = R.drawable.lock),
+                                    iconDescription = "Difficulty"
                                 )
                             }
-                            HorizontalDivider()
-
                             tripsState.selectedTrip!!.description?.let { description ->
-                                ListItem(
-                                    headlineContent = { Text(stringResource(R.string.trips_create_description)) },
-                                    supportingContent = { Text(description.replaceFirstChar { it.uppercase() }) }
+                                Item(
+                                    headline = stringResource(R.string.trips_create_description),
+                                    support = description.replaceFirstChar { it.uppercase() },
+                                    icon = painterResource(id = R.drawable.description),
+                                    iconDescription = "Description"
                                 )
                             }
                         }
