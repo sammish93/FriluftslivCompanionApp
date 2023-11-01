@@ -99,13 +99,9 @@ object LocationFormatter {
         return RectangularBounds.newInstance(southWest, northEast)
     }
 
-    //TODO Test this.
     fun getRegionCodeByLocation(location: String): Pair<String, String> {
         return try {
             val regionCode = when (location) {
-                //I need the previous region code and the current region name,
-                // as Ebird uses the previous region codes,
-                // and the geocode API uses the current region name.
 
                 "Østfold" -> "NO-01"
                 "Buskerud" -> "NO-06"
@@ -146,10 +142,10 @@ object LocationFormatter {
 
                 else -> "NO-03"
             }
-            regionCode to "Success" // Returner både regionkoden og en suksessmelding
+            regionCode to "Success"
         } catch (e: Exception) {
             println("Error: ${e.message}")
-            "NO-03" to "Error: ${e.message}" // Standardverdi og en feilmelding i tilfelle det oppstår feil
+            "NO-03" to "Error: ${e.message}"
         }
     }
 }

@@ -1,6 +1,7 @@
 package no.hiof.friluftslivcompanionapp.domain
 import kotlinx.coroutines.runBlocking
 import no.hiof.friluftslivcompanionapp.data.network.Result
+import no.hiof.friluftslivcompanionapp.models.api.SimpleWeatherResponse
 import org.junit.Before
 import org.junit.Test
 

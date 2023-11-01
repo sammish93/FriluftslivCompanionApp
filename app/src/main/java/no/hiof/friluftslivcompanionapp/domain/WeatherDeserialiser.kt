@@ -19,7 +19,6 @@ import no.hiof.friluftslivcompanionapp.models.enums.WeatherUnit
  */
 class WeatherDeserialiser private constructor() {
 
-    //TODO Test this class.
     private val weatherApi = WeatherApi()
 
     companion object {

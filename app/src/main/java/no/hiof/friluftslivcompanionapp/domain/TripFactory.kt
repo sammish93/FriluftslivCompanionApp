@@ -57,8 +57,18 @@ object TripFactory {
         return stringToReturn
     }
 
-    //TODO Add validation and test.
-    fun createTripActivity(trip: Trip, date: Date): TripActivity {
+    fun createTripActivity(trip: Trip, date: Date): TripActivity? {
+        if (trip == null || date == null) {
+            println("Error: Trip or date is null")
+            return null
+        }
+        if (trip.route.isEmpty() || trip.description.isNullOrEmpty() || trip.duration == null ||
+            trip.distanceKm == null || trip.difficulty == null
+        ) {
+            println("Error: Trip data is invalid")
+            return null
+        }
+
         val tripActivity = TripActivity(
             trip = trip,
             date = date
@@ -67,24 +77,23 @@ object TripFactory {
         return tripActivity
     }
 
-    //TODO Add validation and test.
+
     fun createTrip(
         tripType: TripType,
         tripRoute: List<LatLng>,
         tripDescription: String,
         tripDuration: Duration,
         tripDistance: Double,
-        tripDifficulty: Int
-    ): Trip? {
+        tripDifficulty: Int)
+    : Trip? {
         val startNode = tripRoute.firstOrNull()
-        val startGeoHash = startNode?.let {
-            GeoFireUtils.getGeoHashForLocation(
-                GeoLocation(
-                    it.latitude,
-                    it.longitude
-                )
-            )
+
+        if (tripRoute.isEmpty() || tripDescription.isEmpty() || tripDistance < 0
+            || tripDifficulty < 1 || tripDuration.toHours() <= 0) {
+            return null
         }
+
+        val startGeoHash = startNode?.let { GeoFireUtils.getGeoHashForLocation(GeoLocation(it.latitude, it.longitude)) }
         val startLat = startNode?.latitude
         val startLng = startNode?.longitude
 

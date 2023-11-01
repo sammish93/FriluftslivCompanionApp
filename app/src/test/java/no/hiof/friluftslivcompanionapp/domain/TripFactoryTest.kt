@@ -1,13 +1,18 @@
 package no.hiof.friluftslivcompanionapp.domain
 import com.google.android.gms.maps.model.LatLng
 import no.hiof.friluftslivcompanionapp.models.Hike
+import no.hiof.friluftslivcompanionapp.models.Trip
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
 import java.time.Duration
+import java.util.Date
 
 
 class TripFactoryTest {
@@ -61,6 +66,34 @@ class TripFactoryTest {
     }
 
     @Test
+    fun testCreateTrip_WithEmptyRoute_ReturnsNull() {
+        val tripRoute = emptyList<LatLng>()
+        val tripDescription = "Description"
+        val tripDuration = Duration.ofHours(2)
+        val tripDistance = 10.0
+        val tripDifficulty = 5
+        val tripType = TripType.HIKE
+
+        val result = TripFactory.createTrip(tripType, tripRoute, tripDescription, tripDuration, tripDistance, tripDifficulty)
+
+        assertNull(result)
+    }
+
+    @Test
+    fun testCreateTrip_WithNegativeDistance_ReturnsNull() {
+        val tripRoute = listOf(LatLng(40.0, 20.0))
+        val tripDescription = "Description"
+        val tripDuration = Duration.ofHours(2)
+        val tripDistance = -10.0
+        val tripDifficulty = 5
+        val tripType = TripType.HIKE
+
+        val result = TripFactory.createTrip(tripType, tripRoute, tripDescription, tripDuration, tripDistance, tripDifficulty)
+
+        assertNull(result)
+    }
+
+    @Test
     fun testCreateNonHikeTrip() {
         val route = listOf(LatLng(1.0, 2.0), LatLng(3.0, 4.0))
         val description = "A climbing adventure"
@@ -71,6 +104,29 @@ class TripFactoryTest {
         val result = TripFactory.createTrip(TripType.CLIMB, route, description, duration, distance, difficulty)
 
         assertNull(result)
+    }
+
+
+    @Test
+    fun testCreateTripActivity() {
+        val trip = mock(Trip::class.java)
+
+        `when`(trip.route).thenReturn(listOf(LatLng(0.0, 0.0), LatLng(1.0, 1.0)))
+        `when`(trip.description).thenReturn("Test trip")
+        `when`(trip.duration).thenReturn(Duration.ofHours(2))
+        `when`(trip.distanceKm).thenReturn(10.0)
+        `when`(trip.difficulty).thenReturn(5)
+        val date = Date()
+
+        val tripActivity = TripFactory.createTripActivity(trip, date)
+
+        assertNotNull(tripActivity)
+        if (tripActivity != null) {
+            assertEquals(trip, tripActivity.trip)
+        }
+        if (tripActivity != null) {
+            assertEquals(date, tripActivity.date)
+        }
     }
 
 }
