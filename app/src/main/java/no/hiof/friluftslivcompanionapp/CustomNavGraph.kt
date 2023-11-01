@@ -365,6 +365,7 @@ object CustomNavGraph {
                 FloraFaunaAdditionalInfo(
                     modifier,
                     floraFaunaViewModel,
+                    userViewModel,
                     navController
                 )
             }

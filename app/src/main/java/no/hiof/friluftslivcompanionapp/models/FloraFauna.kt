@@ -12,4 +12,5 @@ abstract class FloraFauna(
     abstract val photoUrl: String?
     abstract val speciesNameScientific: String
     abstract val speciesName: String?
+    abstract val description: String?
 }

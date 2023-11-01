@@ -6,7 +6,7 @@ data class Bird(
     override val speciesName: String? = null,
     override val speciesNameScientific: String,
     val number: Int,
-    var description: String? = null,
+    override var description: String? = null,
     override val photoUrl: String? = null,
     val observationDate: LocalDateTime,
     val coordinates: Location
@@ -20,6 +20,7 @@ data class Bird(
         return SpeciesInfo(
             imageUrl = this.photoUrl,
             speciesName = this.speciesName,
+            speciesNameScientific = this.speciesNameScientific,
             description = this.description
         )
     }

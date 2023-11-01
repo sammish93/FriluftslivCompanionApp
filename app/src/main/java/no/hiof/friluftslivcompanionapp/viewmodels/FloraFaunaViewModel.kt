@@ -15,6 +15,7 @@ import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
 import javax.inject.Inject
 import no.hiof.friluftslivcompanionapp.data.network.Result
 import no.hiof.friluftslivcompanionapp.data.states.FloraFaunaState
+import no.hiof.friluftslivcompanionapp.domain.FloraFaunaFactory
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.FloraFauna
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
@@ -148,11 +149,9 @@ class FloraFaunaViewModel @Inject constructor(
      */
     fun updateSelectedSpeciesInfo(species: FloraFauna) {
         if (species is Bird) {
-            val speciesInfo = species.getBirdInfo()
-
             _floraFaunaState.update { currentState ->
                 currentState.copy(
-                    selectedSpeciesInfo = speciesInfo
+                    selectedSpecies = species
                 )
             }
         }
@@ -165,5 +164,40 @@ class FloraFaunaViewModel @Inject constructor(
                 isLoading = isLoading
             )
         }
+    }
+
+    // Creates a sighting based on state values and then writes to the database.
+    fun createSighting() {
+        val floraFaunaState = _floraFaunaState.value
+
+        val sighting = floraFaunaState.selectedSpecies?.let {
+            FloraFaunaFactory.createSighting(
+                it,
+            floraFaunaState.sightingDate,
+            floraFaunaState.sightingLocation,
+            )
+        }
+
+        //TODO Integrate database writing and clear create sighting values on successful write.
+
+        /*
+        if (sighting != null) {
+            viewModelScope.launch {
+                when (val result = tripsRepository.createTrip(trip)) {
+                    is OperationResult.Success -> {
+
+                        clearTrip()
+                    }
+                    is OperationResult.Error -> {
+
+                        val exception = result.exception
+                        Log.e(TripsViewModel.TAG, "Error writing trip to Firestore: ${exception.message}")
+                    }
+                }
+            }
+        } else {
+
+        }
+         */
     }
 }

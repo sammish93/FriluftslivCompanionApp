@@ -155,7 +155,7 @@ class TripsViewModel @Inject constructor(
         removeNodes()
     }
 
-    // Function
+    // Creates a trip based on state values and then writes to the database.
     fun createTrip() {
         val route = _nodes.value
 

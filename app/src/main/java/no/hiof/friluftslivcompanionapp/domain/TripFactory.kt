@@ -52,6 +52,7 @@ object TripFactory {
         return stringToReturn
     }
 
+    //TODO Add validation and test.
     fun createTrip(tripType: TripType, tripRoute: List<LatLng>, tripDescription: String, tripDuration: Duration, tripDistance: Double, tripDifficulty: Int) : Trip? {
         if (tripType == TripType.HIKE) {
             return Hike(route = tripRoute, description = tripDescription, duration = tripDuration, distanceKm = tripDistance, difficulty = tripDifficulty)
