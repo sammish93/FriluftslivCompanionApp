@@ -1,6 +1,8 @@
 package no.hiof.friluftslivcompanionapp.models
 
+import android.util.Log
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 data class Bird(
     override val speciesName: String? = null,
@@ -8,7 +10,7 @@ data class Bird(
     val number: Int,
     override var description: String? = null,
     override val photoUrl: String? = null,
-    val observationDate: LocalDateTime,
+    //val observationDate: LocalDateTime,
     val coordinates: Location
 ) : Animal(
     speciesName,
@@ -84,7 +86,7 @@ data class Bird(
                 number = number,
                 description = description,
                 photoUrl = photoUrl,
-              //  observationDate = rawObservationDate,
+                //observationDate = rawObservationDate,
                 coordinates = coordinates
             )
         }
