@@ -14,12 +14,6 @@ class LifelistRepository @Inject constructor(
     private val auth: FirebaseAuth
 ){
     // Responsible for retrieving a single user's lifelist. Used by the UserRepository.
-
-
-
-
-
-
     suspend fun addSightingToLifeList(newSighting: FloraFaunaSighting) {
         val currentUser = auth.currentUser
             ?: throw IllegalStateException("No user currently signed in")
@@ -53,7 +47,7 @@ class LifelistRepository @Inject constructor(
         }
     }
 
-    suspend fun countUniqueSpeciesSightedThisYear(): Int {
+    suspend fun countSpeciesSightedThisYear(): Int {
         val allLifelists = getAllItemsInLifeList()
 
 
@@ -70,7 +64,7 @@ class LifelistRepository @Inject constructor(
 
         val filteredSightingsForThisYear = allSightings.filter { sighting -> sighting.date.after(startOfYear) }
 
-        return filteredSightingsForThisYear.map { it.species }.distinct().count()
+        return filteredSightingsForThisYear.map { it.species }.count()
     }
 
 
