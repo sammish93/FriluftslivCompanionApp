@@ -17,6 +17,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.data.api.PlacesApi
+import no.hiof.friluftslivcompanionapp.data.repositories.ActivityRepository
+import no.hiof.friluftslivcompanionapp.data.repositories.LifelistRepository
+import no.hiof.friluftslivcompanionapp.data.repositories.OperationResult
 import no.hiof.friluftslivcompanionapp.data.states.AutoCompleteState
 import no.hiof.friluftslivcompanionapp.data.states.PlaceInfoState
 import no.hiof.friluftslivcompanionapp.data.states.UserState
@@ -42,7 +45,9 @@ import kotlin.math.sqrt
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val placesApi: PlacesApi,
-    private val placesClient: PlacesClient
+    private val placesClient: PlacesClient,
+    private val activityRepository: ActivityRepository,
+    private val lifeListRepository: LifelistRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UserState(lastKnownLocation = null))
@@ -88,6 +93,47 @@ class UserViewModel @Inject constructor(
             updateIsLocationSearchUpdating(false)
         }
     }
+
+    private val _tripCountForTheYear = MutableStateFlow<Int?>(null)
+    val tripCountForTheYear: StateFlow<Int?> get() = _tripCountForTheYear
+
+    fun fetchTripCountForTheYear() {
+        viewModelScope.launch {
+            try {
+                val activitiesResult = activityRepository.getUserTripCountForTheYear()
+                if (activitiesResult is OperationResult.Success) {
+                    _tripCountForTheYear.value = activitiesResult.data
+                } else {
+                    _tripCountForTheYear.value = null
+                }
+            } catch (e: Exception) {
+                Log.e("TripCount", "Error fetching trip count: ${e.message}", e)
+            }
+        }
+    }
+
+    private val _totalKilometers = MutableStateFlow(0.0)
+    val totalKilometers: StateFlow<Double> = _totalKilometers.asStateFlow()
+
+    fun fetchTotalKilometersForTheYear() {
+        viewModelScope.launch {
+            val totalKm = activityRepository.getTotalKilometersForYear()
+            _totalKilometers.value = roundToOneDecimalPlace(totalKm)
+        }
+    }
+
+
+    private val _speciesCount = MutableStateFlow<Int?>(null)
+    val speciesCount: StateFlow<Int?> get() = _speciesCount
+
+    fun fetchSpeciesCountForThisYear() {
+        viewModelScope.launch {
+            _speciesCount.value = lifeListRepository.countUniqueSpeciesSightedThisYear()
+        }
+    }
+
+
+
 
     // Updates the last known location in the map's state.
     fun updateLocation(location: Location?) {
@@ -220,6 +266,11 @@ class UserViewModel @Inject constructor(
         Log.i("PlaceInfo", "Country: ${info.value?.country}")
         Log.i("PlaceInfo", "Coordinates: ${info.value?.coordinates}")
     }
+
+    fun roundToOneDecimalPlace(value: Double): Double {
+        return String.format("%.1f", value).toDouble()
+    }
+
 
     // Updates the last known location in the map's state.
     fun updateIsLocationSearchUpdating(isLocationSearchUpdating: Boolean) {

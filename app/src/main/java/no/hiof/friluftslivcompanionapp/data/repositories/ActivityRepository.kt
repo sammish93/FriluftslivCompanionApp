@@ -11,6 +11,7 @@ import no.hiof.friluftslivcompanionapp.models.Trip
 import no.hiof.friluftslivcompanionapp.models.TripActivity
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
@@ -113,54 +114,90 @@ class ActivityRepository @Inject constructor(
             }
         }
     }
+    suspend fun getUserTripCountForTheYear(): OperationResult<Int> {
+        val functionTag = "GetUserTripCountForTheYear"
+
+        return withContext(Dispatchers.IO) {
+            try {
+                Log.d(functionTag, "Initiating retrieval of user trip count for the year")
+
+                val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
+                Log.d(functionTag, "User is logged in with ID: $userId")
+
+                val startOfYear = getStartOfYear()
+
+                val activityCollectionRef = firestore.collection("users").document(userId).collection("tripActivity")
+                    .whereGreaterThanOrEqualTo("date", startOfYear)  // Filters to get activities from the start of the year
+
+                Log.d(functionTag, "Fetching trip count from Firestore")
+                val querySnapshot = activityCollectionRef.get().await()
+
+                val tripCount = querySnapshot.size()
+
+                Log.d(functionTag, "Successfully retrieved trip count for the year: $tripCount")
+                OperationResult.Success(tripCount)
+            } catch (e: Exception) {
+                Log.e(functionTag, "Exception occurred while retrieving trip count for the year: ${e.message}", e)
+                OperationResult.Error(e)
+            }
+        }
+    }
+
+    suspend fun getTotalKilometersForYear(): Double {
+        val allTrips = getUserTripActivities()
+        if (allTrips is OperationResult.Success) {
+
+            return allTrips.data
+                .filter { it.date.after(getStartOfYear()) }
+                .sumOf { it.trip.distanceKm?: 0.0 }
+        }
+        return 0.0
+    }
+
+    private fun getStartOfYear(): Date {
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.DAY_OF_YEAR, 1)
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        return calendar.time
+    }
+
+
 
 
     /*
 
     suspend fun getAllUserActivities(): OperationResult<List<TripActivity>> {
         return withContext(Dispatchers.IO) {
-            val logTag = "UserActivitiesLog" // Define a log tag
-
             try {
-                Log.d(logTag, "Starting retrieval of user activities")
 
                 val userId = auth.currentUser?.uid
-                if (userId == null) {
-                    Log.e(logTag, "No user logged in")
-                    return@withContext OperationResult.Error(Exception("No user logged in"))
-                }
+                    ?: return@withContext OperationResult.Error(Exception("No user logged in"))
 
-                Log.d(logTag, "Logged-in user ID: $userId")
+                val activitySubcollectionRef = firestore.collection("users").document(userId).collection("activity")
 
-                val activitySubcollectionRef = firestore.collection("users").document(userId).collection("tripActivity")
-                Log.d(logTag, "Retrieving activities from Firestore for user: $userId")
 
                 val querySnapshot = activitySubcollectionRef.get().await()
 
-                val tripActivities: MutableList<TripActivity> = mutableListOf()
 
+                val tripActivityMap: MutableMap<Date, Trip> = mutableMapOf()
                 for (document in querySnapshot.documents) {
-                    Log.d(logTag, "Processing document: ${document.id}")
-
                     val dateKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(document.id)
-                    val tripValue = document.toObject(Hike::class.java)
-
+                    val tripValue = document.toObject(Trip::class.java)
                     if (dateKey != null && tripValue != null) {
-                        Log.d(logTag, "Creating TripActivity for date: $dateKey")
                         val tripActivityMap: MutableMap<Date, Trip> = mutableMapOf()
                         tripActivityMap[dateKey] = tripValue
                         tripActivities.add(TripActivity(tripActivityMap))
-                    } else {
-                        Log.w(logTag, "Missing date or trip data in document: ${document.id}")
                     }
                 }
 
-                Log.d(logTag, "Successfully compiled list of TripActivities. Total count: ${tripActivities.size}")
+                Result.success(TripActivity(tripActivityMap))
 
                 OperationResult.Success(tripActivities)
 
             } catch (e: Exception) {
-                Log.e(logTag, "Error retrieving trip activities", e)
                 OperationResult.Error(e)
             }
         }
@@ -173,6 +210,8 @@ class ActivityRepository @Inject constructor(
         try {
             val userId = auth.currentUser?.uid
                 ?: return@withContext Result.failure(Exception("No user logged in"))
+
+
 
             val userDocumentRef = firestore.collection("users").document(userId)
             val userDocument = userDocumentRef.get().await()

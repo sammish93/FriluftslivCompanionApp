@@ -9,5 +9,13 @@ data class Location(var lat: Double, var lon: Double){
         )
     }
 
+    companion object {
+        fun fromMap(map: Map<String, Any?>): Location {
+            val lat = (map["lat"] as? Double) ?: 0.0
+            val lng = (map["lng"] as? Double) ?: 0.0
+            return Location(lat, lng)
+        }
+    }
+
 
 }
