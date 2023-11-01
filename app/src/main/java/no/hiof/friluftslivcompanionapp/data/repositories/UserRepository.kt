@@ -1,6 +1,7 @@
 package no.hiof.friluftslivcompanionapp.data.repositories
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
@@ -30,9 +31,10 @@ class UserRepository @Inject constructor(
                     "userId" to user.userId,
                     "username" to user.username,
                     "email" to user.email,
-                    "preferences" to user.preferences
+                    "preferences" to user.preferences,
+                    "yearlyTripCount" to user.yearlyTripCount,
+                    "yearlySpeciesCount" to user.yearlySpeciesCount
                 )
-
 
                 user.lifelist?.let {
                     userData["lifelist"] = it
@@ -41,17 +43,13 @@ class UserRepository @Inject constructor(
                     userData["tripActivity"] = it
                 }
 
-
                 userDocument.set(userData, SetOptions.merge()).await()
-
 
                 OperationResult.Success(Unit)
             } else {
-
                 OperationResult.Error(IllegalStateException("No authenticated user found."))
             }
         } catch (e: Exception) {
-
             e.printStackTrace()
             OperationResult.Error(e)
         }
@@ -109,6 +107,74 @@ class UserRepository @Inject constructor(
         }
     }
 
+    suspend fun incrementYearlyTripCount(uid: String): OperationResult<Unit> {
+        return try {
+            val userCollection = firestore.collection("users")
+            val userDocument = userCollection.document(uid)
+
+
+            userDocument.update("yearlyTripCount", FieldValue.increment(1)).await()
+
+            OperationResult.Success(Unit)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            OperationResult.Error(e)
+        }
+    }
+
+    suspend fun incrementYearlySpeciesCount(uid: String): OperationResult<Unit> {
+        return try {
+            val userCollection = firestore.collection("users")
+            val userDocument = userCollection.document(uid)
+
+
+            userDocument.update("yearlySpeciesCount", FieldValue.increment(1)).await()
+
+            OperationResult.Success(Unit)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            OperationResult.Error(e)
+        }
+    }
+
+
+    suspend fun addYearlyFieldsToAllUsers(): OperationResult<Unit> {
+        return try {
+            val userCollection = firestore.collection("users")
+
+
+            val querySnapshot = userCollection.get().await()
+
+            for (document in querySnapshot.documents) {
+                val userDocument = userCollection.document(document.id)
+
+
+                userDocument.update(
+                    "yearlyTripCount", 0,
+                    "yearlySpeciesCount", 0
+                ).await()
+            }
+
+            OperationResult.Success(Unit)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            OperationResult.Error(e)
+        }
+    }
+
+    suspend fun updateUserName(uid: String, newUsername: String): OperationResult<Unit> {
+        return try {
+            val userCollection = firestore.collection("users")
+            val userDocument = userCollection.document(uid)
+
+            userDocument.update("username", newUsername).await()
+
+            OperationResult.Success(Unit)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            OperationResult.Error(e)
+        }
+    }
 
 
 }
