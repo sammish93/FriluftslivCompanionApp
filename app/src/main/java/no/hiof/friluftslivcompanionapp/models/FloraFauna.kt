@@ -10,5 +10,8 @@ abstract class FloraFauna(
 ) {
     abstract fun toMap(): Map<String, Any?>
 
+    abstract val photoUrl: String?
+    abstract val speciesNameScientific: String
+    abstract val speciesName: String?
+    abstract val description: String?
 }
-

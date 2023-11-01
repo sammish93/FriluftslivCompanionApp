@@ -3,15 +3,14 @@ package no.hiof.friluftslivcompanionapp.models
 import android.util.Log
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.Date
 
 data class Bird(
-    val speciesName: String? = null,
-    val speciesNameScientific: String,
+    override val speciesName: String? = null,
+    override val speciesNameScientific: String,
     val number: Int,
-    var description: String? = null,
-    val photoUrl: String? = null,
-   // val observationDate: LocalDateTime,
+    override var description: String? = null,
+    override val photoUrl: String? = null,
+    //val observationDate: LocalDateTime,
     val coordinates: Location
 ) : Animal(
     speciesName,
@@ -19,10 +18,11 @@ data class Bird(
     description,
     photoUrl
 ) {
-    fun getBirdInfo(): BirdInfo {
-        return BirdInfo(
+    fun getBirdInfo(): SpeciesInfo {
+        return SpeciesInfo(
             imageUrl = this.photoUrl,
             speciesName = this.speciesName,
+            speciesNameScientific = this.speciesNameScientific,
             description = this.description
         )
     }
@@ -86,7 +86,7 @@ data class Bird(
                 number = number,
                 description = description,
                 photoUrl = photoUrl,
-              //  observationDate = rawObservationDate,
+                //observationDate = rawObservationDate,
                 coordinates = coordinates
             )
         }

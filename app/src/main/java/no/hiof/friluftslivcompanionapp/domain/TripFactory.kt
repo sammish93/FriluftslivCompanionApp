@@ -54,6 +54,7 @@ object TripFactory {
         return stringToReturn
     }
 
+    //TODO Add validation and test.
     fun createTrip(tripType: TripType, tripRoute: List<LatLng>, tripDescription: String, tripDuration: Duration, tripDistance: Double, tripDifficulty: Int) : Trip? {
         val startNode = tripRoute.firstOrNull()
         val startGeoHash = startNode?.let { GeoFireUtils.getGeoHashForLocation(GeoLocation(it.latitude, it.longitude)) }

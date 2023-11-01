@@ -113,4 +113,7 @@
     <string name="profile_trips_taken">Turer Vært På</string>
     <string name="profile_species_spotted">Arter Sett</string>
     <string name="log_out">Logg ut</string>
+    <string name="flora_fauna_unknown_common_name">Unknown Common Name</string>
+    <string name="flora_fauna_use_my_location">Use my location</string>
+    <string name="search">Search</string>
 </resources>
