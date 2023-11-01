@@ -61,4 +61,29 @@ class MapUtilsTest {
         Assert.assertTrue(result!!.latitude == simulatedLat)
         Assert.assertTrue(result.longitude == simulatedLng)
     }
+
+    @Test
+    fun getLastKnownLocation_returnsNullIFLastKnownIsNull() {
+        val result = getLastKnownLocation(null)
+        Assert.assertNull(result)
+    }
+
+    @Test
+    fun getCameraPosition_returnsUserLocationIfNotNull() {
+        val userLocation = LatLng(59.913868, 10.752245)
+        val cameraZoom = 15f
+
+        val cameraPosition = getCameraPosition(userLocation, cameraZoom)
+
+        Assert.assertEquals(userLocation, cameraPosition.target)
+        Assert.assertEquals(cameraZoom, cameraPosition.zoom)
+    }
+
+    @Test
+    fun getCameraPosition_returnsDefaultLocationIfUserLocationIsNull() {
+        val cameraPosition = getCameraPosition(null, 15f)
+
+        Assert.assertEquals(oslo, cameraPosition.target)
+        Assert.assertEquals(10f, cameraPosition.zoom)
+    }
 }
