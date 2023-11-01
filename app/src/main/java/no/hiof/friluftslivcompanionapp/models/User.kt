@@ -2,6 +2,7 @@ package no.hiof.friluftslivcompanionapp.models
 
 import com.google.firebase.firestore.DocumentId
 
+
 // Should strongly consider making this class a singleton.
 // A new user might not have a lifelist or trip activity, thus '?'.
 data class User(
@@ -12,5 +13,7 @@ data class User(
     var email: String?,
     var preferences: UserPreferences,
     var lifelist: Lifelist? = null,
-    var tripActivity: TripActivity? = null
+    var tripActivity: TripActivity? = null,
+    var yearlyTripCount: Int = 0,
+    var yearlySpeciesCount: Int = 0
 )
