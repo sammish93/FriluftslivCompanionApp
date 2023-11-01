@@ -323,8 +323,6 @@ private fun TripsCreateSheet(
 
             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
-
-
             Button(
                 onClick = {
                     showClearPopup = true

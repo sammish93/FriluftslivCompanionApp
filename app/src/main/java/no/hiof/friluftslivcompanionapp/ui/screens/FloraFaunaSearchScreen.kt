@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -29,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
+import no.hiof.friluftslivcompanionapp.domain.FloraFaunaMapper
 import no.hiof.friluftslivcompanionapp.domain.LocationFormatter
 import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
@@ -36,7 +36,7 @@ import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
 import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
 import no.hiof.friluftslivcompanionapp.ui.components.LocationAutoFillList
-import no.hiof.friluftslivcompanionapp.ui.components.items.CardList
+import no.hiof.friluftslivcompanionapp.ui.components.cards.FloraFaunaCard
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import java.util.Locale
 
@@ -61,7 +61,7 @@ fun FloraFaunaSearchScreen(
     )
 
     var text by remember { mutableStateOf("") }
-    var birdResultsShown by remember { mutableStateOf(false) }
+    var speciesResultsShown by remember { mutableStateOf(false) }
     var resultListShown by remember { mutableStateOf(false) }
     val focusedElement = LocalFocusManager.current
 
@@ -81,7 +81,7 @@ fun FloraFaunaSearchScreen(
                 onValueChange = {
                     text = it
                     userViewModel.searchPlaces(it, SupportedLanguage.NORWEGIAN.code)
-                    birdResultsShown = false
+                    speciesResultsShown = false
                     resultListShown = true
                 },
                 label = {
@@ -149,7 +149,7 @@ fun FloraFaunaSearchScreen(
                                     )
                                     println("Found your location: $regionCode")
                                     println(message)
-                                    viewModel.searchBirdsByLocation(
+                                    viewModel.searchSpeciesByLocation(
                                         regionCode,
                                         20,
                                         userState.language
@@ -162,7 +162,7 @@ fun FloraFaunaSearchScreen(
                                         "Oslo"
                                     )
                                     println(message)
-                                    viewModel.searchBirdsByLocation(
+                                    viewModel.searchSpeciesByLocation(
                                         regionCode,
                                         20,
                                         userState.language
@@ -178,7 +178,7 @@ fun FloraFaunaSearchScreen(
                             locations[0].countryCode == "NO"
                         } else false
                     ) {
-                        Text(text = "Use my location")
+                        Text(text = stringResource(R.string.flora_fauna_use_my_location))
                     }
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -193,7 +193,11 @@ fun FloraFaunaSearchScreen(
                                 )
                                 println("Found your location: $regionCode")
                                 println(message)
-                                viewModel.searchBirdsByLocation(regionCode, 20, userState.language)
+                                viewModel.searchSpeciesByLocation(
+                                    regionCode,
+                                    20,
+                                    userState.language
+                                )
                             }
                         },
                         modifier = Modifier
@@ -204,7 +208,9 @@ fun FloraFaunaSearchScreen(
 
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Search, contentDescription = "Search",
+                            imageVector = Icons.Default.Search, contentDescription = stringResource(
+                                R.string.search
+                            ),
                             modifier = Modifier
                                 .height(40.dp)
                                 .width(40.dp)
@@ -225,16 +231,28 @@ fun FloraFaunaSearchScreen(
                 true -> CustomLoadingScreen()
 
                 else -> {
-                    ListComponent(floraFaunaState.birdResults) { bird, textStyle ->
-                        CardList(
-                            bird,
+                    ListComponent(floraFaunaState.speciesResults) { species, textStyle ->
+
+                        val subclass = FloraFaunaMapper.mapClassToEnum(species)
+                        val subclassToString =
+                            subclass?.let { stringResource(it.label) } ?: stringResource(R.string.unknown)
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        FloraFaunaCard(
+                            species,
                             textStyle,
-                            displayText = { it.speciesName ?: "Unknown Bird" },
-                            fetchImage = { it.photoUrl ?: "Photo of ${it.speciesName}" }
-                        ) {
-                            viewModel.updateSelectedBirdInfo(bird)
-                            navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
-                        }
+                            title = subclassToString,
+                            header = species.speciesName ?: stringResource(R.string.flora_fauna_unknown_common_name),
+                            subHeader = species.speciesNameScientific,
+                            fetchImage = { it.photoUrl ?: "Photo of ${it.speciesName}" },
+                            onMoreInfoClick = {
+                                viewModel.updateSelectedSpeciesInfo(species)
+                                navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
+                            }
+                        )
+
+                        Spacer(modifier = Modifier.height(6.dp))
                     }
                 }
             }
