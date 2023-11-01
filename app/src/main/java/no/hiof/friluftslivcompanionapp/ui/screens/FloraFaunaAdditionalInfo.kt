@@ -16,17 +16,25 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -47,15 +55,23 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.data.states.FloraFaunaState
+import no.hiof.friluftslivcompanionapp.domain.DateFormatter
 import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.ui.components.TopBar
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
+
 
 @OptIn(ExperimentalCoilApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun FloraFaunaAdditionalInfo (
+fun FloraFaunaAdditionalInfo(
     modifier: Modifier = Modifier,
     viewModel: FloraFaunaViewModel = viewModel(),
     userViewModel: UserViewModel = viewModel(),
@@ -135,8 +151,8 @@ fun FloraFaunaAdditionalInfo (
                             modifier = Modifier
                                 .height(180.dp)
                                 .fillMaxWidth(),
-                                //.clip(RoundedCornerShape(12.dp))
-                                //.wrapContentHeight(),
+                            //.clip(RoundedCornerShape(12.dp))
+                            //.wrapContentHeight(),
                             contentScale = ContentScale.Crop
                         )
 
@@ -192,6 +208,8 @@ fun NoSpeciesFoundScreen() {
     }
 }
 
+//TODO Add functionality to select a location if we have enough time.
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SpeciesBottomSheet(
     floraFaunaState: FloraFaunaState,
@@ -200,6 +218,18 @@ fun SpeciesBottomSheet(
 ) {
     val userState by userViewModel.state.collectAsState()
     var showAddPopup by remember { mutableStateOf(false) }
+    var showDatePickerPopup by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = Instant.now().toEpochMilli(),
+        initialDisplayMode = DisplayMode.Picker,
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return utcTimeMillis <= System.currentTimeMillis()
+            }
+        }
+    )
+
+    val df = SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH)
 
     Column(
         modifier = Modifier
@@ -209,10 +239,32 @@ fun SpeciesBottomSheet(
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        TextField(
+            value = df.format(datePickerState.selectedDateMillis?.let { Date(it) }!!),
+            onValueChange = {
+            },
+            readOnly = true,
+            label = { Text(text = "Date of sighting") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
-        //TODO Add date picker.
+        Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
-        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+        Button(
+            onClick = { showDatePickerPopup = true },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(
+                imageVector = Icons.Default.DateRange,
+                contentDescription = "Date",
+            )
+            Text(
+                "Choose a date",
+                modifier = Modifier.padding(start = 4.dp)
+            )
+        }
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -229,10 +281,51 @@ fun SpeciesBottomSheet(
                     contentDescription = stringResource(R.string.add),
                 )
                 Text(
-                    "Add to lifelist",
-                    modifier = Modifier.padding(start = 4.dp)
+                    "Add to lifelist"
                 )
             }
+        }
+    }
+
+    if (showDatePickerPopup) {
+        DatePickerDialog(
+            modifier = Modifier.verticalScroll(rememberScrollState()),
+            onDismissRequest = { showDatePickerPopup = false },
+            confirmButton = {
+                Button(onClick = {
+                    datePickerState.selectedDateMillis?.let { Date(it) }?.let {
+                        floraFaunaViewModel.updateSightingDate(
+                            it
+                        )
+                    }
+
+                    showDatePickerPopup = false
+                }
+
+                ) {
+                    Text(text = stringResource(R.string.okay))
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        datePickerState.selectedDateMillis = Instant.now().toEpochMilli()
+                        showDatePickerPopup = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text(text = stringResource(R.string.dismiss))
+                }
+            }
+        ) {
+            DatePicker(
+                modifier = Modifier.padding(4.dp),
+                state = datePickerState,
+                title = {
+                    Text(text = "Choose a date", modifier = Modifier.padding(start = 8.dp))
+                },
+                showModeToggle = false
+            )
         }
     }
 
@@ -246,7 +339,12 @@ fun SpeciesBottomSheet(
             confirmButton = {
                 Button(onClick = {
                     showAddPopup = false
-                    floraFaunaViewModel.updateSightingLocation(Location(userState.lastKnownLocation!!.latitude, userState.lastKnownLocation!!.longitude))
+                    floraFaunaViewModel.updateSightingLocation(
+                        Location(
+                            userState.lastKnownLocation!!.latitude,
+                            userState.lastKnownLocation!!.longitude
+                        )
+                    )
                     floraFaunaViewModel.createSighting()
                 }) {
                     Text(stringResource(R.string.yes))

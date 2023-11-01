@@ -19,7 +19,10 @@ import no.hiof.friluftslivcompanionapp.domain.FloraFaunaFactory
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.FloraFauna
 import no.hiof.friluftslivcompanionapp.models.Location
+import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
+import no.hiof.friluftslivcompanionapp.models.enums.TripType
+import java.time.Duration
 import java.time.LocalDate
 import java.util.Date
 
@@ -219,5 +222,17 @@ class FloraFaunaViewModel @Inject constructor(
 
         }
          */
+
+        clearSighting()
+    }
+
+    // Function to clear all data relating to create sighting.
+    fun clearSighting() {
+        _floraFaunaState.update { currentState ->
+            currentState.copy(
+                sightingDate = Date(),
+                sightingLocation = Location(DefaultLocation.OSLO.lat, DefaultLocation.OSLO.lon)
+            )
+        }
     }
 }
