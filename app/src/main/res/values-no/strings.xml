@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Friluftsliv Companion App</string>
+    <string name="app_name">Friluftsliv Turkamerat</string>
     <string name="trips">Turer</string>
     <string name="weather">Vær</string>
     <string name="home">Hjem</string>
@@ -116,4 +116,17 @@
     <string name="flora_fauna_unknown_common_name">Unknown Common Name</string>
     <string name="flora_fauna_use_my_location">Use my location</string>
     <string name="search">Search</string>
+    <string name="trips_add_to_trip_log">Add to Trip Log</string>
+    <string name="trips_date_of_trip">Date of trip</string>
+    <string name="trips_choose_a_date">Choose a date</string>
+    <string name="trips_add_to_trip_log_question">Add to trip log?</string>
+    <string name="trips_do_you_wish_to_add">Do you wish to add this trip activity to your trip log?</string>
+    <string name="flora_fauna_info_error_retrieving_species_information">Error retrieving species information</string>
+    <string name="flora_fauna_info_date_of_sighting">Date of sighting</string>
+    <string name="flora_fauna_info_choose_a_date">Choose a date</string>
+    <string name="flora_fauna_info_add_to_lifelist">Add to lifelist</string>
+    <string name="flora_fauna_info_add_to_lifelist_question">Add to lifelist?</string>
+    <string name="flora_fauna_info_do_you_wish_to_add">Do you wish to add this sighting to your lifelist?</string>
+    <string name="flora_fauna_info_add_sighting">Add Sighting</string>
+    <string name="flora_fauna_info_back_to_results">Back to results</string>
 </resources>
