@@ -4,6 +4,7 @@ import no.hiof.friluftslivcompanionapp.models.Trip
 import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import java.time.Duration
 import java.time.LocalDate
+import java.util.Date
 
 /**
  * Represents the state of the Trips pages, primarily focusing on GoogleMaps functionality.
@@ -23,5 +24,6 @@ data class TripsState(
     val selectedTrip: Trip? = null,
     val selectedTripDate: LocalDate? = null,
     // If trip is from RecentActivity object then true, if trip is from map of all trips then false.
-    val isSelectedTripRecentActivity: Boolean = false
+    val isSelectedTripRecentActivity: Boolean = false,
+    val tripActivityDate: Date = Date(),
 )

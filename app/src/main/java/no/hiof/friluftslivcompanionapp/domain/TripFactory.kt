@@ -5,9 +5,11 @@ import com.firebase.geofire.GeoLocation
 import com.google.android.gms.maps.model.LatLng
 import no.hiof.friluftslivcompanionapp.models.Hike
 import no.hiof.friluftslivcompanionapp.models.Trip
+import no.hiof.friluftslivcompanionapp.models.TripActivity
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import java.time.Duration
+import java.util.Date
 
 object TripFactory {
 
@@ -54,6 +56,17 @@ object TripFactory {
         return stringToReturn
     }
 
+    //TODO Add validation and test.
+    fun createTripActivity(trip: Trip, date: Date): TripActivity {
+        val tripActivity = TripActivity(
+            trip = trip,
+            date = date
+        )
+
+        return tripActivity
+    }
+
+    //TODO Add validation and test.
     fun createTrip(
         tripType: TripType,
         tripRoute: List<LatLng>,
@@ -97,7 +110,7 @@ object TripFactory {
         startGeoHash: String?,
         startLat: Double?,
         startLng: Double?
-    ) : Hike {
+    ): Hike {
         return Hike(
             route = tripRoute,
             description = tripDescription,

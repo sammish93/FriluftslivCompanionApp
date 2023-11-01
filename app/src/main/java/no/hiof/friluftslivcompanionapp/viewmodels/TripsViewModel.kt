@@ -18,17 +18,21 @@ import no.hiof.friluftslivcompanionapp.data.repositories.OperationResult
 import no.hiof.friluftslivcompanionapp.data.repositories.TripsRepository
 import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
 import no.hiof.friluftslivcompanionapp.data.states.TripsState
+import no.hiof.friluftslivcompanionapp.domain.FloraFaunaFactory
 import no.hiof.friluftslivcompanionapp.domain.LocationFormatter
 import no.hiof.friluftslivcompanionapp.domain.TripFactory
 import no.hiof.friluftslivcompanionapp.models.DummyTrip
 import no.hiof.friluftslivcompanionapp.models.Hike
+import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.Trip
 import no.hiof.friluftslivcompanionapp.models.TripActivity
+import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
 import java.time.Duration
 import java.time.LocalDate
+import java.util.Date
 import javax.inject.Inject
 
 // NOTE: Composable Screens in app/ui/screens can communicate with this viewmodel (and thus the data
@@ -222,6 +226,60 @@ class TripsViewModel @Inject constructor(
             }
         } else {
 
+        }
+    }
+
+    // Updates a Date value to be used when adding a tripActivity.
+    fun updateTripActivityDate(date: Date) {
+        _tripsState.update { currentState ->
+            currentState.copy(
+                tripActivityDate = date
+            )
+        }
+    }
+
+    // Creates a TripActivity object based on state values and then writes to the database.
+    fun createTripActivity() {
+        val tripsState = _tripsState.value
+
+        val tripActivity = tripsState.selectedTrip?.let {
+            TripFactory.createTripActivity(
+                it,
+                tripsState.tripActivityDate
+            )
+        }
+
+        //TODO Integrate database writing and clear create tripActivity values on successful write.
+
+        /*
+        if (sighting != null) {
+            viewModelScope.launch {
+                when (val result = tripsRepository.createTrip(trip)) {
+                    is OperationResult.Success -> {
+
+                        clearTrip()
+                    }
+                    is OperationResult.Error -> {
+
+                        val exception = result.exception
+                        Log.e(TripsViewModel.TAG, "Error writing trip to Firestore: ${exception.message}")
+                    }
+                }
+            }
+        } else {
+
+        }
+         */
+
+        clearTripActivity()
+    }
+
+    // Function to clear all data relating to create tripActivity.
+    fun clearTripActivity() {
+        _tripsState.update { currentState ->
+            currentState.copy(
+                tripActivityDate = Date()
+            )
         }
     }
 
