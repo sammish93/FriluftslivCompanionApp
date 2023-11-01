@@ -61,6 +61,34 @@ class TripFactoryTest {
     }
 
     @Test
+    fun testCreateTrip_WithEmptyRoute_ReturnsNull() {
+        val tripRoute = emptyList<LatLng>()
+        val tripDescription = "Description"
+        val tripDuration = Duration.ofHours(2)
+        val tripDistance = 10.0
+        val tripDifficulty = 5
+        val tripType = TripType.HIKE
+
+        val result = TripFactory.createTrip(tripType, tripRoute, tripDescription, tripDuration, tripDistance, tripDifficulty)
+
+        assertNull(result)
+    }
+
+    @Test
+    fun testCreateTrip_WithNegativeDistance_ReturnsNull() {
+        val tripRoute = listOf(LatLng(40.0, 20.0))
+        val tripDescription = "Description"
+        val tripDuration = Duration.ofHours(2)
+        val tripDistance = -10.0
+        val tripDifficulty = 5
+        val tripType = TripType.HIKE
+
+        val result = TripFactory.createTrip(tripType, tripRoute, tripDescription, tripDuration, tripDistance, tripDifficulty)
+
+        assertNull(result)
+    }
+
+    @Test
     fun testCreateNonHikeTrip() {
         val route = listOf(LatLng(1.0, 2.0), LatLng(3.0, 4.0))
         val description = "A climbing adventure"
