@@ -171,21 +171,32 @@ class ActivityRepository @Inject constructor(
 
     suspend fun getAllUserActivities(): OperationResult<List<TripActivity>> {
         return withContext(Dispatchers.IO) {
+            val logTag = "UserActivitiesLog" // Define a log tag
+
             try {
+                Log.d(logTag, "Starting retrieval of user activities")
 
                 val userId = auth.currentUser?.uid
-                    ?: return@withContext OperationResult.Error(Exception("No user logged in"))
+                if (userId == null) {
+                    Log.e(logTag, "No user logged in")
+                    return@withContext OperationResult.Error(Exception("No user logged in"))
+                }
 
-                val activitySubcollectionRef = firestore.collection("users").document(userId).collection("activity")
+                Log.d(logTag, "Logged-in user ID: $userId")
 
+                val activitySubcollectionRef = firestore.collection("users").document(userId).collection("tripActivity")
+                Log.d(logTag, "Retrieving activities from Firestore for user: $userId")
 
                 val querySnapshot = activitySubcollectionRef.get().await()
 
+                val tripActivities: MutableList<TripActivity> = mutableListOf()
 
-                val tripActivityMap: MutableMap<Date, Trip> = mutableMapOf()
                 for (document in querySnapshot.documents) {
+                    Log.d(logTag, "Processing document: ${document.id}")
+
                     val dateKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(document.id)
-                    val tripValue = document.toObject(Trip::class.java)
+                    val tripValue = document.toObject(Hike::class.java)
+
                     if (dateKey != null && tripValue != null) {
                         val tripActivityMap: MutableMap<Date, Trip> = mutableMapOf()
                         tripActivityMap[dateKey] = tripValue
@@ -193,7 +204,7 @@ class ActivityRepository @Inject constructor(
                     }
                 }
 
-                Result.success(TripActivity(tripActivityMap))
+                Log.d(logTag, "Successfully compiled list of TripActivities. Total count: ${tripActivities.size}")
 
                 OperationResult.Success(tripActivities)
 
@@ -210,8 +221,6 @@ class ActivityRepository @Inject constructor(
         try {
             val userId = auth.currentUser?.uid
                 ?: return@withContext Result.failure(Exception("No user logged in"))
-
-
 
             val userDocumentRef = firestore.collection("users").document(userId)
             val userDocument = userDocumentRef.get().await()
