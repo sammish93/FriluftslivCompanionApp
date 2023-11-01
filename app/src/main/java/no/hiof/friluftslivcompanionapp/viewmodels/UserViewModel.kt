@@ -144,11 +144,27 @@ class UserViewModel @Inject constructor(
             if (result is OperationResult.Success) {
                 _topThreeUsersByTripCount.value = result.data
             } else {
-                // Handle the error or set a default value
+
                 _topThreeUsersByTripCount.value = null
             }
         }
     }
+
+    private val _topThreeUsersBySpeciesCount = MutableStateFlow<List<User>?>(null)
+    val topThreeUsersBySpeciesCount: StateFlow<List<User>?> get() = _topThreeUsersBySpeciesCount
+
+    fun fetchTopThreeUsersBySpeciesCount() {
+        viewModelScope.launch {
+            val result = userRepository.getTopThreeUsersBySpeciesCount()
+            if (result is OperationResult.Success) {
+                _topThreeUsersBySpeciesCount.value = result.data
+            } else {
+
+                _topThreeUsersBySpeciesCount.value = null
+            }
+        }
+    }
+
 
 
 

@@ -93,6 +93,8 @@ fun ProfileScreen(
     val totalSpeciesCount by userViewModel.speciesCount.collectAsState()
 
     val topThreeTrips by userViewModel.topThreeUsersByTripCount.collectAsState()
+    val topThreeSpecies by userViewModel.topThreeUsersBySpeciesCount.collectAsState()
+
 
 
 
@@ -101,6 +103,7 @@ fun ProfileScreen(
         userViewModel.fetchTotalKilometersForTheYear()
         userViewModel.fetchSpeciesCountForThisYear()
         userViewModel.fetchTopThreeUsersByTripCount()
+        userViewModel.fetchTopThreeUsersBySpeciesCount()
     }
 
 
@@ -203,21 +206,57 @@ fun ProfileScreen(
 
                         //TODO Implement functionality to get top 3 people with most sightings.
                         Text(text = stringResource(R.string.profile_species_spotted))
+                        topThreeSpecies?.forEachIndexed { index, user ->
+                            Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                            LeaderboardRow(
 
-                        Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                                displayPicture = DisplayPicture.DP_DEFAULT,
+                                username = user.username,
+                                numberToDisplay = user.yearlySpeciesCount,
+                                placement = index + 1
+                            )
+                        }
 
-                        LeaderboardRow(DisplayPicture.DP_THREE, "Paddy", 104, 1)
-
-                        Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-                        LeaderboardRow(DisplayPicture.DP_FOUR, "Feargal", 97, 2, 4, 0.9F)
-
-                        Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-                        LeaderboardRow(DisplayPicture.DP_FIVE, "Colm", 82, 3, 8, 0.8F)
                     }
                 }
+                /*
 
+                //TODO Implement functionality to get top 3 people with most recentactivity.
+                Text(text = stringResource(R.string.profile_trips_taken))
+
+                Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+                LeaderboardRow(DisplayPicture.DP_DEFAULT, "Jim", 42, 1)
+
+                Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+                LeaderboardRow(DisplayPicture.DP_ONE, "Joris", 38, 2, 4, 0.9F)
+
+                Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+                LeaderboardRow(DisplayPicture.DP_TWO, "Jonas", 34, 3, 8, 0.8F)
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
+
+                //TODO Implement functionality to get top 3 people with most sightings.
+                Text(text = stringResource(R.string.profile_species_spotted))
+
+                Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+                LeaderboardRow(DisplayPicture.DP_THREE, "Paddy", 104, 1)
+
+                Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+                LeaderboardRow(DisplayPicture.DP_FOUR, "Feargal", 97, 2, 4, 0.9F)
+
+                Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+                LeaderboardRow(DisplayPicture.DP_FIVE, "Colm", 82, 3, 8, 0.8F)
+            }
+        }
+
+
+                 */
                 HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
                 Button(modifier = Modifier.fillMaxWidth(),

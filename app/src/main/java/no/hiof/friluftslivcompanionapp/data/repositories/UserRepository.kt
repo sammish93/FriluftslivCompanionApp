@@ -1,8 +1,11 @@
 package no.hiof.friluftslivcompanionapp.data.repositories
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
 import no.hiof.friluftslivcompanionapp.models.User
@@ -28,7 +31,7 @@ class UserRepository @Inject constructor(
 
                 // Prepare the user data map
                 val userData = hashMapOf<String, Any?>(
-                    "userId" to user.userId,
+
                     "username" to user.username,
                     "email" to user.email,
                     "preferences" to user.preferences,
@@ -161,6 +164,49 @@ class UserRepository @Inject constructor(
             OperationResult.Error(e)
         }
     }
+
+    suspend fun getTopThreeUsersByTripCount(): OperationResult<List<User>> {
+        return try {
+            val userCollection = firestore.collection("users")
+
+            val querySnapshot = userCollection
+                .orderBy("yearlyTripCount", Query.Direction.DESCENDING)
+                .limit(3)
+                .get()
+                .await()
+
+            val users = querySnapshot.documents.mapNotNull { it.toObject(User::class.java) }
+
+            OperationResult.Success(users)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            OperationResult.Error(e)
+        }
+    }
+
+    suspend fun getTopThreeUsersBySpeciesCount(): OperationResult<List<User>> {
+        return try {
+            val userCollection = firestore.collection("users")
+
+
+            val querySnapshot = userCollection
+                .orderBy("yearlySpeciesCount", Query.Direction.DESCENDING)
+                .limit(3)
+                .get()
+                .await()
+
+            val users = querySnapshot.documents.mapNotNull { it.toObject(User::class.java) }
+
+            OperationResult.Success(users)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            OperationResult.Error(e)
+        }
+    }
+
+
+
+
 
     suspend fun updateUserName(uid: String, newUsername: String): OperationResult<Unit> {
         return try {
