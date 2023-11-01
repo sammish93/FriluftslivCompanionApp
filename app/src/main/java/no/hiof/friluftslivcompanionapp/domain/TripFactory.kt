@@ -5,9 +5,11 @@ import com.firebase.geofire.GeoLocation
 import com.google.android.gms.maps.model.LatLng
 import no.hiof.friluftslivcompanionapp.models.Hike
 import no.hiof.friluftslivcompanionapp.models.Trip
+import no.hiof.friluftslivcompanionapp.models.TripActivity
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import java.time.Duration
+import java.util.Date
 
 object TripFactory {
 
@@ -55,9 +57,33 @@ object TripFactory {
     }
 
     //TODO Add validation and test.
-    fun createTrip(tripType: TripType, tripRoute: List<LatLng>, tripDescription: String, tripDuration: Duration, tripDistance: Double, tripDifficulty: Int) : Trip? {
+    fun createTripActivity(trip: Trip, date: Date): TripActivity {
+        val tripActivity = TripActivity(
+            trip = trip,
+            date = date
+        )
+
+        return tripActivity
+    }
+
+    //TODO Add validation and test.
+    fun createTrip(
+        tripType: TripType,
+        tripRoute: List<LatLng>,
+        tripDescription: String,
+        tripDuration: Duration,
+        tripDistance: Double,
+        tripDifficulty: Int
+    ): Trip? {
         val startNode = tripRoute.firstOrNull()
-        val startGeoHash = startNode?.let { GeoFireUtils.getGeoHashForLocation(GeoLocation(it.latitude, it.longitude)) }
+        val startGeoHash = startNode?.let {
+            GeoFireUtils.getGeoHashForLocation(
+                GeoLocation(
+                    it.latitude,
+                    it.longitude
+                )
+            )
+        }
         val startLat = startNode?.latitude
         val startLng = startNode?.longitude
 
@@ -85,7 +111,7 @@ object TripFactory {
         startGeoHash: String?,
         startLat: Double?,
         startLng: Double?
-    ) : Hike {
+    ): Hike {
         return Hike(
             route = tripRoute,
             description = tripDescription,

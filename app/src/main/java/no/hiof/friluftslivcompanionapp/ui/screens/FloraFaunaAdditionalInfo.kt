@@ -88,24 +88,28 @@ fun FloraFaunaAdditionalInfo(
                 null -> {}
 
                 else -> {
-                    ExtendedFloatingActionButton(
-                        text = { Text("Add Sighting") },
-                        icon = {
-                            Icon(
-                                Icons.Filled.Add,
-                                contentDescription = "Add Sighting"
-                            )
-                        },
-                        onClick = {
-                            showBottomSheet = true
-                        }
-                    )
+                    if (floraFaunaState.selectedSpecies != null) {
+                        ExtendedFloatingActionButton(
+                            text = { Text(stringResource(R.string.flora_fauna_info_add_sighting)) },
+                            icon = {
+                                Icon(
+                                    Icons.Filled.Add,
+                                    contentDescription = stringResource(id = R.string.flora_fauna_info_add_sighting)
+                                )
+                            },
+                            onClick = {
+                                showBottomSheet = true
+                            }
+                        )
+                    }
                 }
             }
         },
         floatingActionButtonPosition = FabPosition.End,
         topBar = {
-            TopBar(title = "Back to results", onBackClick = { navController.popBackStack() })
+            TopBar(
+                title = stringResource(R.string.flora_fauna_info_back_to_results),
+                onBackClick = { navController.popBackStack() })
         },
     ) { innerPadding ->
 
@@ -147,7 +151,7 @@ fun FloraFaunaAdditionalInfo(
 
                         Image(
                             painter = rememberImagePainter(data = species?.photoUrl),
-                            contentDescription = "Photo of ${species?.speciesName}",
+                            contentDescription = "${species?.speciesName}",
                             modifier = Modifier
                                 .height(180.dp)
                                 .fillMaxWidth(),
@@ -184,7 +188,7 @@ fun FloraFaunaAdditionalInfo(
             },
             sheetState = sheetState
         ) {
-            SpeciesBottomSheet(floraFaunaState, viewModel, userViewModel)
+            SpeciesBottomSheet(viewModel, userViewModel)
         }
     }
 }
@@ -200,7 +204,7 @@ fun NoSpeciesFoundScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Error retrieving species information",
+            text = stringResource(R.string.flora_fauna_info_error_retrieving_species_information),
             style = CustomTypography.headlineMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier.wrapContentSize(Alignment.Center)
@@ -212,7 +216,6 @@ fun NoSpeciesFoundScreen() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SpeciesBottomSheet(
-    floraFaunaState: FloraFaunaState,
     floraFaunaViewModel: FloraFaunaViewModel,
     userViewModel: UserViewModel
 ) {
@@ -244,7 +247,7 @@ fun SpeciesBottomSheet(
             onValueChange = {
             },
             readOnly = true,
-            label = { Text(text = "Date of sighting") },
+            label = { Text(text = stringResource(R.string.flora_fauna_info_date_of_sighting)) },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -256,10 +259,10 @@ fun SpeciesBottomSheet(
         ) {
             Icon(
                 imageVector = Icons.Default.DateRange,
-                contentDescription = "Date",
+                contentDescription = stringResource(id = R.string.date),
             )
             Text(
-                "Choose a date",
+                stringResource(R.string.flora_fauna_info_choose_a_date),
                 modifier = Modifier.padding(start = 4.dp)
             )
         }
@@ -281,7 +284,7 @@ fun SpeciesBottomSheet(
                     contentDescription = stringResource(R.string.add),
                 )
                 Text(
-                    "Add to lifelist"
+                    stringResource(R.string.flora_fauna_info_add_to_lifelist)
                 )
             }
         }
@@ -322,7 +325,10 @@ fun SpeciesBottomSheet(
                 modifier = Modifier.padding(4.dp),
                 state = datePickerState,
                 title = {
-                    Text(text = "Choose a date", modifier = Modifier.padding(start = 8.dp))
+                    Text(
+                        text = stringResource(id = R.string.flora_fauna_info_choose_a_date),
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
                 },
                 showModeToggle = false
             )
@@ -334,8 +340,8 @@ fun SpeciesBottomSheet(
             onDismissRequest = {
                 showAddPopup = false
             },
-            title = { Text(text = "Add to lifelist?") },
-            text = { Text("Do you wish to add this sighting to your lifelist?") },
+            title = { Text(text = stringResource(R.string.flora_fauna_info_add_to_lifelist_question)) },
+            text = { Text(stringResource(R.string.flora_fauna_info_do_you_wish_to_add)) },
             confirmButton = {
                 Button(onClick = {
                     showAddPopup = false
