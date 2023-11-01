@@ -101,7 +101,6 @@ fun ProfileScreen(
     }
 
 
-
     Scaffold(
         topBar = {
             SettingsBar(
