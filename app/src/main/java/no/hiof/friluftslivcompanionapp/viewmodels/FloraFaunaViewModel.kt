@@ -18,8 +18,10 @@ import no.hiof.friluftslivcompanionapp.data.states.FloraFaunaState
 import no.hiof.friluftslivcompanionapp.domain.FloraFaunaFactory
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.FloraFauna
+import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import java.time.LocalDate
+import java.util.Date
 
 // NOTE: Composable Screens in app/ui/screens can communicate with this viewmodel (and thus the data
 // layer via 'import androidx.lifecycle.viewmodel.compose.viewModel' at the top of the file, and
@@ -162,6 +164,24 @@ class FloraFaunaViewModel @Inject constructor(
         _floraFaunaState.update { currentState ->
             currentState.copy(
                 isLoading = isLoading
+            )
+        }
+    }
+
+    // Updates a Date value to be used when adding a sighting.
+    fun updateSightingDate(date: Date) {
+        _floraFaunaState.update { currentState ->
+            currentState.copy(
+                sightingDate = date
+            )
+        }
+    }
+
+    // Updates a Location value to be used when adding a sighting.
+    fun updateSightingLocation(location: Location) {
+        _floraFaunaState.update { currentState ->
+            currentState.copy(
+                sightingLocation = location
             )
         }
     }
