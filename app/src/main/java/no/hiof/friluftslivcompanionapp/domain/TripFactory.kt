@@ -2,6 +2,7 @@ package no.hiof.friluftslivcompanionapp.domain
 
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import no.hiof.friluftslivcompanionapp.models.Hike
 import no.hiof.friluftslivcompanionapp.models.Trip
@@ -122,5 +123,27 @@ object TripFactory {
             startLat = startLat,
             startLng = startLng
         )
+    }
+
+    //TODO Test this.
+    /**
+     * A function designed to be used by the Google Maps Marker class to set custom marker colours.
+     * @param difficulty A difficulty level from 1 to 5.
+     * @return Returns a float value resembling hue colours to be used with Google Maps Markers.
+     * Any value that isn't between 1 and 5 will return HUE_GREEN by default.
+     */
+    fun returnColourFromDifficulty(difficulty: Int): Float {
+        var colourToReturn = BitmapDescriptorFactory.HUE_GREEN
+
+        when (difficulty) {
+            5 -> colourToReturn = BitmapDescriptorFactory.HUE_VIOLET
+            4 -> colourToReturn = BitmapDescriptorFactory.HUE_RED
+            3 -> colourToReturn = BitmapDescriptorFactory.HUE_ORANGE
+            2 -> colourToReturn = BitmapDescriptorFactory.HUE_YELLOW
+
+            else -> colourToReturn = BitmapDescriptorFactory.HUE_GREEN
+        }
+
+        return colourToReturn
     }
 }
