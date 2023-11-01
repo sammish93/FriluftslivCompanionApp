@@ -9,4 +9,7 @@ abstract class FloraFauna(
     photoUrl: String?
 ) {
 
+    abstract val photoUrl: String?
+    abstract val speciesNameScientific: String
+    abstract val speciesName: String?
 }

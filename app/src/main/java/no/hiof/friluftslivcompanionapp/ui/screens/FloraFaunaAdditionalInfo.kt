@@ -24,7 +24,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
-import no.hiof.friluftslivcompanionapp.models.BirdInfo
 import no.hiof.friluftslivcompanionapp.ui.components.TopBar
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
@@ -56,7 +55,7 @@ fun FloraFaunaAdditionalInfo (
         ) {
             item {
                 Text("Extra Information", style = CustomTypography.titleLarge)
-                floraFaunaState.selectedBirdInfo?.let {
+                floraFaunaState.selectedSpeciesInfo?.let {
                     Image(
                         painter = rememberImagePainter(data = it.imageUrl),
                         contentDescription = "Photo of ${it.speciesName}",

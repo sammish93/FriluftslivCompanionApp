@@ -3,11 +3,11 @@ package no.hiof.friluftslivcompanionapp.models
 import java.time.LocalDateTime
 
 data class Bird(
-    val speciesName: String? = null,
-    val speciesNameScientific: String,
+    override val speciesName: String? = null,
+    override val speciesNameScientific: String,
     val number: Int,
     var description: String? = null,
-    val photoUrl: String? = null,
+    override val photoUrl: String? = null,
     val observationDate: LocalDateTime,
     val coordinates: Location
 ) : Animal(
@@ -16,8 +16,8 @@ data class Bird(
     description,
     photoUrl
 ) {
-    fun getBirdInfo(): BirdInfo {
-        return BirdInfo(
+    fun getBirdInfo(): SpeciesInfo {
+        return SpeciesInfo(
             imageUrl = this.photoUrl,
             speciesName = this.speciesName,
             description = this.description

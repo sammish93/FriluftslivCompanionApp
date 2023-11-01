@@ -15,9 +15,8 @@ import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
 import javax.inject.Inject
 import no.hiof.friluftslivcompanionapp.data.network.Result
 import no.hiof.friluftslivcompanionapp.data.states.FloraFaunaState
-import no.hiof.friluftslivcompanionapp.data.states.WeatherState
 import no.hiof.friluftslivcompanionapp.models.Bird
-import no.hiof.friluftslivcompanionapp.models.BirdInfo
+import no.hiof.friluftslivcompanionapp.models.FloraFauna
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import java.time.LocalDate
 
@@ -65,39 +64,39 @@ class FloraFaunaViewModel @Inject constructor(
     }
 
     /**
-     * Updates the bird results with the provided list of bird observations.
+     * Updates the species results with the provided list of species observations.
      *
-     * This method sets the bird results to the provided list of bird observations,
-     * updating the state to reflect the latest bird data.
+     * This method sets the species results to the provided list of species observations,
+     * updating the state to reflect the latest species data.
      *
-     * @param results The list of bird observations to update the bird results with.
+     * @param results The list of species observations to update the species results with.
      */
-    private fun updateBirdResults(results: List<Bird>) {
+    private fun updateSpeciesResults(results: List<FloraFauna>) {
         _floraFaunaState.update { currentState ->
             currentState.copy(
-                birdResults = results
+                speciesResults = results
             )
         }
     }
 
     /**
-     * Searches for birds based on the specified location.
+     * Searches for species based on the specified location.
      *
-     * This method makes an asynchronous API call to retrieve recent bird observations
-     * for the given location, processes the results, and updates the bird results.
+     * This method makes an asynchronous API call to retrieve recent species observations
+     * for the given location, processes the results, and updates the species results.
      *
-     * @param location The location or region code to search for bird observations.
+     * @param location The location or region code to search for species observations.
      */
-    suspend fun searchBirdsByLocation(
+    suspend fun searchSpeciesByLocation(
         location: String,
         maxResults: Int = 20,
         language: SupportedLanguage
     ) {
         viewModelScope.launch {
-            updateBirdResults(emptyList())
+            updateSpeciesResults(emptyList())
 
             try {
-                updateLoadingBirdResponse(true)
+                updateLoadingSpeciesResponse(true)
 
                 val result = performSecondaryRequest(
                     language = language,
@@ -106,14 +105,14 @@ class FloraFaunaViewModel @Inject constructor(
                 )
 
                 if (result is Result.Success) {
-                    val birdList = result.value
-                    if (birdList.isNotEmpty()) {
-                        val processedList = api.processBirdList(birdList) { bird ->
-                            bird
+                    val speciesList = result.value
+                    if (speciesList.isNotEmpty()) {
+                        val processedList = api.processBirdList(speciesList) { species ->
+                            species
                         }
-                        updateBirdResults(processedList)
+                        updateSpeciesResults(processedList)
                     } else {
-                        println("No bird observations found in the past week in the specified location.")
+                        println("No species observations found in the past week in the specified location.")
                     }
                 } else if (result is Result.Failure) {
                     println("API call failed: ${result.message}")
@@ -121,7 +120,7 @@ class FloraFaunaViewModel @Inject constructor(
             } catch (e: Exception) {
                 println("Error: ${e.message}")
             } finally {
-                updateLoadingBirdResponse(false)
+                updateLoadingSpeciesResponse(false)
             }
         }
     }
@@ -131,7 +130,7 @@ class FloraFaunaViewModel @Inject constructor(
         language: SupportedLanguage,
         maxResults: Int = 20
     ): Result<List<Bird>> {
-        println("No enough bird observations found for the specified location. Making a secondary request...")
+        println("No enough species observations found for the specified location. Making a secondary request...")
 
         return api.getObservationsBetweenDates(
             languageCode = language,
@@ -143,22 +142,24 @@ class FloraFaunaViewModel @Inject constructor(
     }
 
     /**
-     * Method to update the information about the selected bird.
+     * Method to update the information about the selected species.
      *
-     * @param bird The bird to update with new information.
+     * @param species The species to update with new information.
      */
-    fun updateSelectedBirdInfo(bird: Bird) {
-        val birdInfo = bird.getBirdInfo()
+    fun updateSelectedSpeciesInfo(species: FloraFauna) {
+        if (species is Bird) {
+            val speciesInfo = species.getBirdInfo()
 
-        _floraFaunaState.update { currentState ->
-            currentState.copy(
-                selectedBirdInfo = birdInfo
-            )
+            _floraFaunaState.update { currentState ->
+                currentState.copy(
+                    selectedSpeciesInfo = speciesInfo
+                )
+            }
         }
     }
 
     // Changes a Boolean value used to show/hide a progress bar.
-    fun updateLoadingBirdResponse(isLoading: Boolean) {
+    fun updateLoadingSpeciesResponse(isLoading: Boolean) {
         _floraFaunaState.update { currentState ->
             currentState.copy(
                 isLoading = isLoading
