@@ -1,5 +1,14 @@
 package no.hiof.friluftslivcompanionapp.domain
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -135,24 +144,40 @@ object TripFactory {
     }
 
     //TODO Test this.
-    /**
-     * A function designed to be used by the Google Maps Marker class to set custom marker colours.
-     * @param difficulty A difficulty level from 1 to 5.
-     * @return Returns a float value resembling hue colours to be used with Google Maps Markers.
-     * Any value that isn't between 1 and 5 will return HUE_GREEN by default.
-     */
-    fun returnColourFromDifficulty(difficulty: Int): Float {
-        var colourToReturn = BitmapDescriptorFactory.HUE_GREEN
+    fun changeIconColor(context: Context, iconResId: Int, difficulty: Int): Bitmap {
+        val originalIcon = BitmapFactory.decodeResource(context.resources, iconResId)
+        val coloredIcon = Bitmap.createBitmap(originalIcon.width, originalIcon.height, originalIcon.config)
 
-        when (difficulty) {
-            5 -> colourToReturn = BitmapDescriptorFactory.HUE_VIOLET
-            4 -> colourToReturn = BitmapDescriptorFactory.HUE_RED
-            3 -> colourToReturn = BitmapDescriptorFactory.HUE_ORANGE
-            2 -> colourToReturn = BitmapDescriptorFactory.HUE_YELLOW
-
-            else -> colourToReturn = BitmapDescriptorFactory.HUE_GREEN
+        val canvas = Canvas(coloredIcon)
+        val color = Paint().apply {
+            colorFilter = pickColorFilter(difficulty)
         }
+        canvas.drawBitmap(originalIcon, 0f, 0f, color)
+        return coloredIcon
+    }
 
-        return colourToReturn
+    private fun getColor(color: String): Int {
+        val hvs = floatArrayOf(0f, 1f, 1f)
+        hvs[0] = when (color) {
+            "yellow" -> BitmapDescriptorFactory.HUE_YELLOW
+            "red" -> BitmapDescriptorFactory.HUE_RED
+            "violet" -> BitmapDescriptorFactory.HUE_VIOLET
+            "orange" -> BitmapDescriptorFactory.HUE_ORANGE
+
+            else -> {BitmapDescriptorFactory.HUE_GREEN}
+        }
+        return Color.HSVToColor(hvs)
+    }
+
+    private fun pickColorFilter(difficulty: Int): PorterDuffColorFilter {
+        val mode = PorterDuff.Mode.SRC_IN
+        return when (difficulty) {
+            5 -> PorterDuffColorFilter(getColor("yellow"), mode)
+            4 -> PorterDuffColorFilter(getColor("violet"), mode)
+            3 -> PorterDuffColorFilter(getColor("red"), mode)
+            2 -> PorterDuffColorFilter(getColor("orange"), mode)
+
+            else -> PorterDuffColorFilter(getColor("green"), mode)
+        }
     }
 }
