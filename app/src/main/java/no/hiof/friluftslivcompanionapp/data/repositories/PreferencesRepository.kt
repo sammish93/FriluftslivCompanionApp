@@ -3,16 +3,9 @@ package no.hiof.friluftslivcompanionapp.data.repositories
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
-import no.hiof.friluftslivcompanionapp.models.UserPreferences
 import no.hiof.friluftslivcompanionapp.models.enums.DisplayPicture
+import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import javax.inject.Inject
 
 class PreferencesRepository @Inject constructor(
@@ -94,6 +87,27 @@ class PreferencesRepository @Inject constructor(
         val userPreferences = document["preferences"] as? Map<String, Any>
         val displayPictureString = userPreferences?.get("displayPicture") as? String ?: DisplayPicture.DP_DEFAULT.name
         return DisplayPicture.valueOf(displayPictureString)
+    }
+
+    suspend fun updateUserLanguage(language: SupportedLanguage): OperationResult<Unit> {
+        return try {
+            val userDocument = firestore.collection("users").document(userId)
+
+            userDocument.update("preferences.language", language).await()
+
+            OperationResult.Success(Unit)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            OperationResult.Error(e)
+        }
+    }
+
+    suspend fun fetchUserSupportedLanguage(): SupportedLanguage {
+        val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
+        val document = firestore.collection("users").document(userId).get().await()
+        val userPreferences = document["preferences"] as? Map<String, Any>
+        val displaySupportedLanguageString = userPreferences?.get("language") as? String ?: SupportedLanguage.ENGLISH.name
+        return SupportedLanguage.valueOf(displaySupportedLanguageString)
     }
 
 

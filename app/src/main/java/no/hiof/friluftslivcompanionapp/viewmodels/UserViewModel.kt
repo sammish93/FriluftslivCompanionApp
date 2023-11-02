@@ -5,8 +5,6 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.libraries.places.api.model.RectangularBounds
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.auth.FirebaseUser
@@ -33,9 +31,7 @@ import no.hiof.friluftslivcompanionapp.models.User
 import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.DisplayPicture
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
-import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import javax.inject.Inject
-import kotlin.math.sqrt
 
 /**
  * A ViewModel responsible for managing and updating the state of the Google Map.
@@ -307,6 +303,26 @@ class UserViewModel @Inject constructor(
             currentState.copy(
                 language = language
             )
+        }
+
+        viewModelScope.launch {
+            try {
+                preferencesRepository.updateUserLanguage(language)
+            }catch (e:Exception){
+
+            }
+        }
+    }
+
+    fun fetchUserLanguagePreference(userId: String){
+        viewModelScope.launch {
+            try {
+                val supportedLanguageFromDb = preferencesRepository.fetchUserSupportedLanguage()
+                updateLanguage(supportedLanguageFromDb)
+
+            }catch (e: Exception){
+
+            }
         }
     }
 

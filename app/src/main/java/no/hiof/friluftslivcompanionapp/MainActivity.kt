@@ -112,6 +112,8 @@ class MainActivity : AppCompatActivity() {
             //TODO: Update values for isDarkMode, language, etc.
             userViewModel.updateCurrentUser(currentUser)
             userViewModel.fetchDarkModePreference(currentUser.uid)
+            userViewModel.fetchDisplayPicture(currentUser.uid)
+            userViewModel.fetchUserLanguagePreference(currentUser.uid)
 
 
 
