@@ -93,8 +93,7 @@ fun GoogleMapTripStartNodes(
             onClick = {
                 searchInCurrentMapArea()
                 /* TODO: Need to have a state in the viewModel that checks if the search is over
-                         or not. That is because 'searchInCurrentMapArea' is an asynchronous operation.
-                 */
+                         or not. That is because 'searchInCurrentMapArea' is an asynchronous operation. */
                 if (trips.isEmpty()) {
                     Toast.makeText(context,"There are no trips in this radius", Toast.LENGTH_LONG).show()
                 }
