@@ -21,75 +21,19 @@ class PreferencesRepository @Inject constructor(
         private const val TAG = "Preference Repository"
     }
 
-    suspend fun updateUserDarkModePreference(isDarkMode: Boolean) {
-        try {
-            val userPreferencesMap = mapOf("isDarkMode" to isDarkMode)
-            firestore.collection("users").document(userId)
-                .collection("userPreferences").document("preferences")
-                .set(userPreferencesMap, SetOptions.merge())
-            Log.d(TAG, "Dark mode preference updated successfully: $isDarkMode")
+    suspend fun updateUserDarkModePreference(isDarkMode: Boolean): OperationResult<Unit> {
+        return try {
+            val userDocument = firestore.collection("users").document(userId)
+
+            userDocument.update("preferences.darkModeEnabled", isDarkMode).await()
+
+            OperationResult.Success(Unit)
         } catch (e: Exception) {
-            Log.e(TAG, "Error updating dark mode preference", e)
+            e.printStackTrace()
+            OperationResult.Error(e)
         }
     }
 
-    suspend fun updateUserPreferences(userid: String, updatedPreferences: UserPreferences) {
-        val currentUser = auth.currentUser ?: return // If there's no user logged in, just return.
-
-        val userPreferencesDocument = firestore
-            .collection("users")
-            .document(currentUser.uid)
-            .collection("preferences")
-            .document("userPreferences")
-
-        firestore.runTransaction { transaction ->
-            val snapshot = transaction.get(userPreferencesDocument)
-
-            // If the document already exists, we update it. Otherwise, we create a new one.
-            if (snapshot.exists()) {
-                transaction.update(userPreferencesDocument, updatedPreferences.toMap())
-            } else {
-                transaction.set(userPreferencesDocument, updatedPreferences.toMap())
-            }
-        }.await()
-    }
-
-    // Function to get the user preferences from Firestore with real-time updates
-    fun getUserPreferencesFlow(): Flow<UserPreferences?> {
-        val currentUser = auth.currentUser ?: return flowOf(null) // If no user, return a flow of null.
-
-        val userPreferencesDocument = firestore
-            .collection("users")
-            .document(currentUser.uid)
-            .collection("preferences")
-            .document("userPreferences")
-
-        return callbackFlow {
-            val listener = userPreferencesDocument.addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    // Handle any errors appropriately in your app
-                    close(error)
-                    return@addSnapshotListener
-                }
-
-                if (snapshot != null && snapshot.exists()) {
-                    try {
-                        val userPreferences = UserPreferences.fromMap(snapshot.data ?: emptyMap())
-                        trySend(userPreferences).isSuccess
-                    } catch (e: Exception) {
-                        // Handle the error if the conversion fails
-                        close(e)
-                    }
-                } else {
-                    trySend(null).isSuccess
-                }
-            }
-
-            // This will be invoked when the flow collector is cancelled
-            // which we interpret as when it's no longer needed.
-            awaitClose { listener.remove() }
-        }
-    }
 }
 
 
