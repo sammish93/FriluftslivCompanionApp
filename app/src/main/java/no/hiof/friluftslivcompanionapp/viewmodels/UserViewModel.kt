@@ -254,8 +254,28 @@ class UserViewModel @Inject constructor(
                 displayPicture = displayPicture
             )
         }
+
+        viewModelScope.launch {
+            try {
+                preferencesRepository.updateUserDisplayPicture(displayPicture)
+
+            } catch (e: Exception) {
+                // Handle exception
+
+            }
+        }
     }
 
+    fun fetchDisplayPicture(userId: String) {
+        viewModelScope.launch {
+            try {
+                val displayPictureFromDb = preferencesRepository.fetchUserDisplayPicture()
+                updateDisplayPicture(displayPictureFromDb)
+            } catch (e: Exception) {
+                // Handle exception
+            }
+        }
+    }
 
 
     // Retrieves the logged in user's current display picture.
