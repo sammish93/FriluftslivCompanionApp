@@ -99,6 +99,8 @@ fun SettingsScreen(
     val openLocDialogue = remember { mutableStateOf(false) }
     val openProfileDialogue = remember { mutableStateOf(false) }
 
+    val isDarkMode by userViewModel.isDarkMode.collectAsState()
+
     Scaffold(
         topBar = {
             TopBar(title = stringResource(R.string.navigation_back_to_profile), onBackClick = { navController.popBackStack() })
@@ -251,9 +253,9 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.weight(1f))
 
                     Switch(
-                        checked = userState.isDarkMode,
-                        onCheckedChange = {
-                            userViewModel.updateDarkMode(!userState.isDarkMode)
+                        checked = isDarkMode,
+                        onCheckedChange = {isChecked ->
+                            userViewModel.updateDarkMode(isChecked)
                         }
                     )
                 }

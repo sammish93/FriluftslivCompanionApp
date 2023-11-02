@@ -12,14 +12,18 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.data.api.PlacesApi
 import no.hiof.friluftslivcompanionapp.data.repositories.ActivityRepository
 import no.hiof.friluftslivcompanionapp.data.repositories.LifelistRepository
 import no.hiof.friluftslivcompanionapp.data.repositories.OperationResult
+import no.hiof.friluftslivcompanionapp.data.repositories.PreferencesRepository
 import no.hiof.friluftslivcompanionapp.data.repositories.UserRepository
 import no.hiof.friluftslivcompanionapp.data.states.AutoCompleteState
 import no.hiof.friluftslivcompanionapp.data.states.PlaceInfoState
@@ -50,7 +54,8 @@ class UserViewModel @Inject constructor(
     private val placesClient: PlacesClient,
     private val activityRepository: ActivityRepository,
     private val lifeListRepository: LifelistRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val preferencesRepository: PreferencesRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UserState(lastKnownLocation = null))
@@ -202,12 +207,31 @@ class UserViewModel @Inject constructor(
                 isDarkMode = isDarkMode
             )
         }
+
+        viewModelScope.launch {
+            try {
+                preferencesRepository.updateUserDarkModePreference(isDarkMode)
+                // You could update some state here to show a success message
+            } catch (e: Exception) {
+                // Handle error, show a message to the user, or retry
+                _state.update { currentState ->
+                    currentState.copy(
+                        // You could have an error field in your state to show an error message
+                    )
+                }
+            }
+        }
     }
 
     // Updates whether dark mode is enabled.
     fun getIsDarkMode() : Boolean {
         return _state.value.isDarkMode
     }
+    val isDarkMode: StateFlow<Boolean> = _state.map { it.isDarkMode }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        _state.value.isDarkMode
+    )
 
     // Updates the user's chosen display picture.
     //TODO Write this value to a firebase user.
