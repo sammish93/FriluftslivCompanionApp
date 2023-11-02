@@ -24,8 +24,6 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -52,20 +50,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import no.hiof.friluftslivcompanionapp.R
-import no.hiof.friluftslivcompanionapp.data.states.FloraFaunaState
 import no.hiof.friluftslivcompanionapp.domain.DateFormatter
 import no.hiof.friluftslivcompanionapp.domain.TripFactory
-import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.ui.components.TopBar
 import no.hiof.friluftslivcompanionapp.ui.components.items.Item
 import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapTripAdditionalInfo
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
-import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import java.text.SimpleDateFormat
 import java.time.Instant
-import java.time.LocalDate
 import java.util.Date
 import java.util.Locale
 
