@@ -3,11 +3,9 @@ package no.hiof.friluftslivcompanionapp.domain
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.FloraFauna
 import no.hiof.friluftslivcompanionapp.models.enums.FloraFaunaSubclass
-import no.hiof.friluftslivcompanionapp.models.enums.WeatherType
 
 object FloraFaunaMapper {
 
-    //TODO Test this.
     /**
      * @param species An object of type FloraFauna. Should be a subclass to FloraFauna.
      *

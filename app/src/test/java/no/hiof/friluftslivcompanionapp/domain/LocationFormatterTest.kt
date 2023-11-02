@@ -5,6 +5,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
+import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
+import org.junit.Assert
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
@@ -97,6 +99,36 @@ class LocationFormatterTest {
         assertEquals(expectedSouthWest.longitude, result.southwest.longitude, 1.0e-10)
         assertEquals(expectedNorthEast.latitude, result.northeast.latitude, 1.0e-10)
         assertEquals(expectedNorthEast.longitude, result.northeast.longitude, 1.0e-10)
+    }
+
+    @Test
+    fun testGetRegionCodeByLocation() {
+        val testLocations = listOf("Oslo", "Viken", "Innlandet", "Trøndelag")
+        for (location in testLocations) {
+            val result = LocationFormatter.getRegionCodeByLocation(location)
+            val regionCode = result.first
+            val message = result.second
+
+            when (location) {
+                "Oslo" -> {
+                    Assert.assertEquals("NO-03", regionCode)
+                    Assert.assertEquals("Success", message)
+                }
+                "Viken" -> {
+                    Assert.assertEquals("NO-01,NO-02,NO-06", regionCode)
+                    Assert.assertEquals("Success", message)
+                }
+                "Innlandet" -> {
+                    Assert.assertEquals("NO-04,NO-05", regionCode)
+                    Assert.assertEquals("Success", message)
+                }
+                "Trøndelag" -> {
+                    Assert.assertEquals("NO-16,NO-17", regionCode)
+                    Assert.assertEquals("Success", message)
+                }
+
+            }
+        }
     }
 
 }

@@ -2,6 +2,7 @@ package no.hiof.friluftslivcompanionapp.domain
 
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import no.hiof.friluftslivcompanionapp.models.Hike
 import no.hiof.friluftslivcompanionapp.models.Trip
@@ -56,8 +57,18 @@ object TripFactory {
         return stringToReturn
     }
 
-    //TODO Add validation and test.
-    fun createTripActivity(trip: Trip, date: Date): TripActivity {
+    fun createTripActivity(trip: Trip, date: Date): TripActivity? {
+        if (trip == null || date == null) {
+            println("Error: Trip or date is null")
+            return null
+        }
+        if (trip.route.isEmpty() || trip.description.isNullOrEmpty() || trip.duration == null ||
+            trip.distanceKm == null || trip.difficulty == null
+        ) {
+            println("Error: Trip data is invalid")
+            return null
+        }
+
         val tripActivity = TripActivity(
             trip = trip,
             date = date
@@ -66,24 +77,23 @@ object TripFactory {
         return tripActivity
     }
 
-    //TODO Add validation and test.
+
     fun createTrip(
         tripType: TripType,
         tripRoute: List<LatLng>,
         tripDescription: String,
         tripDuration: Duration,
         tripDistance: Double,
-        tripDifficulty: Int
-    ): Trip? {
+        tripDifficulty: Int)
+    : Trip? {
         val startNode = tripRoute.firstOrNull()
-        val startGeoHash = startNode?.let {
-            GeoFireUtils.getGeoHashForLocation(
-                GeoLocation(
-                    it.latitude,
-                    it.longitude
-                )
-            )
+
+        if (tripRoute.isEmpty() || tripDescription.isEmpty() || tripDistance < 0
+            || tripDifficulty < 1 || tripDuration.toHours() <= 0) {
+            return null
         }
+
+        val startGeoHash = startNode?.let { GeoFireUtils.getGeoHashForLocation(GeoLocation(it.latitude, it.longitude)) }
         val startLat = startNode?.latitude
         val startLng = startNode?.longitude
 
@@ -122,5 +132,27 @@ object TripFactory {
             startLat = startLat,
             startLng = startLng
         )
+    }
+
+    //TODO Test this.
+    /**
+     * A function designed to be used by the Google Maps Marker class to set custom marker colours.
+     * @param difficulty A difficulty level from 1 to 5.
+     * @return Returns a float value resembling hue colours to be used with Google Maps Markers.
+     * Any value that isn't between 1 and 5 will return HUE_GREEN by default.
+     */
+    fun returnColourFromDifficulty(difficulty: Int): Float {
+        var colourToReturn = BitmapDescriptorFactory.HUE_GREEN
+
+        when (difficulty) {
+            5 -> colourToReturn = BitmapDescriptorFactory.HUE_VIOLET
+            4 -> colourToReturn = BitmapDescriptorFactory.HUE_RED
+            3 -> colourToReturn = BitmapDescriptorFactory.HUE_ORANGE
+            2 -> colourToReturn = BitmapDescriptorFactory.HUE_YELLOW
+
+            else -> colourToReturn = BitmapDescriptorFactory.HUE_GREEN
+        }
+
+        return colourToReturn
     }
 }
