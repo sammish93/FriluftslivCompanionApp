@@ -1,5 +1,9 @@
 package no.hiof.friluftslivcompanionapp.ui.components
 
+import android.text.Layout
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.DateRange
@@ -12,6 +16,13 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -25,16 +36,16 @@ import no.hiof.friluftslivcompanionapp.models.enums.Screen
 // https://developer.android.com/jetpack/compose/navigation#bottom-nav
 @Composable
 fun CustomNavigationBar(navController: NavController) {
-    NavigationBar {
+    NavigationBar() {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
 
         val bottomNavOptions = mapOf(
-            Screen.TRIPS to Icons.Filled.DateRange,
-            Screen.WEATHER to Icons.Filled.LocationOn,
-            Screen.HOME to Icons.Filled.Home,
-            Screen.FLORA_FAUNA to Icons.Filled.Star,
-            Screen.PROFILE to Icons.Filled.AccountCircle
+            Screen.TRIPS to painterResource(id = R.drawable.icons8_map_48),
+            Screen.WEATHER to painterResource(id = R.drawable.icons8_partly_cloudy_day_48),
+            Screen.HOME to painterResource(id = R.drawable.icons8_tent_48),
+            Screen.FLORA_FAUNA to painterResource(id = R.drawable.icons8_oak_leaf_48),
+            Screen.PROFILE to painterResource(id = R.drawable.icons8_male_user_48)
         )
         bottomNavOptions.forEach { screen ->
             val screenPage = screen.key
@@ -48,8 +59,9 @@ fun CustomNavigationBar(navController: NavController) {
                 Screen.PROFILE -> stringResource(R.string.profile)
                 else -> stringResource(R.string.unknown)
             }
+
             NavigationBarItem(
-                icon = { Icon(icon, contentDescription = contentDescription) },
+                icon = { Icon(icon, contentDescription = contentDescription, modifier = Modifier.scale(if (screenPage == Screen.HOME) 2F else 1F)) },
                 //TODO if test to determine whether to display navbar label in English or Norwegian.
                 label = { Text(stringResource(screenPage.navBarLabel)) },
                 selected = currentDestination?.hierarchy?.any { it.route == screenPage.route } == true,
