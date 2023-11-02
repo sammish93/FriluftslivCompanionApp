@@ -1,6 +1,14 @@
 package no.hiof.friluftslivcompanionapp.ui.components.maps
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -8,8 +16,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -39,7 +50,8 @@ fun GoogleMapTripStartNodes(
     tripsViewModel: TripsViewModel = viewModel(),
     userViewModel: UserViewModel = viewModel(),
     trips: List<Hike>,
-    modifier: Modifier = Modifier) {
+    modifier: Modifier = Modifier,
+    onSearchAreaRequested: (LatLng) -> Unit) {
 
     val mapLoadedState = remember { mutableStateOf(false) }
     val bounds = computeBounds(trips)
@@ -62,31 +74,59 @@ fun GoogleMapTripStartNodes(
         ), if (userState.isLocationPermissionGranted) 12f else 5f
     )
 
+    /*
     val cameraPositionState = rememberCameraPositionState {
         position = (if (latestBoundsState.value != null) getCameraPosition(
             latestBoundsState.value!!.center,
             12f
         ) else null) ?: cameraPosition }
+     */
+    val cameraPositionState = rememberCameraPositionState()
 
+    fun searchInCurrentMapArea() {
+        val currentCameraPosition = cameraPositionState.position.target
+        onSearchAreaRequested(currentCameraPosition)
+    }
 
-    GoogleMap(
-        cameraPositionState = cameraPositionState,
-        properties = mapProperties,
-        onMapLoaded = { mapLoadedState.value = true },
-        modifier = Modifier.fillMaxWidth(),
-        uiSettings = MapUiSettings(zoomControlsEnabled = true, zoomGesturesEnabled = true)
+    Box(modifier = Modifier.fillMaxSize()) {
+        GoogleMap(
+            cameraPositionState = cameraPositionState,
+            properties = mapProperties,
+            onMapLoaded = { mapLoadedState.value = true },
+            modifier = Modifier.fillMaxWidth(),
+            uiSettings = MapUiSettings(zoomControlsEnabled = true, zoomGesturesEnabled = true)
         ) {
-        HikerMarker(
-            trips = trips,
-            tripsViewModel = tripsViewModel,
-            navController = navController
+            HikerMarker(
+                trips = trips,
+                tripsViewModel = tripsViewModel,
+                navController = navController
+            )
+        }
+        ExtendedFloatingActionButton(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp),
+            text = { Text("Search this area") },
+            icon = {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = stringResource(id = R.string.search))
+            },
+            onClick = {
+                searchInCurrentMapArea()
+            }
         )
     }
 
-    LaunchedEffect(mapLoadedState.value) {
-        if (mapLoadedState.value && latestBoundsState.value != null) {
-            val cameraUpdate = latestBoundsState.value.let { CameraUpdateFactory.newLatLngBounds(it!!, 100) }
-            cameraUpdate.let { cameraPositionState.move(it) }
+    val initialLoad = remember { mutableStateOf(true) }
+    LaunchedEffect(initialLoad.value) {
+        if (initialLoad.value) {
+            latestBoundsState.value?.let { bounds ->
+                val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 100)
+                cameraPositionState.move(cameraUpdate)
+
+                initialLoad.value = false
+            }
         }
     }
 }
@@ -125,7 +165,7 @@ fun HikerMarker(
 
 fun computeBounds(trips: List<Hike>): LatLngBounds? {
     val builder = LatLngBounds.builder()
-    if (!trips.isEmpty()) {
+    if (trips.isNotEmpty()) {
         trips.forEach { trip ->
             trip.startLat?.let { lat ->
                 trip.startLng?.let { lng ->
