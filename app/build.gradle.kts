@@ -46,6 +46,18 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // Get the API keys from the local.properties file
+        val properties = Properties().apply {
+            load(project.rootProject.file("local.properties").inputStream())
+        }
+
+        // Return empty string if properties was not loaded.
+        val eBirdKey = properties.getProperty("EBIRD_API_KEY")?.let { "\"$it\"" } ?: "\"\""
+        buildConfigField("String", "EBIRD_API_KEY", eBirdKey)
+
+        val weatherKey = properties.getProperty("WEATHER_API_KEY")?.let { "\"$it\"" } ?: "\"\""
+        buildConfigField("String", "WEATHER_API_KEY", weatherKey)
     }
 
     buildTypes {
