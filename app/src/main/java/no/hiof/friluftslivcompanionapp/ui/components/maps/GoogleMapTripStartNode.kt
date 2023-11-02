@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.components.maps
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +54,7 @@ fun GoogleMapTripStartNodes(
     val cameraPositionState = rememberCameraPositionState()
     val latestBoundsState = rememberUpdatedState(computeBounds(trips))
     val userState by userViewModel.state.collectAsState()
+    val context = LocalContext.current
 
     val mapProperties =
         MapProperties(
@@ -88,6 +92,12 @@ fun GoogleMapTripStartNodes(
             },
             onClick = {
                 searchInCurrentMapArea()
+                /* TODO: Need to have a state in the viewModel that checks if the search is over
+                         or not. That is because 'searchInCurrentMapArea' is an asynchronous operation.
+                 */
+                if (trips.isEmpty()) {
+                    Toast.makeText(context,"There are no trips in this radius", Toast.LENGTH_LONG).show()
+                }
             }
         )
     }
