@@ -211,14 +211,32 @@ class UserViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 preferencesRepository.updateUserDarkModePreference(isDarkMode)
-                // You could update some state here to show a success message
+
             } catch (e: Exception) {
-                // Handle error, show a message to the user, or retry
+
                 _state.update { currentState ->
                     currentState.copy(
-                        // You could have an error field in your state to show an error message
+
                     )
                 }
+            }
+        }
+    }
+
+    //exposes the isDarkMode from the current state
+    val isDarkMode: StateFlow<Boolean> = _state.map { it.isDarkMode }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        _state.value.isDarkMode
+    )
+
+    fun fetchDarkModePreference(userId: String) {
+        viewModelScope.launch {
+            try {
+                val isDarkModeFromDb = preferencesRepository.fetchUserDarkModePreference()
+                updateDarkMode(isDarkModeFromDb)
+            } catch (e: Exception) {
+                // Handle exception
             }
         }
     }
@@ -227,11 +245,6 @@ class UserViewModel @Inject constructor(
     fun getIsDarkMode() : Boolean {
         return _state.value.isDarkMode
     }
-    val isDarkMode: StateFlow<Boolean> = _state.map { it.isDarkMode }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        _state.value.isDarkMode
-    )
 
     // Updates the user's chosen display picture.
     //TODO Write this value to a firebase user.
@@ -242,6 +255,8 @@ class UserViewModel @Inject constructor(
             )
         }
     }
+
+
 
     // Retrieves the logged in user's current display picture.
     fun getDisplayPicture() : DisplayPicture {

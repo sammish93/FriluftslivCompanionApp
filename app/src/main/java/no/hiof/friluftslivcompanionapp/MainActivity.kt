@@ -109,8 +109,11 @@ class MainActivity : AppCompatActivity() {
         if (currentUser != null) {
 
             // Updates the userViewModel to the current user.
-            //TODO Update values for isDarkMode, language, etc.
+            //TODO: Update values for isDarkMode, language, etc.
             userViewModel.updateCurrentUser(currentUser)
+            userViewModel.fetchDarkModePreference(currentUser.uid)
+
+
 
             // User is signed in, shows the main content.
             setContent {
