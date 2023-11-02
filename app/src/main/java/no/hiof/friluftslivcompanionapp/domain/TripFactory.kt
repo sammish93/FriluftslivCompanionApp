@@ -159,9 +159,7 @@ object TripFactory {
     private fun getColor(color: String): Int {
         val hvs = floatArrayOf(0f, 1f, 1f)
         hvs[0] = when (color) {
-            "yellow" -> BitmapDescriptorFactory.HUE_YELLOW
             "red" -> BitmapDescriptorFactory.HUE_RED
-            "violet" -> BitmapDescriptorFactory.HUE_VIOLET
             "orange" -> BitmapDescriptorFactory.HUE_ORANGE
 
             else -> {BitmapDescriptorFactory.HUE_GREEN}
@@ -172,10 +170,8 @@ object TripFactory {
     private fun pickColorFilter(difficulty: Int): PorterDuffColorFilter {
         val mode = PorterDuff.Mode.SRC_IN
         return when (difficulty) {
-            5 -> PorterDuffColorFilter(getColor("yellow"), mode)
-            4 -> PorterDuffColorFilter(getColor("violet"), mode)
-            3 -> PorterDuffColorFilter(getColor("red"), mode)
-            2 -> PorterDuffColorFilter(getColor("orange"), mode)
+            5, 4 -> PorterDuffColorFilter(getColor("red"), mode)
+            3 -> PorterDuffColorFilter(getColor("orange"), mode)
 
             else -> PorterDuffColorFilter(getColor("green"), mode)
         }
