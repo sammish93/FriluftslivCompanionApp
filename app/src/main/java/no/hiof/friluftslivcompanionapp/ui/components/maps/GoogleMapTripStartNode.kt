@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -95,6 +96,8 @@ fun HikerMarker(
     navController: NavController,
     tripsViewModel: TripsViewModel = viewModel(),
     trips: List<Hike>) {
+
+    val context = LocalContext.current
     when (trips.isEmpty()) {
         false -> {
             for (trip in trips) {
@@ -103,10 +106,9 @@ fun HikerMarker(
                         val tripStartPosition = LatLng(lat, lng)
                         Marker(
                             MarkerState(position = tripStartPosition),
-                            icon = BitmapDescriptorFactory.defaultMarker(TripFactory.returnColourFromDifficulty(
-                                trip.difficulty!!
+                            icon = BitmapDescriptorFactory.fromBitmap(TripFactory.changeIconColor(
+                                context, R.drawable.baseline_hiking_black_36, trip.difficulty!!
                             )),
-                            //icon = BitmapDescriptorFactory.fromResource(R.drawable.baseline_hiking_black_36),
                             onClick = {
                                 tripsViewModel.updateSelectedTrip(trip)
                                 navController.navigate(Screen.TRIPS_ADDITIONAL_INFO.name)
