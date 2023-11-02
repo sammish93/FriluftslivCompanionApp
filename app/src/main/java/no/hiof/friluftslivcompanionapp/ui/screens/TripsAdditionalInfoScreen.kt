@@ -108,13 +108,13 @@ fun TripsAdditionalInfoScreen(
                         ) {
                             // Inspired from: https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#ListItem(kotlin.Function0,androidx.compose.ui.Modifier,kotlin.Function0,kotlin.Function0,kotlin.Function0,kotlin.Function0,androidx.compose.material3.ListItemColors,androidx.compose.ui.unit.Dp,androidx.compose.ui.unit.Dp)
                             tripsState.selectedTrip?.duration?.let {
-                                DateFormatter.formatDurationToPrettyString(it, "Hour", "Minute")
+                                DateFormatter.formatDurationToPrettyString(it, stringResource(R.string.hours), stringResource(R.string.minutes))
                             }?.let { formattedDuration ->
                                 Item(
                                     headline = stringResource(R.string.duration),
                                     support = formattedDuration,
                                     icon = painterResource(id = R.drawable.timer),
-                                    iconDescription = "Duration"
+                                    iconDescription = stringResource(R.string.duration)
                                 )
                             }
                             val roundedDistance = tripsState.selectedTrip!!.distanceKm?.let {
@@ -124,7 +124,7 @@ fun TripsAdditionalInfoScreen(
                                 headline = stringResource(R.string.distance),
                                 support = "${roundedDistance.toString()} km",
                                 icon = painterResource(id = R.drawable.distance),
-                                iconDescription = "Distance"
+                                iconDescription = stringResource(R.string.distance)
                             )
                             tripsState.selectedTrip?.difficulty?.let {
                                 TripFactory.convertTripDifficultyFromIntToString(it)
@@ -133,7 +133,7 @@ fun TripsAdditionalInfoScreen(
                                     headline = stringResource(R.string.difficulty),
                                     support = formattedDifficulty,
                                     icon = painterResource(id = R.drawable.lock),
-                                    iconDescription = "Difficulty"
+                                    iconDescription = stringResource(R.string.difficulty)
                                 )
                             }
                             tripsState.selectedTrip!!.description?.let { description ->
@@ -141,7 +141,7 @@ fun TripsAdditionalInfoScreen(
                                     headline = stringResource(R.string.trips_create_description),
                                     support = description.replaceFirstChar { it.uppercase() },
                                     icon = painterResource(id = R.drawable.description),
-                                    iconDescription = "Description"
+                                    iconDescription = stringResource(R.string.trips_create_description)
                                 )
                             }
                         }
