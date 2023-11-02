@@ -45,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -56,6 +57,7 @@ import no.hiof.friluftslivcompanionapp.domain.DateFormatter
 import no.hiof.friluftslivcompanionapp.domain.TripFactory
 import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.ui.components.TopBar
+import no.hiof.friluftslivcompanionapp.ui.components.items.Item
 import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapTripAdditionalInfo
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
@@ -110,38 +112,43 @@ fun TripsAdditionalInfoScreen(
                                 .verticalScroll(rememberScrollState()),
                             verticalArrangement = Arrangement.Top
                         ) {
-
-                            //TODO Use DateFormatter and modify a function to include year.
-                            // also add if (tripsState.isSelectedTripRecentActivity) then show date.
-                            Text(stringResource(R.string.date))
-                            Text(LocalDate.now().toString())
-
-                            Text(stringResource(R.string.duration))
+                            // Inspired from: https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#ListItem(kotlin.Function0,androidx.compose.ui.Modifier,kotlin.Function0,kotlin.Function0,kotlin.Function0,kotlin.Function0,androidx.compose.material3.ListItemColors,androidx.compose.ui.unit.Dp,androidx.compose.ui.unit.Dp)
                             tripsState.selectedTrip?.duration?.let {
                                 DateFormatter.formatDurationToPrettyString(it, "Hour", "Minute")
                             }?.let { formattedDuration ->
-                                Text(text = formattedDuration)
+                                Item(
+                                    headline = stringResource(R.string.duration),
+                                    support = formattedDuration,
+                                    icon = painterResource(id = R.drawable.timer),
+                                    iconDescription = "Duration"
+                                )
                             }
-
-                            Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-                            Text(stringResource(R.string.distance))
-                            Text(tripsState.selectedTrip!!.distanceKm.toString())
-
-                            Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-                            Text(stringResource(R.string.difficulty))
+                            val roundedDistance = tripsState.selectedTrip!!.distanceKm?.let {
+                                kotlin.math.round(it * 10) / 10
+                            }
+                            Item(
+                                headline = stringResource(R.string.distance),
+                                support = "${roundedDistance.toString()} km",
+                                icon = painterResource(id = R.drawable.distance),
+                                iconDescription = "Distance"
+                            )
                             tripsState.selectedTrip?.difficulty?.let {
                                 TripFactory.convertTripDifficultyFromIntToString(it)
                             }?.let { formattedDifficulty ->
-                                Text(text = formattedDifficulty)
+                                Item(
+                                    headline = stringResource(R.string.difficulty),
+                                    support = formattedDifficulty,
+                                    icon = painterResource(id = R.drawable.lock),
+                                    iconDescription = "Difficulty"
+                                )
                             }
-
-                            Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-                            Text(stringResource(R.string.trips_create_description))
-                            tripsState.selectedTrip!!.description?.let { it ->
-                                Text(it.replaceFirstChar { it.uppercase() })
+                            tripsState.selectedTrip!!.description?.let { description ->
+                                Item(
+                                    headline = stringResource(R.string.trips_create_description),
+                                    support = description.replaceFirstChar { it.uppercase() },
+                                    icon = painterResource(id = R.drawable.description),
+                                    iconDescription = "Description"
+                                )
                             }
                         }
 

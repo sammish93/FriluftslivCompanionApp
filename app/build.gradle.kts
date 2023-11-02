@@ -168,5 +168,6 @@ dependencies {
     // Geofire
     implementation("com.firebase:geofire-android-common:3.2.0")
 
+    testImplementation("org.robolectric:robolectric:4.7.1")
 
 }
