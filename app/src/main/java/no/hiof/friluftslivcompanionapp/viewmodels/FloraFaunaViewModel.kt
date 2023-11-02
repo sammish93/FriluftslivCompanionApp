@@ -14,6 +14,7 @@ import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
 import javax.inject.Inject
 import no.hiof.friluftslivcompanionapp.data.network.Result
+import no.hiof.friluftslivcompanionapp.data.repositories.LifelistRepository
 import no.hiof.friluftslivcompanionapp.data.states.FloraFaunaState
 import no.hiof.friluftslivcompanionapp.domain.FloraFaunaFactory
 import no.hiof.friluftslivcompanionapp.models.Bird
@@ -40,6 +41,8 @@ import java.util.Date
 class FloraFaunaViewModel @Inject constructor(
     // Communication with the data layer can be injected as dependencies here.
     // private val repository: TripsRepository
+
+    private val lifelistRepository: LifelistRepository
 
 ) : ViewModel(), TabNavigation {
 
@@ -193,37 +196,25 @@ class FloraFaunaViewModel @Inject constructor(
     fun createSighting() {
         val floraFaunaState = _floraFaunaState.value
 
-        val sighting = floraFaunaState.selectedSpecies?.let {
-            FloraFaunaFactory.createSighting(
-                it,
-            floraFaunaState.sightingDate,
-            floraFaunaState.sightingLocation,
-            )
-        }
 
-        //TODO Integrate database writing and clear create sighting values on successful write.
+        val sightingDate = floraFaunaState.sightingDate
+        val sightingLocation = floraFaunaState.sightingLocation
 
-        /*
-        if (sighting != null) {
-            viewModelScope.launch {
-                when (val result = tripsRepository.createTrip(trip)) {
-                    is OperationResult.Success -> {
+        floraFaunaState.selectedSpecies?.let { selectedSpecies ->
+            val sighting = FloraFaunaFactory.createSighting(selectedSpecies, sightingDate, sightingLocation)
 
-                        clearTrip()
-                    }
-                    is OperationResult.Error -> {
+            sighting?.let { newSighting ->
+                viewModelScope.launch {
+                    try {
+                        lifelistRepository.addSightingToLifeList(newSighting)
 
-                        val exception = result.exception
-                        Log.e(TripsViewModel.TAG, "Error writing trip to Firestore: ${exception.message}")
+                        clearSighting()
+                    } catch (e: Exception) {
+                        // Handle any exceptions
                     }
                 }
             }
-        } else {
-
         }
-         */
-
-        clearSighting()
     }
 
     // Function to clear all data relating to create sighting.
