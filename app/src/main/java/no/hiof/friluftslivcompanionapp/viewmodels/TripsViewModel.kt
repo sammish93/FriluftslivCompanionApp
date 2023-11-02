@@ -208,7 +208,7 @@ class TripsViewModel @Inject constructor(
             tripState.createTripDifficulty
         )
 
-        //TODO Integrate database writing and clear create trip values on successful write.
+
 
         if (trip != null) {
             viewModelScope.launch {
@@ -242,37 +242,40 @@ class TripsViewModel @Inject constructor(
     fun createTripActivity() {
         val tripsState = _tripsState.value
 
-        val tripActivity = tripsState.selectedTrip?.let {
-            TripFactory.createTripActivity(
-                it,
-                tripsState.tripActivityDate
-            )
-        }
 
         //TODO Integrate database writing and clear create tripActivity values on successful write.
+        tripsState.selectedTrip?.let { selectedTrip ->
+            if (selectedTrip is Hike) {
+                val tripActivityDate = tripsState.tripActivityDate ?: Date()
 
-        /*
-        if (sighting != null) {
-            viewModelScope.launch {
-                when (val result = tripsRepository.createTrip(trip)) {
-                    is OperationResult.Success -> {
+                TripFactory.createTripActivity(selectedTrip, tripActivityDate)
+                    ?.let {
+                        viewModelScope.launch {
+                            try {
 
-                        clearTrip()
+                                activityRepository.addTripActivityToUser(
+                                    selectedTrip.documentId,
+                                    tripActivityDate
+                                )
+
+                                clearTripActivity()
+                            } catch (e: Exception) {
+                                // Handle exceptions
+                            }
+                        }
                     }
-                    is OperationResult.Error -> {
-
-                        val exception = result.exception
-                        Log.e(TripsViewModel.TAG, "Error writing trip to Firestore: ${exception.message}")
-                    }
-                }
+            } else {
+                //
             }
-        } else {
-
         }
-         */
-
-        clearTripActivity()
     }
+
+
+
+
+
+
+
 
     // Function to clear all data relating to create tripActivity.
     fun clearTripActivity() {
