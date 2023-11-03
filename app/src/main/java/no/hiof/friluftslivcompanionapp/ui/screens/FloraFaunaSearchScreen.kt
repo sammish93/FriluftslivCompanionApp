@@ -13,8 +13,10 @@ import androidx.navigation.NavController
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
@@ -24,6 +26,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
@@ -37,6 +40,7 @@ import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
 import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
 import no.hiof.friluftslivcompanionapp.ui.components.LocationAutoFillList
 import no.hiof.friluftslivcompanionapp.ui.components.cards.FloraFaunaCard
+import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import java.util.Locale
 
@@ -229,30 +233,74 @@ fun FloraFaunaSearchScreen(
         ) {
             when (floraFaunaState.isLoading) {
                 true -> CustomLoadingScreen()
+                else -> when (floraFaunaState.isFailure || floraFaunaState.isNoGps) {
+                    false -> {
+                        ListComponent(floraFaunaState.speciesResults) { species, textStyle ->
 
-                else -> {
-                    ListComponent(floraFaunaState.speciesResults) { species, textStyle ->
+                            val subclass = FloraFaunaMapper.mapClassToEnum(species)
+                            val subclassToString =
+                                subclass?.let { stringResource(it.label) } ?: stringResource(R.string.unknown)
 
-                        val subclass = FloraFaunaMapper.mapClassToEnum(species)
-                        val subclassToString =
-                            subclass?.let { stringResource(it.label) } ?: stringResource(R.string.unknown)
+                            Spacer(modifier = Modifier.height(6.dp))
 
-                        Spacer(modifier = Modifier.height(6.dp))
+                            FloraFaunaCard(
+                                species,
+                                textStyle,
+                                title = subclassToString,
+                                header = species.speciesName ?: stringResource(R.string.flora_fauna_unknown_common_name),
+                                subHeader = species.speciesNameScientific,
+                                fetchImage = { it.photoUrl ?: "Photo of ${it.speciesName}" },
+                                onMoreInfoClick = {
+                                    viewModel.updateSelectedSpeciesInfo(species)
+                                    navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
+                                }
+                            )
 
-                        FloraFaunaCard(
-                            species,
-                            textStyle,
-                            title = subclassToString,
-                            header = species.speciesName ?: stringResource(R.string.flora_fauna_unknown_common_name),
-                            subHeader = species.speciesNameScientific,
-                            fetchImage = { it.photoUrl ?: "Photo of ${it.speciesName}" },
-                            onMoreInfoClick = {
-                                viewModel.updateSelectedSpeciesInfo(species)
-                                navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
+                            Spacer(modifier = Modifier.height(6.dp))
+                        }
+                    }
+                    else -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .wrapContentSize(Alignment.Center)
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = if (floraFaunaState.isNoGps) stringResource(R.string.error_no_gps_location_found) else stringResource(
+                                    R.string.error_retrieving_api_success_response
+                                ),
+                                style = CustomTypography.headlineMedium,
+                                textAlign = TextAlign.Center,
+                                modifier = modifier.wrapContentSize(Alignment.Center)
+                            )
+                            IconButton(onClick = {
+                                viewModel.viewModelScope.launch {
+                                    //TODO Add functionality to prompt the user to share their location if
+                                    // permissions aren't currently given.
+                                    val location = locations?.get(0)
+
+                                    val locality = location?.adminArea ?: "Oslo"
+
+                                    viewModel.viewModelScope.launch {
+                                        val (regionCode, message) = LocationFormatter.getRegionCodeByLocation(
+                                            locality
+                                        )
+                                        println("Found your location: $regionCode")
+                                        println(message)
+                                        viewModel.searchSpeciesByLocation(
+                                            regionCode,
+                                            20,
+                                            userState.language
+                                        )
+                                    }
+                                }
+                            }) {
+                                Icon(Icons.Default.Refresh, contentDescription = stringResource(id = R.string.refresh))
                             }
-                        )
-
-                        Spacer(modifier = Modifier.height(6.dp))
+                        }
                     }
                 }
             }

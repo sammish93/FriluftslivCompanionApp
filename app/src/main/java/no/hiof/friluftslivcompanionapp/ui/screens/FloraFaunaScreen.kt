@@ -30,6 +30,7 @@ fun FloraFaunaScreen(
     viewModel: FloraFaunaViewModel = viewModel(),
     userViewModel: UserViewModel = viewModel()
 ) {
+    //TODO: Add error handling for offline behaviour, if needed, when the screen has its composables etc
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -26,4 +26,7 @@ data class TripsState(
     // If trip is from RecentActivity object then true, if trip is from map of all trips then false.
     val isSelectedTripRecentActivity: Boolean = false,
     val tripActivityDate: Date = Date(),
+    val isLoading: Boolean = false,
+    val isFailure: Boolean = false,
+    val isNoGps: Boolean = false
 )

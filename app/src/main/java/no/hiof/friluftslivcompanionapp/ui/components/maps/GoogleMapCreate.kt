@@ -156,6 +156,7 @@ fun GoogleMapCreate(
 }
 
 // Lorena´s code.
+//TODO: Remove if not used
 @Composable
 fun GoogleMapsView(locationName: String, viewModel: FloraFaunaViewModel) {
     val location = getLocationFromName(locationName, LocalContext.current)

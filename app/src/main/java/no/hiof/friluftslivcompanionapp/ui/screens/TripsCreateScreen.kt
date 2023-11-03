@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -15,6 +17,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -28,6 +31,7 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -48,14 +52,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.firebase.firestore.GeoPoint
+import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.data.states.TripsState
 import no.hiof.friluftslivcompanionapp.domain.DateFormatter
 import no.hiof.friluftslivcompanionapp.domain.TripFactory
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
+import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
 import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapCreate
+import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import java.time.Duration
@@ -76,25 +85,63 @@ fun TripsCreateScreen(
     val tripState by viewModel.tripsState.collectAsState()
     val userState by userViewModel.state.collectAsState()
 
-    Scaffold(
-        // A button that allows the user to click and display the Bottom Sheet.
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                text = { Text(stringResource(id = R.string.trips_create_create_trip)) },
-                icon = {
-                    Icon(
-                        Icons.Filled.Add,
-                        contentDescription = stringResource(id = R.string.trips_create_create_trip)
-                    )
-                },
-                onClick = {
-                    showBottomSheet = true
+    when (tripState.isLoading) {
+        true -> CustomLoadingScreen()
+        else -> when (tripState.isFailure || tripState.isNoGps) {
+            false -> {
+                Scaffold(
+                    // A button that allows the user to click and display the Bottom Sheet.
+                    floatingActionButton = {
+                        ExtendedFloatingActionButton(
+                            text = { Text(stringResource(id = R.string.trips_create_create_trip)) },
+                            icon = {
+                                Icon(
+                                    Icons.Filled.Add,
+                                    contentDescription = stringResource(id = R.string.trips_create_create_trip)
+                                )
+                            },
+                            onClick = {
+                                showBottomSheet = true
+                            }
+                        )
+                    },
+                    floatingActionButtonPosition = FabPosition.Center
+                ) { contentPadding ->
+                    GoogleMapCreate(userViewModel, viewModel, modifier.padding(contentPadding))
                 }
-            )
-        },
-        floatingActionButtonPosition = FabPosition.Center
-    ) { contentPadding ->
-        GoogleMapCreate(userViewModel, viewModel, modifier.padding(contentPadding))
+            }
+            else -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.Center)
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = if (tripState.isNoGps) stringResource(R.string.error_no_gps_location_found)
+                        else stringResource(
+                            R.string.error_retrieving_api_success_response
+                        ),
+                        style = CustomTypography.headlineMedium,
+                        textAlign = TextAlign.Center,
+                        modifier = modifier.wrapContentSize(Alignment.Center)
+                    )
+                    IconButton(onClick = {
+                        viewModel.viewModelScope.launch {
+                            //TODO Add functionality to prompt the user to share their location if
+                            // permissions aren't currently given.
+
+                        }
+                    }) {
+                        Icon(Icons.Default.Refresh, contentDescription = stringResource(id = R.string.refresh))
+                    }
+                }
+            }
+
+        }
+
     }
 
     if (showBottomSheet) {

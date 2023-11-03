@@ -3,8 +3,14 @@ package no.hiof.friluftslivcompanionapp.ui.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
@@ -16,12 +22,18 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.firestore.GeoPoint
+import kotlinx.coroutines.launch
+import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.ui.components.Carousel
+import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
+import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 
@@ -34,6 +46,7 @@ fun HomeScreen(
     // Sensors(userViewModel)
     val userLocation by userViewModel.state.collectAsState()
     val hikes by tripsViewModel.hikes.collectAsState()
+    val tripsState by tripsViewModel.tripsState.collectAsState()
     val error = tripsViewModel.errorMessage.value
 
     if (error != null) {
@@ -51,30 +64,79 @@ fun HomeScreen(
 
     val currentPage = remember { mutableIntStateOf(0) }
 
-    Column(
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        if (hikes.isNullOrEmpty()) {
-            Text(
-                text = "There are currently no trips in your area",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Medium,
-                textAlign = TextAlign.Center
-            )
+    when (tripsState.isLoading) {
+        true -> CustomLoadingScreen()
+        else -> when (tripsState.isFailure || tripsState.isNoGps) {
+            false -> {
+                Column(
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 8.dp,
+                        bottom = 8.dp
+                    ),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    if (hikes.isNullOrEmpty()) {
+                        Text(
+                            text = "There are currently no trips in your area",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        Text(
+                            text = "Trips in your area",
+                            style = MaterialTheme.typography.headlineLarge,
+                            fontWeight = FontWeight.Medium,
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Carousel(
+                            trips = hikes,
+                            currentPage = currentPage
+                        )
+                    }
+                }
+            }
+            else -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.Center)
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = if (tripsState.isNoGps) stringResource(R.string.error_no_gps_location_found)
+                        else stringResource(
+                            R.string.error_retrieving_api_success_response
+                        ),
+                        style = CustomTypography.headlineMedium,
+                        textAlign = TextAlign.Center,
+                        modifier = modifier.wrapContentSize(Alignment.Center)
+                    )
+                    IconButton(onClick = {
+                        tripsViewModel.viewModelScope.launch {
+                            //TODO Add functionality to prompt the user to share their location if
+                            // permissions aren't currently given.
+                            val geoPoint = userLocation.lastKnownLocation?.let {
+                                GeoPoint(it.latitude, it.longitude)
+                            }
+                            if (geoPoint != null) {
+                                tripsViewModel.getTripsNearUsersLocation(geoPoint, radiusInKm = 50.0, limit = 5)
+                            }
+                        }
+                    }) {
+                        Icon(
+                            Icons.Default.Refresh,
+                            contentDescription = stringResource(id = R.string.refresh)
+                        )
+                    }
+                }
+            }
         }
-        else {
-            Text(
-                text = "Trips in your area",
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Medium,
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Carousel(
-                trips = hikes,
-                currentPage = currentPage
-            )
-        }
+
     }
 }
