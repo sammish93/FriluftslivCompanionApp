@@ -182,7 +182,7 @@ class TripsViewModel @Inject constructor(
         _tripsState.update { currentState ->
             currentState.copy(
                 createTripType = TripType.HIKE,
-                createTripDuration = Duration.ofHours(1).plus(Duration.ofMinutes(30)),
+                createTripDuration = Duration.ofHours(1).plus(Duration.ofMinutes(0)),
                 createTripDifficulty = 3,
                 createTripDescription = "",
                 createTripDistanceKm = 0.0
