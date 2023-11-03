@@ -198,7 +198,9 @@ fun ProfileScreen(
                                 displayPicture = DisplayPicture.DP_DEFAULT,
                                 username = user.username,
                                 numberToDisplay = user.yearlyTripCount,
-                                placement = index + 1
+                                placement = index + 1,
+                                padding = if (index == 0) 0 else if (index == 1) 4 else 8,
+                                scale = if (index == 0) 1F else if (index == 1) 0.9F else 0.8F
                             )
                         }
 
@@ -213,7 +215,9 @@ fun ProfileScreen(
                                 displayPicture = DisplayPicture.DP_DEFAULT,
                                 username = user.username,
                                 numberToDisplay = user.yearlySpeciesCount,
-                                placement = index + 1
+                                placement = index + 1,
+                                padding = if (index == 0) 0 else if (index == 1) 4 else 8,
+                                scale = if (index == 0) 1F else if (index == 1) 0.9F else 0.8F
                             )
                         }
 
