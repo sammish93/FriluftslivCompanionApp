@@ -36,9 +36,13 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import no.hiof.friluftslivcompanionapp.R
+import no.hiof.friluftslivcompanionapp.domain.LocationFormatter
 import no.hiof.friluftslivcompanionapp.domain.TripFactory
 import no.hiof.friluftslivcompanionapp.models.Hike
+import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
+import no.hiof.friluftslivcompanionapp.utils.getCameraPosition
+import no.hiof.friluftslivcompanionapp.utils.getLastKnownLocation
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 
@@ -55,6 +59,16 @@ fun GoogleMapTripStartNodes(
     val latestBoundsState = rememberUpdatedState(computeBounds(trips))
     val userState by userViewModel.state.collectAsState()
     val context = LocalContext.current
+
+    val lastKnownLocation = userState.lastKnownLocation
+    val userLocation = getLastKnownLocation(lastKnownLocation)
+
+    val cameraPosition = getCameraPosition(
+        userLocation ?: LatLng(
+            DefaultLocation.OSLO.lat,
+            DefaultLocation.OSLO.lon
+        ), if (userState.isLocationPermissionGranted) 14f else 5f
+    )
 
     val mapProperties =
         MapProperties(
@@ -102,8 +116,13 @@ fun GoogleMapTripStartNodes(
     }
 
     LaunchedEffect(Unit) {
-        latestBoundsState.value?.let { bounds ->
-            val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 100)
+        if (latestBoundsState.value != null) {
+            val cameraUpdate = CameraUpdateFactory.newLatLngBounds(latestBoundsState.value!!, 100)
+            cameraPositionState.move(cameraUpdate)
+        } else {
+            // Behaviour to handle when the user's location doesn't contain any existing routes.
+            // Prevents camera defaulting to center of the globe.
+            val cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition)
             cameraPositionState.move(cameraUpdate)
         }
     }
@@ -125,7 +144,7 @@ fun HikerMarker(
                         Marker(
                             MarkerState(position = tripStartPosition),
                             icon = BitmapDescriptorFactory.fromBitmap(TripFactory.changeIconColor(
-                                context, R.drawable.baseline_hiking_black_36, trip.difficulty!!
+                                context, R.drawable.icons8_region_48, trip.difficulty!!
                             )),
                             onClick = {
                                 tripsViewModel.updateSelectedTrip(trip)
@@ -156,6 +175,14 @@ fun computeBounds(trips: List<Hike>): LatLngBounds? {
     }
 
     return null
+}
+
+fun computeBoundsFromSingleLatLng(latLng: LatLng): LatLngBounds? {
+    val builder = LatLngBounds.builder()
+
+    builder.include(LatLng(latLng.latitude, latLng.longitude))
+
+    return builder.build()
 }
 
 
