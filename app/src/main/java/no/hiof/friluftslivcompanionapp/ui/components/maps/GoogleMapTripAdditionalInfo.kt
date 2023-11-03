@@ -35,10 +35,10 @@ fun GoogleMapTripAdditionalInfo(nodes: List<LatLng>) {
         properties = mapProperties,
         cameraPositionState = cameraPositionState
     ) {
-        nodes.forEach { node ->
+        nodes.forEachIndexed { index, node ->
             Marker(
                 MarkerState(position = node),
-                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE),
+                icon = if (index == 0) BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN) else BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE),
                 title = "Node",
                 snippet = "$node"
             )
