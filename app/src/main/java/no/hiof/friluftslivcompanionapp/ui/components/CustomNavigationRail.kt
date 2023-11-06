@@ -58,7 +58,7 @@ fun CustomNavigationRail(navController: NavController, userViewModel: UserViewMo
     NavigationRail(
         header = {
             if (userState.isRailBarOpened) {
-                IconButton(onClick = { userViewModel.updateIsRailBarOpened(!userState.isRailBarOpened)}) {
+                IconButton(onClick = { userViewModel.updateIsRailBarOpened(false)}) {
                     Icon(
                         imageVector = Icons.Default.Menu, contentDescription = "Menu"
                     )

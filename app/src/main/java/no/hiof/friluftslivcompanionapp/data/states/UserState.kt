@@ -1,6 +1,7 @@
 package no.hiof.friluftslivcompanionapp.data.states
 
 import android.location.Location
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.ui.unit.DpSize
@@ -28,5 +29,5 @@ data class UserState @OptIn(ExperimentalMaterial3WindowSizeClassApi::class) cons
     val isLocationSearchUpdating: Boolean = false,
     val windowSizeClass: WindowSizeClass = WindowSizeClass.calculateFromSize(DpSize.Zero),
     val isRailBarOpened: Boolean = true,
-    val isDrawerBarOpened: Boolean = true
+    val isDrawerBarOpened: DrawerValue = DrawerValue.Open
 )

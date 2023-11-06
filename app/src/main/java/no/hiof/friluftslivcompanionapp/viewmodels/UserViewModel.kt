@@ -2,6 +2,7 @@ package no.hiof.friluftslivcompanionapp.viewmodels
 
 import android.location.Location
 import android.util.Log
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
@@ -411,10 +412,10 @@ class UserViewModel @Inject constructor(
     }
 
     // Updates whether or not the drawer bar has been opened.
-    fun updateIsDrawerBarOpened(isDrawerBarOpened: Boolean) {
+    fun updateIsDrawerBarOpened(drawerValueState: DrawerValue) {
         _state.update { currentState ->
             currentState.copy(
-                isDrawerBarOpened = isDrawerBarOpened
+                isDrawerBarOpened = drawerValueState
             )
         }
     }

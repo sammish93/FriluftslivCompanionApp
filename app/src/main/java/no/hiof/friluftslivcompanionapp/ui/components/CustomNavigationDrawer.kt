@@ -19,11 +19,14 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -54,6 +57,26 @@ import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 fun CustomNavigationDrawer(navController: NavController, userViewModel: UserViewModel = viewModel()) {
 
     val userState by userViewModel.state.collectAsState()
+    val drawerState = rememberDrawerState(initialValue = userState.isDrawerBarOpened)
+
+    /*
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Text("Drawer title", modifier = Modifier.padding(16.dp))
+                Divider()
+                NavigationDrawerItem(
+                    label = { Text(text = "Drawer Item") },
+                    selected = false,
+                    onClick = { /*TODO*/ }
+                )
+                // ...other drawer items
+            }
+        },
+    )
+
+     */
 
     NavigationRail(
         header = {

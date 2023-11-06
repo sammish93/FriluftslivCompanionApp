@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -72,6 +73,7 @@ import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
+import no.hiof.friluftslivcompanionapp.ui.components.CustomNavigationDrawer
 import no.hiof.friluftslivcompanionapp.ui.components.CustomNavigationRail
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
@@ -202,11 +204,11 @@ fun FriluftslivApp(
 
     // CustomTabsBar Composables are assigned to functions here and injected in NavHost below.
     val tripsTabsBar: @Composable () -> Unit =
-        { CustomTabsBar(tripsViewModel, navController, Modifier.padding(start = if (userState.isRailBarOpened) 80.dp else 0.dp)) }
+        { CustomTabsBar(tripsViewModel, navController, Modifier.padding(start = if (userState.isRailBarOpened) 80.dp else if (drawerBarShown.value && userState.isDrawerBarOpened == DrawerValue.Open) 360.dp else 0.dp)) }
     val floraFaunaTabsBar: @Composable () -> Unit =
-        { CustomTabsBar(floraFaunaViewModel, navController, Modifier.padding(start = if (userState.isRailBarOpened) 80.dp else 0.dp)) }
+        { CustomTabsBar(floraFaunaViewModel, navController, Modifier.padding(start = if (userState.isRailBarOpened) 80.dp else if (drawerBarShown.value && userState.isDrawerBarOpened == DrawerValue.Open) 360.dp else 0.dp)) }
     val weatherTabsBar: @Composable () -> Unit =
-        { CustomTabsBar(weatherViewModel, navController, Modifier.padding(start = if (userState.isRailBarOpened) 80.dp else 0.dp)) }
+        { CustomTabsBar(weatherViewModel, navController, Modifier.padding(start = if (userState.isRailBarOpened) 80.dp else if (drawerBarShown.value && userState.isDrawerBarOpened == DrawerValue.Open) 360.dp else 0.dp)) }
 
 
     when (userState.isLocationManagerCalled) {
@@ -243,7 +245,7 @@ fun FriluftslivApp(
                             when (userState.isRailBarOpened) {
                                 false -> FloatingActionButton(
                                     onClick = {
-                                        userViewModel.updateIsRailBarOpened(!userState.isRailBarOpened)
+                                        userViewModel.updateIsRailBarOpened(true)
                                     }
                                 ) {
                                     Icon(Icons.Filled.Menu, contentDescription = "Menu")
@@ -251,10 +253,10 @@ fun FriluftslivApp(
 
                                 else -> {}
                             }
-                            when (userState.isRailBarOpened) {
-                                false -> FloatingActionButton(
+                            when (userState.isDrawerBarOpened) {
+                                DrawerValue.Closed -> FloatingActionButton(
                                     onClick = {
-                                        userViewModel.updateIsRailBarOpened(!userState.isRailBarOpened)
+                                        userViewModel.updateIsDrawerBarOpened(DrawerValue.Open)
                                     }
                                 ) {
                                     Icon(Icons.Filled.Menu, contentDescription = "Menu")
@@ -277,14 +279,14 @@ fun FriluftslivApp(
                 }
 
                 when (drawerBarShown.value) {
-                    true -> CustomNavigationRail(navController, userViewModel)
+                    true -> CustomNavigationDrawer(navController, userViewModel)
 
                     else -> {}
                 }
 
                 Box(modifier = Modifier.padding(innerPadding)) {
 
-                    Row(modifier = Modifier.padding(start = if (railBarShown.value && userState.isRailBarOpened) 80.dp else 0.dp)) {
+                    Row(modifier = Modifier.padding(start = if (railBarShown.value && userState.isRailBarOpened) 80.dp else if (drawerBarShown.value && userState.isDrawerBarOpened == DrawerValue.Open) 360.dp else 0.dp)) {
                         NavHost(
                             navController = navController,
                             startDestination = Screen.HOME.name,
