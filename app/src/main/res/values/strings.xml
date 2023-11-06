@@ -131,4 +131,6 @@
     <string name="flora_fauna_info_do_you_wish_to_add">Do you wish to add this sighting to your lifelist?</string>
     <string name="flora_fauna_info_add_sighting">Add Sighting</string>
     <string name="flora_fauna_info_back_to_results">Back to results</string>
+    <string name="not_share_location_msg">You do not share your location, use the search field.</string>
+    <string name="understood">Understood</string>
 </resources>
