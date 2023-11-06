@@ -13,11 +13,19 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -41,9 +49,13 @@ import javax.inject.Inject
 
 import androidx.compose.material3.Typography
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.core.os.LocaleListCompat
 import no.hiof.friluftslivcompanionapp.ui.components.CustomNavigationBar
@@ -60,6 +72,7 @@ import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
+import no.hiof.friluftslivcompanionapp.ui.components.CustomNavigationRail
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
@@ -120,7 +133,6 @@ class MainActivity : AppCompatActivity() {
             userViewModel.fetchUserLanguagePreference(currentUser.uid)
 
 
-
             // User is signed in, shows the main content.
             setContent {
                 // State to be present in a composable so that theme updates on value change.
@@ -146,7 +158,11 @@ class MainActivity : AppCompatActivity() {
                 // logged in user - it's defaulted to ENGLISH right now.
                 // Code was based on examples shown here -
                 // https://medium.com/@fierydinesh/multi-language-support-android-localization-in-app-and-system-settings-change-language-e00957e9c48c
-                AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(userViewModel.getLanguage().code))
+                AppCompatDelegate.setApplicationLocales(
+                    LocaleListCompat.forLanguageTags(
+                        userViewModel.getLanguage().code
+                    )
+                )
             }
         } else {
             // No user signed in, start SignInActivity
@@ -180,13 +196,18 @@ fun FriluftslivApp(
     val weatherViewModel = hiltViewModel<WeatherViewModel>()
     val userState by userViewModel.state.collectAsState()
 
+    val bottomBarShown = remember { mutableStateOf(userState.windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact) }
+    val railBarShown = remember { mutableStateOf(userState.windowSizeClass.widthSizeClass == WindowWidthSizeClass.Medium) }
+    val drawerBarShown = remember { mutableStateOf(userState.windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) }
+
     // CustomTabsBar Composables are assigned to functions here and injected in NavHost below.
     val tripsTabsBar: @Composable () -> Unit =
-        { CustomTabsBar(tripsViewModel, navController) }
+        { CustomTabsBar(tripsViewModel, navController, Modifier.padding(start = if (userState.isRailBarOpened) 80.dp else 0.dp)) }
     val floraFaunaTabsBar: @Composable () -> Unit =
-        { CustomTabsBar(floraFaunaViewModel, navController) }
+        { CustomTabsBar(floraFaunaViewModel, navController, Modifier.padding(start = if (userState.isRailBarOpened) 80.dp else 0.dp)) }
     val weatherTabsBar: @Composable () -> Unit =
-        { CustomTabsBar(weatherViewModel, navController) }
+        { CustomTabsBar(weatherViewModel, navController, Modifier.padding(start = if (userState.isRailBarOpened) 80.dp else 0.dp)) }
+
 
     when (userState.isLocationManagerCalled) {
         true ->
@@ -210,40 +231,100 @@ fun FriluftslivApp(
                     }
                 },
                 bottomBar = {
-                    CustomNavigationBar(navController)
-                }
-            ) { innerPadding ->
-                Box(modifier = Modifier.padding(innerPadding)) {
-                    NavHost(
-                        navController = navController,
-                        startDestination = Screen.HOME.name,
-                        modifier = modifier.fillMaxSize()
-                    ) {
-                        composable(
-                            Screen.HOME.name,
-                            enterTransition = {
-                                // Transition animation from every page.
-                                slideIntoContainer(
-                                    AnimatedContentTransitionScope.SlideDirection.Down,
-                                    animationSpec = tween(500)
-                                )
-                            },
-                            exitTransition = {
-                                slideOutOfContainer(
-                                    AnimatedContentTransitionScope.SlideDirection.Up,
-                                    animationSpec = tween(500)
-                                )
-                            }) {
-                            HomeScreen(userViewModel, tripsViewModel, modifier.padding(innerPadding))
+                    when (bottomBarShown.value) {
+                        true -> CustomNavigationBar(navController)
+
+                        else -> {}
+                    }
+                },
+                floatingActionButton = {
+                    when (bottomBarShown.value) {
+                        false -> {
+                            when (userState.isRailBarOpened) {
+                                false -> FloatingActionButton(
+                                    onClick = {
+                                        userViewModel.updateIsRailBarOpened(!userState.isRailBarOpened)
+                                    }
+                                ) {
+                                    Icon(Icons.Filled.Menu, contentDescription = "Menu")
+                                }
+
+                                else -> {}
+                            }
+                            when (userState.isRailBarOpened) {
+                                false -> FloatingActionButton(
+                                    onClick = {
+                                        userViewModel.updateIsRailBarOpened(!userState.isRailBarOpened)
+                                    }
+                                ) {
+                                    Icon(Icons.Filled.Menu, contentDescription = "Menu")
+                                }
+
+                                else -> {}
+                            }
                         }
 
-                        tripsGraph(navController, tripsViewModel, userViewModel, modifier)
+                        else -> {}
+                    }
+                },
+                floatingActionButtonPosition = FabPosition.Start
+            ) { innerPadding ->
 
-                        floraFaunaGraph(navController, floraFaunaViewModel, userViewModel, modifier)
+                when (railBarShown.value) {
+                    true -> CustomNavigationRail(navController, userViewModel)
 
-                        weatherGraph(navController, weatherViewModel, userViewModel, modifier)
+                    else -> {}
+                }
 
-                        profileGraph(navController, userViewModel, modifier)
+                when (drawerBarShown.value) {
+                    true -> CustomNavigationRail(navController, userViewModel)
+
+                    else -> {}
+                }
+
+                Box(modifier = Modifier.padding(innerPadding)) {
+
+                    Row(modifier = Modifier.padding(start = if (railBarShown.value && userState.isRailBarOpened) 80.dp else 0.dp)) {
+                        NavHost(
+                            navController = navController,
+                            startDestination = Screen.HOME.name,
+                            modifier = modifier.fillMaxSize()
+                        ) {
+                            composable(
+                                Screen.HOME.name,
+                                enterTransition = {
+                                    // Transition animation from every page.
+                                    slideIntoContainer(
+                                        AnimatedContentTransitionScope.SlideDirection.Down,
+                                        animationSpec = tween(500)
+                                    )
+                                },
+                                exitTransition = {
+                                    slideOutOfContainer(
+                                        AnimatedContentTransitionScope.SlideDirection.Up,
+                                        animationSpec = tween(500)
+                                    )
+                                }) {
+                                HomeScreen(
+                                    userViewModel,
+                                    tripsViewModel,
+                                    modifier.padding(innerPadding)
+                                )
+                            }
+
+                            tripsGraph(navController, tripsViewModel, userViewModel, modifier)
+
+                            floraFaunaGraph(
+                                navController,
+                                floraFaunaViewModel,
+                                userViewModel,
+                                modifier
+                            )
+
+                            weatherGraph(navController, weatherViewModel, userViewModel, modifier)
+
+                            profileGraph(navController, userViewModel, modifier)
+                        }
                     }
                 }
             }

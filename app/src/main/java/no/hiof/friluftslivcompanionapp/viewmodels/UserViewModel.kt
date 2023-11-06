@@ -400,4 +400,22 @@ class UserViewModel @Inject constructor(
             )
         }
     }
+
+    // Updates whether or not the rail bar has been opened.
+    fun updateIsRailBarOpened(isRailBarOpened: Boolean) {
+        _state.update { currentState ->
+            currentState.copy(
+                isRailBarOpened = isRailBarOpened
+            )
+        }
+    }
+
+    // Updates whether or not the drawer bar has been opened.
+    fun updateIsDrawerBarOpened(isDrawerBarOpened: Boolean) {
+        _state.update { currentState ->
+            currentState.copy(
+                isDrawerBarOpened = isDrawerBarOpened
+            )
+        }
+    }
 }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -21,7 +22,7 @@ import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 // Consult this website for additional information:
 // https://medium.com/@andkemal/jetpack-compose-and-tab-layout-49f59f8dec29
 @Composable
-fun CustomTabsBar(viewModel: TabNavigation, navController: NavController) {
+fun CustomTabsBar(viewModel: TabNavigation, navController: NavController, modifier: Modifier = Modifier) {
 
     //var tabIndex by remember {
     //    mutableStateOf(0)
@@ -45,7 +46,7 @@ fun CustomTabsBar(viewModel: TabNavigation, navController: NavController) {
 
     val tabsUiState by viewModel.uiState.collectAsState()
 
-    SecondaryTabRow(selectedTabIndex = tabsUiState.currentTabIndex) {
+    SecondaryTabRow(selectedTabIndex = tabsUiState.currentTabIndex, modifier = modifier) {
         viewModel.tabDestinations.onEachIndexed { index, (destination, title) ->
             Tab(
                 text = { Text(stringResource(title)) },

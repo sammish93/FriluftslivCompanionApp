@@ -51,18 +51,16 @@ import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 // Consult this website for additional information:
 // https://developer.android.com/jetpack/compose/navigation#bottom-nav
 @Composable
-fun CustomNavigationRail(navController: NavController, userViewModel: UserViewModel = viewModel()) {
+fun CustomNavigationDrawer(navController: NavController, userViewModel: UserViewModel = viewModel()) {
 
     val userState by userViewModel.state.collectAsState()
 
     NavigationRail(
         header = {
-            if (userState.isRailBarOpened) {
-                IconButton(onClick = { userViewModel.updateIsRailBarOpened(!userState.isRailBarOpened)}) {
-                    Icon(
-                        imageVector = Icons.Default.Menu, contentDescription = "Menu"
-                    )
-                }
+            IconButton(onClick = { userViewModel.updateIsRailBarOpened(!userState.isRailBarOpened)}) {
+                Icon(
+                    imageVector = Icons.Default.Menu, contentDescription = "Menu"
+                )
             }
         }
     ) {
