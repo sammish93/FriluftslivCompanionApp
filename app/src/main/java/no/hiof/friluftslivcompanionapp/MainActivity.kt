@@ -140,6 +140,8 @@ class MainActivity : AppCompatActivity() {
                 // Code was based on examples shown here -
                 // https://medium.com/@fierydinesh/multi-language-support-android-localization-in-app-and-system-settings-change-language-e00957e9c48c
                 AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(userViewModel.getLanguage().code))
+
+                userViewModel.updateLocationManagerCalled(true)
             }
         } else {
             // No user signed in, start SignInActivity

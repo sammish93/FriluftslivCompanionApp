@@ -188,7 +188,8 @@ fun FloraFaunaSearchScreen(
                             .fillMaxWidth()
                             .height(40.dp),
                         enabled = locPermissionState.status.isGranted &&
-                                !locations.isNullOrEmpty() && locations[0].countryCode == "NO"
+                                !locations.isNullOrEmpty() && locations[0].countryCode == "NO" &&
+                                userState.lastKnownLocation != null
                     ) {
                         Text(text = stringResource(R.string.flora_fauna_use_my_location))
                     }
