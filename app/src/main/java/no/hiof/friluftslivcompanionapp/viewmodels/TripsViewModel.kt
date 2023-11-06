@@ -94,6 +94,8 @@ class TripsViewModel @Inject constructor(
                     Log.e("TripsViewModel", "Error fetching hikes: ${result.exception}")
                     errorMessage.value = "There are currently no trips near your location."
                 }
+
+                else -> {}
             }
         }
     }
@@ -222,6 +224,8 @@ class TripsViewModel @Inject constructor(
                         val exception = result.exception
                         Log.e(TAG, "Error writing trip to Firestore: ${exception.message}")
                     }
+
+                    else -> {}
                 }
             }
         } else {
@@ -298,6 +302,8 @@ class TripsViewModel @Inject constructor(
                         Log.e(TAG, "Error fetching recent activity: ${result.exception.message}")
 
                     }
+
+                    else -> {}
                 }
 
             }catch (e: Exception){

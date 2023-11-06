@@ -1,6 +1,7 @@
 package no.hiof.friluftslivcompanionapp.data.states
 
 import android.location.Location
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import com.google.firebase.auth.FirebaseUser
 import no.hiof.friluftslivcompanionapp.models.User
 import no.hiof.friluftslivcompanionapp.models.enums.DisplayPicture
@@ -22,5 +23,6 @@ data class UserState(
     val isLocationManagerCalled: Boolean = false,
     val isLocationPermissionGranted: Boolean = false,
     val isInitiallyNavigatedTo: Boolean = false,
-    val isLocationSearchUpdating: Boolean = false
+    val isLocationSearchUpdating: Boolean = false,
+    val windowSizeClass: WindowSizeClass? = null
 )

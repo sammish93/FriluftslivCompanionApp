@@ -2,6 +2,7 @@ package no.hiof.friluftslivcompanionapp.viewmodels
 
 import android.location.Location
 import android.util.Log
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -116,8 +117,8 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    private val _totalKilometers = MutableStateFlow(0.0)
-    val totalKilometers: StateFlow<Double> = _totalKilometers.asStateFlow()
+    private val _totalKilometers = MutableStateFlow("")
+    val totalKilometers: StateFlow<String> = _totalKilometers.asStateFlow()
 
     fun fetchTotalKilometersForTheYear() {
         viewModelScope.launch {
@@ -377,8 +378,8 @@ class UserViewModel @Inject constructor(
         Log.i("PlaceInfo", "Coordinates: ${info.value?.coordinates}")
     }
 
-    fun roundToOneDecimalPlace(value: Double): Double {
-        return String.format("%.1f", value).toDouble()
+    fun roundToOneDecimalPlace(value: Double): String {
+        return String.format("%.1f", value)
     }
 
 
@@ -391,4 +392,12 @@ class UserViewModel @Inject constructor(
         }
     }
 
+    // Updates the value of the device's window size.
+    fun updateWindowSizeClass(windowSizeClass: WindowSizeClass) {
+        _state.update { currentState ->
+            currentState.copy(
+                windowSizeClass = windowSizeClass
+            )
+        }
+    }
 }

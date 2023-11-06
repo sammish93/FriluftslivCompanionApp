@@ -59,7 +59,7 @@ fun TripItem(trip: Hike) {
             Column(
                 modifier = Modifier.align(Alignment.BottomStart)
             ) {
-                val roundedDistance = String.format("%.1f", trip.distanceKm).toFloat()
+                val roundedDistance = String.format("%.1f", trip.distanceKm)
                 Text(
                     text = "Distance: $roundedDistance km",
                     color = MaterialTheme.colorScheme.surface,

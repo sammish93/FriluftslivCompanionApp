@@ -40,6 +40,9 @@ import no.hiof.friluftslivcompanionapp.ui.theme.FriluftslivCompanionAppTheme
 import javax.inject.Inject
 
 import androidx.compose.material3.Typography
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.core.os.LocaleListCompat
@@ -92,6 +95,7 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -121,6 +125,9 @@ class MainActivity : AppCompatActivity() {
             setContent {
                 // State to be present in a composable so that theme updates on value change.
                 val userState by userViewModel.state.collectAsState()
+
+                // Updates the screen's current window size (even when rotated/resized).
+                userViewModel.updateWindowSizeClass(calculateWindowSizeClass(this))
 
                 FriluftslivCompanionAppTheme(
                     typography = CustomTypography,
@@ -159,7 +166,7 @@ fun WaitingScreen() {
 @Composable
 fun FriluftslivApp(
     modifier: Modifier = Modifier,
-    userViewModel: UserViewModel,
+    userViewModel: UserViewModel
 ) {
     val navController = rememberNavController()
     val currentRoute by rememberUpdatedState(
