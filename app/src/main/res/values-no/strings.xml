@@ -131,4 +131,6 @@
     <string name="flora_fauna_info_back_to_results">Back to results</string>
     <string name="not_share_location_msg">Du deler ikke lokasjon.Benytt søkefeltet.</string>
     <string name="understood">Forstått</string>
+    <string name="not_share_location_msg_HomePage">Aktiver plasseringstilgang for å se turer i området ditt</string>
+
 </resources>
