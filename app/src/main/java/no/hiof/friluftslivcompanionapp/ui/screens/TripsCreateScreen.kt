@@ -121,7 +121,6 @@ fun TripsCreateScreen(
                 floatingActionButtonPosition = FabPosition.Center
             ) { contentPadding ->
                 GoogleMapCreate(userViewModel, viewModel, modifier.padding(contentPadding))
-                ErrorView(message = stringResource(R.string.no_gps_location_found_using_default_oslo))
                 SnackbarHost(
                     hostState = snackbarHostState,
                     modifier = Modifier.align(Alignment.BottomCenter)

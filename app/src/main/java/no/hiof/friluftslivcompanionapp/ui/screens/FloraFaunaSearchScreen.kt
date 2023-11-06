@@ -242,7 +242,7 @@ fun FloraFaunaSearchScreen(
         ) {
             when (floraFaunaState.isLoading) {
                 true -> CustomLoadingScreen()
-                else -> if (!locPermissionState.status.isGranted && text.isEmpty()) {
+                else -> if ((!locPermissionState.status.isGranted || userState.lastKnownLocation == null) && text.isEmpty()) {
                     ErrorView(message = stringResource(R.string.error_no_gps_location_found))
                     SnackbarHost(hostState = snackbarHostState,
                         modifier = Modifier.align(Alignment.BottomCenter))

@@ -46,6 +46,8 @@ import kotlinx.coroutines.launch
 import android.Manifest
 import android.content.Context
 import android.location.Geocoder
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -59,6 +61,7 @@ import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Switch
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -87,13 +90,15 @@ fun SettingsScreen(
 
     val context = LocalContext.current
 
+    // Code inspired by ChatGPT V3.5
+    val connectivityManager = remember { context.getSystemService(ConnectivityManager::class.java) }
+    val isNetworkAvailable by rememberUpdatedState {
+        val network = connectivityManager?.activeNetwork
+        val capabilities = connectivityManager?.getNetworkCapabilities(network)
+        capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+    }
 
     val geocoder = Geocoder(LocalContext.current, Locale.getDefault())
-    val location = geocoder.getFromLocation(
-        userState.lastKnownLocation?.latitude ?: DefaultLocation.OSLO.lat,
-        userState.lastKnownLocation?.longitude ?: DefaultLocation.OSLO.lon,
-        1
-    )
 
     val openLanguageDialogue = remember { mutableStateOf(false) }
     val openLocDialogue = remember { mutableStateOf(false) }
@@ -308,42 +313,50 @@ fun SettingsScreen(
                     else -> {}
                 }
 
-                Text(
-                    text =
-                    stringResource(
-                        R.string.settings_municipality,
-                        (if (!location?.get(0)?.subAdminArea.isNullOrBlank()) location?.get(0)?.subAdminArea else stringResource(
-                            id = R.string.unknown
-                        ))!!
-                    ),
-                    style = CustomTypography.bodySmall
-                )
+                if (isNetworkAvailable()) {
+                    val location = geocoder.getFromLocation(
+                        userState.lastKnownLocation?.latitude ?: DefaultLocation.OSLO.lat,
+                        userState.lastKnownLocation?.longitude ?: DefaultLocation.OSLO.lon,
+                        1
+                    )
 
-                Spacer(modifier = Modifier.padding(vertical = 2.dp))
+                    Text(
+                        text =
+                        stringResource(
+                            R.string.settings_municipality,
+                            (if (!location?.get(0)?.subAdminArea.isNullOrBlank()) location?.get(0)?.subAdminArea else stringResource(
+                                id = R.string.unknown
+                            ))!!
+                        ),
+                        style = CustomTypography.bodySmall
+                    )
 
-                Text(
-                    text =
+                    Spacer(modifier = Modifier.padding(vertical = 2.dp))
+
+                    Text(
+                        text =
                         stringResource(
                             R.string.settings_county,
                             (if (!location?.get(0)?.adminArea.isNullOrBlank()) location?.get(0)?.adminArea else stringResource(
                                 id = R.string.unknown
                             ))!!
                         ),
-                    style = CustomTypography.bodySmall
-                )
+                        style = CustomTypography.bodySmall
+                    )
 
-                Spacer(modifier = Modifier.padding(vertical = 2.dp))
+                    Spacer(modifier = Modifier.padding(vertical = 2.dp))
 
-                Text(
-                    text =
-                    stringResource(
-                        R.string.settings_country,
-                        (if (!location?.get(0)?.countryName.isNullOrBlank()) location?.get(0)?.countryName else stringResource(
-                            id = R.string.unknown
-                        ))!!
-                    ),
-                    style = CustomTypography.bodySmall
-                )
+                    Text(
+                        text =
+                        stringResource(
+                            R.string.settings_country,
+                            (if (!location?.get(0)?.countryName.isNullOrBlank()) location?.get(0)?.countryName else stringResource(
+                                id = R.string.unknown
+                            ))!!
+                        ),
+                        style = CustomTypography.bodySmall
+                    )
+                }
 
                 Spacer(modifier = Modifier.padding(vertical = 2.dp))
 
