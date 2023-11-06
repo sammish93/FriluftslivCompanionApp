@@ -76,7 +76,7 @@ fun HomeScreen(
     val currentPage = remember { mutableIntStateOf(0) }
 
     when (tripsState.isLoading) {
-        true -> CustomLoadingScreen()
+       true -> CustomLoadingScreen()
         else -> when (tripsState.isFailure || !locPermissionState.status.isGranted) {
             false -> {
                 Column(

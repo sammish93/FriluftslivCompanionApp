@@ -134,4 +134,6 @@
     <string name="not_share_location_msg">You do not share your location, use the search field.</string>
     <string name="understood">Understood</string>
     <string name="not_share_location_msg_HomePage">Enable location premission to see trips in your area</string>
+    <string name="no_gps_location_found_using_default_oslo">No GPS location found. Using default:Oslo</string>
+    <string name="not_share_location_msg_TripScreen">No GPS location found. Click search button to use default location Oslo</string>
 </resources>

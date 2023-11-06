@@ -132,5 +132,7 @@
     <string name="not_share_location_msg">Du deler ikke lokasjon.Benytt søkefeltet.</string>
     <string name="understood">Forstått</string>
     <string name="not_share_location_msg_HomePage">Aktiver plasseringstilgang for å se turer i området ditt</string>
+    <string name="no_gps_location_found_using_default_oslo">Ingen GPS-posisjon funnet. Bruker standard:Oslo</string>
+    <string name="not_share_location_msg_TripScreen">Enable your location to use map in your area</string>
 
 </resources>
