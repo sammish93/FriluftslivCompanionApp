@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -29,6 +30,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -114,7 +116,15 @@ fun WeatherScreen(
                 ) { contentPadding ->
 
                     // The main content of the screen is in this block.
-                    ForecastCards(contentPadding, weatherState, userState.language)
+                    when (userState.windowSizeClass.widthSizeClass) {
+                        WindowWidthSizeClass.Compact -> {
+                            ForecastCards(contentPadding, weatherState, userState.language, false)
+                        }
+
+                        else -> {
+                            ForecastCards(contentPadding, weatherState, userState.language, true)
+                        }
+                    }
                 }
             }
 
@@ -172,120 +182,187 @@ fun WeatherScreen(
 private fun ForecastCards(
     contentPadding: PaddingValues,
     weatherState: WeatherState,
-    language: SupportedLanguage
+    language: SupportedLanguage,
+    isWide: Boolean
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(contentPadding)
-            .padding(12.dp),
-        verticalArrangement = Arrangement.Top
-    ) {
         // This section before the next column remains in position while the rest
         // of the list is scrollable.
-        weatherState.currentWeather?.let {
-            PrimaryWeatherCard(
-                weather = it,
-                units = weatherState.unitChoice,
-                language = language
-            )
-        }
+        when (isWide) {
+            true -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(12.dp)
+                        .verticalScroll(rememberScrollState(), enabled = isWide),
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    Spacer(modifier = Modifier.height(20.dp))
 
-        Spacer(modifier = Modifier.height(8.dp))
+                    Row {
+                        weatherState.currentWeather?.let {
+                            PrimaryWeatherCard(
+                                weather = it,
+                                units = weatherState.unitChoice,
+                                language = language,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
 
-        weatherState.todayWeather?.let {
-            PrimaryWeatherCard(
-                weather = it,
-                units = weatherState.unitChoice,
-                current = false,
-                language = language
-            )
-        }
+                        Spacer(modifier = Modifier.width(8.dp))
 
-        Spacer(modifier = Modifier.height(24.dp))
+                        weatherState.todayWeather?.let {
+                            PrimaryWeatherCard(
+                                weather = it,
+                                units = weatherState.unitChoice,
+                                current = false,
+                                language = language,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
 
-        // This column is scrollable.
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.Top
-        ) {
-            Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-            weatherState.todayPlusOneWeather?.let {
-                SecondaryWeatherCard(
-                    weather = it,
-                    units = weatherState.unitChoice,
-                    language = language
-                )
+                    // This column is scrollable.
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.Top
+                    ) {
+                        SecondaryCards(weatherState, language)
+
+                        // This spacer is important so that the last item in the scrollable
+                        // list can be viewed (not covered by the floating action button).
+                        Spacer(modifier = Modifier.height(80.dp))
+                    }
+                }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            else -> {
+                Column(
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    Spacer(modifier = Modifier.height(20.dp))
 
-            weatherState.todayPlusTwoWeather?.let {
-                SecondaryWeatherCard(
-                    weather = it,
-                    units = weatherState.unitChoice,
-                    language = language
-                )
+                    weatherState.currentWeather?.let {
+                        PrimaryWeatherCard(
+                            weather = it,
+                            units = weatherState.unitChoice,
+                            language = language
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    weatherState.todayWeather?.let {
+                        PrimaryWeatherCard(
+                            weather = it,
+                            units = weatherState.unitChoice,
+                            current = false,
+                            language = language
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // This column is scrollable.
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.Top
+                    ) {
+                        SecondaryCards(weatherState, language)
+
+                        // This spacer is important so that the last item in the scrollable
+                        // list can be viewed (not covered by the floating action button).
+                        Spacer(modifier = Modifier.height(80.dp))
+                    }
+                }
             }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            weatherState.todayPlusThreeWeather?.let {
-                SecondaryWeatherCard(
-                    weather = it,
-                    units = weatherState.unitChoice,
-                    language = language
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            weatherState.todayPlusFourWeather?.let {
-                SecondaryWeatherCard(
-                    weather = it,
-                    units = weatherState.unitChoice,
-                    language = language
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            weatherState.todayPlusFiveWeather?.let {
-                SecondaryWeatherCard(
-                    weather = it,
-                    units = weatherState.unitChoice,
-                    language = language
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            weatherState.todayPlusSixWeather?.let {
-                SecondaryWeatherCard(
-                    weather = it,
-                    units = weatherState.unitChoice,
-                    language = language
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            weatherState.todayPlusSevenWeather?.let {
-                SecondaryWeatherCard(
-                    weather = it,
-                    units = weatherState.unitChoice,
-                    language = language
-                )
-            }
-
-            // This spacer is important so that the last item in the scrollable
-            // list can be viewed (not covered by the floating action button).
-            Spacer(modifier = Modifier.height(80.dp))
         }
     }
+
+@Composable
+private fun SecondaryCards(
+    weatherState: WeatherState,
+    language: SupportedLanguage
+) {
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    weatherState.todayPlusOneWeather?.let {
+        SecondaryWeatherCard(
+            weather = it,
+            units = weatherState.unitChoice,
+            language = language
+        )
+    }
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    weatherState.todayPlusTwoWeather?.let {
+        SecondaryWeatherCard(
+            weather = it,
+            units = weatherState.unitChoice,
+            language = language
+        )
+    }
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    weatherState.todayPlusThreeWeather?.let {
+        SecondaryWeatherCard(
+            weather = it,
+            units = weatherState.unitChoice,
+            language = language
+        )
+    }
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    weatherState.todayPlusFourWeather?.let {
+        SecondaryWeatherCard(
+            weather = it,
+            units = weatherState.unitChoice,
+            language = language
+        )
+    }
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    weatherState.todayPlusFiveWeather?.let {
+        SecondaryWeatherCard(
+            weather = it,
+            units = weatherState.unitChoice,
+            language = language
+        )
+    }
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    weatherState.todayPlusSixWeather?.let {
+        SecondaryWeatherCard(
+            weather = it,
+            units = weatherState.unitChoice,
+            language = language
+        )
+    }
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    weatherState.todayPlusSevenWeather?.let {
+        SecondaryWeatherCard(
+            weather = it,
+            units = weatherState.unitChoice,
+            language = language
+        )
+    }
+
+    Spacer(modifier = Modifier.height(8.dp))
 }
 
 @Composable

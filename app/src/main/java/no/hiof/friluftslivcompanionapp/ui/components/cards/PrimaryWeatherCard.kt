@@ -25,6 +25,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import no.hiof.friluftslivcompanionapp.R
@@ -70,6 +71,8 @@ fun PrimaryWeatherCard(
                     ),
                     style = MaterialTheme.typography.headlineSmall,
                     textAlign = TextAlign.Left,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Row(
                     modifier = modifier.fillMaxHeight(),

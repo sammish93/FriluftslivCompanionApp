@@ -5,11 +5,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -20,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -166,7 +169,23 @@ fun WeatherSearchScreen(
                             // When a successful reponse has been returned then the following is displayed.
                             false -> {
                                 // The main content of the screen is in this block.
-                                ForecastCardsForSearch(weatherState, userState.language)
+                                when (userState.windowSizeClass.widthSizeClass) {
+                                    WindowWidthSizeClass.Compact -> {
+                                        ForecastCardsForSearch(
+                                            weatherState,
+                                            userState.language,
+                                            false
+                                        )
+                                    }
+
+                                    else -> {
+                                        ForecastCardsForSearch(
+                                            weatherState,
+                                            userState.language,
+                                            true
+                                        )
+                                    }
+                                }
                             }
 
                             else -> {}
@@ -183,119 +202,180 @@ fun WeatherSearchScreen(
 @Composable
 private fun ForecastCardsForSearch(
     weatherState: WeatherState,
-    language: SupportedLanguage
+    language: SupportedLanguage,
+    isWide: Boolean
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.Top
-    ) {
-        Spacer(modifier = Modifier.height(20.dp))
 
-        // This section before the next column remains in position while the rest
-        // of the list is scrollable.
-        weatherState.currentWeatherForSearch?.let {
-            PrimaryWeatherCard(
-                weather = it,
-                units = weatherState.unitChoice,
-                language = language
-            )
+    // This section before the next column remains in position while the rest
+    // of the list is scrollable.
+    when (isWide) {
+        true -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState(), enabled = isWide),
+                verticalArrangement = Arrangement.Top
+            ) {
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Row {
+                    weatherState.currentWeather?.let {
+                        PrimaryWeatherCard(
+                            weather = it,
+                            units = weatherState.unitChoice,
+                            language = language,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    weatherState.todayWeather?.let {
+                        PrimaryWeatherCard(
+                            weather = it,
+                            units = weatherState.unitChoice,
+                            current = false,
+                            language = language,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // This column is scrollable.
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    SecondaryCards(weatherState, language)
+                }
+            }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        else -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Top
+            ) {
+                Spacer(modifier = Modifier.height(20.dp))
 
-        weatherState.todayWeatherForSearch?.let {
-            PrimaryWeatherCard(
-                weather = it,
-                units = weatherState.unitChoice,
-                current = false,
-                language = language
-            )
-        }
+                weatherState.currentWeather?.let {
+                    PrimaryWeatherCard(
+                        weather = it,
+                        units = weatherState.unitChoice,
+                        language = language
+                    )
+                }
 
-        Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-        // This column is scrollable.
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.Top
-        ) {
-            Spacer(modifier = Modifier.height(8.dp))
+                weatherState.todayWeather?.let {
+                    PrimaryWeatherCard(
+                        weather = it,
+                        units = weatherState.unitChoice,
+                        current = false,
+                        language = language
+                    )
+                }
 
-            weatherState.todayPlusOneWeatherForSearch?.let {
-                SecondaryWeatherCard(
-                    weather = it,
-                    units = weatherState.unitChoice,
-                    language = language
-                )
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // This column is scrollable.
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    SecondaryCards(weatherState, language)
+                }
             }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            weatherState.todayPlusTwoWeatherForSearch?.let {
-                SecondaryWeatherCard(
-                    weather = it,
-                    units = weatherState.unitChoice,
-                    language = language
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            weatherState.todayPlusThreeWeatherForSearch?.let {
-                SecondaryWeatherCard(
-                    weather = it,
-                    units = weatherState.unitChoice,
-                    language = language
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            weatherState.todayPlusFourWeatherForSearch?.let {
-                SecondaryWeatherCard(
-                    weather = it,
-                    units = weatherState.unitChoice,
-                    language = language
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            weatherState.todayPlusFiveWeatherForSearch?.let {
-                SecondaryWeatherCard(
-                    weather = it,
-                    units = weatherState.unitChoice,
-                    language = language
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            weatherState.todayPlusSixWeatherForSearch?.let {
-                SecondaryWeatherCard(
-                    weather = it,
-                    units = weatherState.unitChoice,
-                    language = language
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            weatherState.todayPlusSevenWeatherForSearch?.let {
-                SecondaryWeatherCard(
-                    weather = it,
-                    units = weatherState.unitChoice,
-                    language = language
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
+
+@Composable
+private fun SecondaryCards(
+    weatherState: WeatherState,
+    language: SupportedLanguage
+) {
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    weatherState.todayPlusOneWeatherForSearch?.let {
+        SecondaryWeatherCard(
+            weather = it,
+            units = weatherState.unitChoice,
+            language = language
+        )
+    }
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    weatherState.todayPlusTwoWeatherForSearch?.let {
+        SecondaryWeatherCard(
+            weather = it,
+            units = weatherState.unitChoice,
+            language = language
+        )
+    }
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    weatherState.todayPlusThreeWeatherForSearch?.let {
+        SecondaryWeatherCard(
+            weather = it,
+            units = weatherState.unitChoice,
+            language = language
+        )
+    }
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    weatherState.todayPlusFourWeatherForSearch?.let {
+        SecondaryWeatherCard(
+            weather = it,
+            units = weatherState.unitChoice,
+            language = language
+        )
+    }
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    weatherState.todayPlusFiveWeatherForSearch?.let {
+        SecondaryWeatherCard(
+            weather = it,
+            units = weatherState.unitChoice,
+            language = language
+        )
+    }
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    weatherState.todayPlusSixWeatherForSearch?.let {
+        SecondaryWeatherCard(
+            weather = it,
+            units = weatherState.unitChoice,
+            language = language
+        )
+    }
+
+    Spacer(modifier = Modifier.height(12.dp))
+
+    weatherState.todayPlusSevenWeatherForSearch?.let {
+        SecondaryWeatherCard(
+            weather = it,
+            units = weatherState.unitChoice,
+            language = language
+        )
+    }
+
+    Spacer(modifier = Modifier.height(8.dp))
+}
+
 
 
 
