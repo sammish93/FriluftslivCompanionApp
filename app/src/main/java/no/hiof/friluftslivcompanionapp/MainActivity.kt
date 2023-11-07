@@ -212,11 +212,20 @@ fun FriluftslivApp(
 
     // CustomTabsBar Composables are assigned to functions here and injected in NavHost below.
     val tripsTabsBar: @Composable () -> Unit =
-        { CustomTabsBar(tripsViewModel, navController) }
+        { CustomTabsBar(tripsViewModel, navController,
+            Modifier.padding(start =
+            if (userState.windowSizeClass.widthSizeClass != WindowWidthSizeClass.Compact &&
+                userState.isRailBarOpened) 80.dp else 0.dp)) }
     val floraFaunaTabsBar: @Composable () -> Unit =
-        { CustomTabsBar(floraFaunaViewModel, navController) }
+        { CustomTabsBar(floraFaunaViewModel, navController,
+            Modifier.padding(start =
+            if (userState.windowSizeClass.widthSizeClass != WindowWidthSizeClass.Compact &&
+                userState.isRailBarOpened) 80.dp else 0.dp)) }
     val weatherTabsBar: @Composable () -> Unit =
-        { CustomTabsBar(weatherViewModel, navController) }
+        { CustomTabsBar(weatherViewModel, navController,
+            Modifier.padding(start =
+            if (userState.windowSizeClass.widthSizeClass != WindowWidthSizeClass.Compact &&
+                userState.isRailBarOpened) 80.dp else 0.dp)) }
 
     when (userState.isLocationManagerCalled) {
         true ->
