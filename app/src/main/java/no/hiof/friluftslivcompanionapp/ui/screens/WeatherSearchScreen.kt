@@ -50,6 +50,7 @@ import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
 import no.hiof.friluftslivcompanionapp.ui.components.LocationAutoFillList
 import no.hiof.friluftslivcompanionapp.ui.components.cards.PrimaryWeatherCard
 import no.hiof.friluftslivcompanionapp.ui.components.cards.SecondaryWeatherCard
+import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 
@@ -94,16 +95,12 @@ fun WeatherSearchScreen(
             label = {
                 Text(
                     text = stringResource(R.string.search_search_for_a_place),
-                    style = TextStyle(fontWeight = FontWeight.Medium)
+                    style = CustomTypography.labelLarge
                 )
             },
             modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.extraLarge,
             colors = TextFieldDefaults.colors(),
-            textStyle = TextStyle(
-                fontWeight = FontWeight.Medium,
-                fontSize = 18.sp
-            ),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,

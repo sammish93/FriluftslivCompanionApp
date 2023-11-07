@@ -11,6 +11,28 @@ import no.hiof.friluftslivcompanionapp.R
 
 
 val CustomTypography =  Typography(
+
+    displayLarge = TextStyle(
+        fontFamily = FontFamily(Font(R.font.londrinasolid_black)),
+        fontSize = 57.sp,
+        lineHeight = 64.sp,
+        letterSpacing = 0.sp
+    ),
+
+    displayMedium = TextStyle(
+        fontFamily = FontFamily(Font(R.font.londrinasolid_black)),
+        fontSize = 45.sp,
+        lineHeight = 52.sp,
+        letterSpacing = 0.sp
+    ),
+
+    displaySmall = TextStyle(
+        fontFamily = FontFamily(Font(R.font.londrinasolid_black)),
+        fontSize = 36.sp,
+        lineHeight = 44.sp,
+        letterSpacing = 0.sp
+    ),
+
     headlineLarge = TextStyle(
         fontFamily = FontFamily(Font(R.font.londrinasolid_regular)),
         fontSize = 32.sp,
@@ -54,22 +76,43 @@ val CustomTypography =  Typography(
     ),
 
     bodyLarge = TextStyle(
-        fontFamily = FontFamily(Font(R.font.enriqueta_regular)),
+        fontFamily = FontFamily(Font(R.font.enriqueta_medium)),
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.sp
     ),
 
     bodyMedium = TextStyle(
-        fontFamily = FontFamily(Font(R.font.enriqueta_regular)),
+        fontFamily = FontFamily(Font(R.font.enriqueta_medium)),
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.sp
     ),
 
     bodySmall = TextStyle(
-        fontFamily = FontFamily(Font(R.font.enriqueta_regular)),
+        fontFamily = FontFamily(Font(R.font.enriqueta_medium)),
         fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.sp
+    ),
+
+    labelLarge = TextStyle(
+        fontFamily = FontFamily(Font(R.font.londrinasolid_light)),
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.sp
+    ),
+
+    labelMedium = TextStyle(
+        fontFamily = FontFamily(Font(R.font.londrinasolid_light)),
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.sp
+    ),
+
+    labelSmall = TextStyle(
+        fontFamily = FontFamily(Font(R.font.londrinasolid_light)),
+        fontSize = 11.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.sp
     ),
