@@ -13,20 +13,11 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -135,6 +126,7 @@ class MainActivity : AppCompatActivity() {
             userViewModel.fetchUserLanguagePreference(currentUser.uid)
 
 
+
             // User is signed in, shows the main content.
             setContent {
                 // State to be present in a composable so that theme updates on value change.
@@ -160,11 +152,9 @@ class MainActivity : AppCompatActivity() {
                 // logged in user - it's defaulted to ENGLISH right now.
                 // Code was based on examples shown here -
                 // https://medium.com/@fierydinesh/multi-language-support-android-localization-in-app-and-system-settings-change-language-e00957e9c48c
-                AppCompatDelegate.setApplicationLocales(
-                    LocaleListCompat.forLanguageTags(
-                        userViewModel.getLanguage().code
-                    )
-                )
+                AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(userViewModel.getLanguage().code))
+
+                userViewModel.updateLocationManagerCalled(true)
             }
         } else {
             // No user signed in, start SignInActivity
@@ -184,7 +174,7 @@ fun WaitingScreen() {
 @Composable
 fun FriluftslivApp(
     modifier: Modifier = Modifier,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
 ) {
     val navController = rememberNavController()
     val currentRoute by rememberUpdatedState(
@@ -203,12 +193,11 @@ fun FriluftslivApp(
 
     // CustomTabsBar Composables are assigned to functions here and injected in NavHost below.
     val tripsTabsBar: @Composable () -> Unit =
-        { CustomTabsBar(tripsViewModel, navController, Modifier.padding(start = if (userState.isRailBarOpened) 80.dp else 0.dp)) }
+        { CustomTabsBar(tripsViewModel, navController) }
     val floraFaunaTabsBar: @Composable () -> Unit =
-        { CustomTabsBar(floraFaunaViewModel, navController, Modifier.padding(start = if (userState.isRailBarOpened) 80.dp else 0.dp)) }
+        { CustomTabsBar(floraFaunaViewModel, navController) }
     val weatherTabsBar: @Composable () -> Unit =
-        { CustomTabsBar(weatherViewModel, navController, Modifier.padding(start = if (userState.isRailBarOpened) 80.dp else 0.dp)) }
-
+        { CustomTabsBar(weatherViewModel, navController) }
 
     when (userState.isLocationManagerCalled) {
         true ->

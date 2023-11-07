@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
+import android.Manifest
 import android.location.Geocoder
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,12 +14,12 @@ import androidx.navigation.NavController
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
@@ -26,9 +27,11 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.domain.FloraFaunaMapper
@@ -37,14 +40,15 @@ import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
+import no.hiof.friluftslivcompanionapp.ui.components.ErrorView
 import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
 import no.hiof.friluftslivcompanionapp.ui.components.LocationAutoFillList
+import no.hiof.friluftslivcompanionapp.ui.components.SnackbarWithCondition
 import no.hiof.friluftslivcompanionapp.ui.components.cards.FloraFaunaCard
-import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import java.util.Locale
 
-
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun FloraFaunaSearchScreen(
     searchBy: String,
@@ -53,9 +57,12 @@ fun FloraFaunaSearchScreen(
     viewModel: FloraFaunaViewModel = viewModel(),
     userViewModel: UserViewModel = viewModel()
 ) {
+    val locPermissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
+
     val userState by userViewModel.state.collectAsState()
     val floraFaunaState by viewModel.floraFaunaState.collectAsState()
     val placesState by userViewModel.placeInfoState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val geocoder = Geocoder(LocalContext.current, Locale.getDefault())
     val locations = geocoder.getFromLocation(
@@ -63,6 +70,8 @@ fun FloraFaunaSearchScreen(
         userState.lastKnownLocation?.longitude ?: DefaultLocation.OSLO.lon,
         1
     )
+
+
 
     var text by remember { mutableStateOf("") }
     var speciesResultsShown by remember { mutableStateOf(false) }
@@ -145,7 +154,7 @@ fun FloraFaunaSearchScreen(
                             if (!locations.isNullOrEmpty()) {
                                 val location = locations[0]
 
-                                val locality = location.adminArea ?: "Oslo"
+                                val locality = location.adminArea
 
                                 viewModel.viewModelScope.launch {
                                     val (regionCode, message) = LocationFormatter.getRegionCodeByLocation(
@@ -178,9 +187,9 @@ fun FloraFaunaSearchScreen(
                             .weight(1f)
                             .fillMaxWidth()
                             .height(40.dp),
-                        enabled = if (!locations.isNullOrEmpty()) {
-                            locations[0].countryCode == "NO"
-                        } else false
+                        enabled = locPermissionState.status.isGranted &&
+                                !locations.isNullOrEmpty() && locations[0].countryCode == "NO" &&
+                                userState.lastKnownLocation != null
                     ) {
                         Text(text = stringResource(R.string.flora_fauna_use_my_location))
                     }
@@ -233,8 +242,23 @@ fun FloraFaunaSearchScreen(
         ) {
             when (floraFaunaState.isLoading) {
                 true -> CustomLoadingScreen()
-                else -> when (floraFaunaState.isFailure || floraFaunaState.isNoGps) {
-                    false -> {
+                else -> if ((!locPermissionState.status.isGranted || userState.lastKnownLocation == null) && text.isEmpty()) {
+                    ErrorView(message = stringResource(R.string.error_no_gps_location_found))
+                    SnackbarHost(hostState = snackbarHostState,
+                        modifier = Modifier.align(Alignment.BottomCenter))
+
+                    SnackbarWithCondition(
+                        snackbarHostState = snackbarHostState,
+                        message = stringResource(R.string.not_share_location_msg),
+                        actionLabel = stringResource(R.string.understood),
+                        condition = !locPermissionState.status.isGranted && text.isEmpty()
+                    )
+
+                } else if (floraFaunaState.isFailure){
+                    ErrorView(message = stringResource(R.string.error_retrieving_api_success_response))
+
+                }
+                else {
                         ListComponent(floraFaunaState.speciesResults) { species, textStyle ->
 
                             val subclass = FloraFaunaMapper.mapClassToEnum(species)
@@ -258,50 +282,6 @@ fun FloraFaunaSearchScreen(
 
                             Spacer(modifier = Modifier.height(6.dp))
                         }
-                    }
-                    else -> {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .wrapContentSize(Alignment.Center)
-                                .padding(16.dp),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = if (floraFaunaState.isNoGps) stringResource(R.string.error_no_gps_location_found) else stringResource(
-                                    R.string.error_retrieving_api_success_response
-                                ),
-                                style = CustomTypography.headlineMedium,
-                                textAlign = TextAlign.Center,
-                                modifier = modifier.wrapContentSize(Alignment.Center)
-                            )
-                            IconButton(onClick = {
-                                viewModel.viewModelScope.launch {
-                                    //TODO Add functionality to prompt the user to share their location if
-                                    // permissions aren't currently given.
-                                    val location = locations?.get(0)
-
-                                    val locality = location?.adminArea ?: "Oslo"
-
-                                    viewModel.viewModelScope.launch {
-                                        val (regionCode, message) = LocationFormatter.getRegionCodeByLocation(
-                                            locality
-                                        )
-                                        println("Found your location: $regionCode")
-                                        println(message)
-                                        viewModel.searchSpeciesByLocation(
-                                            regionCode,
-                                            20,
-                                            userState.language
-                                        )
-                                    }
-                                }
-                            }) {
-                                Icon(Icons.Default.Refresh, contentDescription = stringResource(id = R.string.refresh))
-                            }
-                        }
-                    }
                 }
             }
         }

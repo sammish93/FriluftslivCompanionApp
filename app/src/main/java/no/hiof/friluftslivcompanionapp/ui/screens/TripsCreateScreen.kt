@@ -1,6 +1,8 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
+import android.Manifest
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -35,6 +37,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -55,6 +59,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
@@ -63,13 +70,15 @@ import no.hiof.friluftslivcompanionapp.domain.DateFormatter
 import no.hiof.friluftslivcompanionapp.domain.TripFactory
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
+import no.hiof.friluftslivcompanionapp.ui.components.ErrorView
+import no.hiof.friluftslivcompanionapp.ui.components.SnackbarWithCondition
 import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapCreate
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import java.time.Duration
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun TripsCreateScreen(
     navController: NavController,
@@ -85,63 +94,73 @@ fun TripsCreateScreen(
     val tripState by viewModel.tripsState.collectAsState()
     val userState by userViewModel.state.collectAsState()
 
-    when (tripState.isLoading) {
-        true -> CustomLoadingScreen()
-        else -> when (tripState.isFailure || tripState.isNoGps) {
-            false -> {
-                Scaffold(
-                    // A button that allows the user to click and display the Bottom Sheet.
-                    floatingActionButton = {
-                        ExtendedFloatingActionButton(
-                            text = { Text(stringResource(id = R.string.trips_create_create_trip)) },
-                            icon = {
-                                Icon(
-                                    Icons.Filled.Add,
-                                    contentDescription = stringResource(id = R.string.trips_create_create_trip)
-                                )
-                            },
-                            onClick = {
-                                showBottomSheet = true
-                            }
-                        )
-                    },
-                    floatingActionButtonPosition = FabPosition.Center
-                ) { contentPadding ->
-                    GoogleMapCreate(userViewModel, viewModel, modifier.padding(contentPadding))
-                }
-            }
-            else -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .wrapContentSize(Alignment.Center)
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = if (tripState.isNoGps) stringResource(R.string.error_no_gps_location_found)
-                        else stringResource(
-                            R.string.error_retrieving_api_success_response
-                        ),
-                        style = CustomTypography.headlineMedium,
-                        textAlign = TextAlign.Center,
-                        modifier = modifier.wrapContentSize(Alignment.Center)
-                    )
-                    IconButton(onClick = {
-                        viewModel.viewModelScope.launch {
-                            //TODO Add functionality to prompt the user to share their location if
-                            // permissions aren't currently given.
+    val locPermissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
+    val snackbarHostState = remember { SnackbarHostState() }
 
+    Box(){when (tripState.isLoading) {
+        true -> CustomLoadingScreen()
+        else -> if (!locPermissionState.status.isGranted) {
+
+
+            Scaffold(
+                // A button that allows the user to click and display the Bottom Sheet.
+                floatingActionButton = {
+                    ExtendedFloatingActionButton(
+                        text = { Text(stringResource(id = R.string.trips_create_create_trip)) },
+                        icon = {
+                            Icon(
+                                Icons.Filled.Add,
+                                contentDescription = stringResource(id = R.string.trips_create_create_trip)
+                            )
+                        },
+                        onClick = {
+                            showBottomSheet = true
                         }
-                    }) {
-                        Icon(Icons.Default.Refresh, contentDescription = stringResource(id = R.string.refresh))
-                    }
-                }
+                    )
+                },
+                floatingActionButtonPosition = FabPosition.Center
+            ) { contentPadding ->
+                GoogleMapCreate(userViewModel, viewModel, modifier.padding(contentPadding))
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                )
+
+                SnackbarWithCondition(
+                    snackbarHostState = snackbarHostState,
+                    message = (stringResource(R.string.noGpsMsg_CreateTripScreen)),
+                    actionLabel = stringResource(R.string.understood),
+                    condition = !locPermissionState.status.isGranted
+                )
             }
+        } else if (tripState.isFailure) {
+            ErrorView(message = stringResource(R.string.error_retrieving_api_success_response))
+
 
         }
-
+        else{
+            Scaffold(
+                // A button that allows the user to click and display the Bottom Sheet.
+                floatingActionButton = {
+                    ExtendedFloatingActionButton(
+                        text = { Text(stringResource(id = R.string.trips_create_create_trip)) },
+                        icon = {
+                            Icon(
+                                Icons.Filled.Add,
+                                contentDescription = stringResource(id = R.string.trips_create_create_trip)
+                            )
+                        },
+                        onClick = {
+                            showBottomSheet = true
+                        }
+                    )
+                },
+                floatingActionButtonPosition = FabPosition.Center
+            ) { contentPadding ->
+                GoogleMapCreate(userViewModel, viewModel, modifier.padding(contentPadding))
+                }
+            }
+        }
     }
 
     if (showBottomSheet) {

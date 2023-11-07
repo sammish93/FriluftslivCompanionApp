@@ -13,5 +13,5 @@ data class FloraFaunaState(
     val sightingLocation: Location = Location(DefaultLocation.OSLO.lat, DefaultLocation.OSLO.lon),
     val isLoading: Boolean = false,
     val isFailure: Boolean = false,
-    val isNoGps: Boolean = false
+    //val isNoGps: Boolean = false
 )

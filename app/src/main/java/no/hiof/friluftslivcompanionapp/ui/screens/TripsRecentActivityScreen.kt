@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
+import android.Manifest
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,6 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
@@ -37,6 +41,7 @@ import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 
 
 val dummyTrips: List<DummyTrip> = DummyTrip.getDummyData()
+@OptIn(ExperimentalPermissionsApi::class)
 
 @Composable
 fun TripsRecentActivityScreen(
@@ -48,6 +53,7 @@ fun TripsRecentActivityScreen(
     val userState by userViewModel.state.collectAsState()
     val tripsInArea by tripsViewModel.hikes.collectAsState()
     val tripsState by tripsViewModel.tripsState.collectAsState()
+    val locPermissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
 
     LaunchedEffect(userState) {
         val geoPoint = userState.lastKnownLocation?.let { GeoPoint(it.latitude, it.longitude) }
@@ -58,7 +64,7 @@ fun TripsRecentActivityScreen(
 
     when (tripsState.isLoading) {
         true -> CustomLoadingScreen()
-        else -> when (tripsState.isFailure || tripsState.isNoGps) {
+        else -> when (tripsState.isFailure ||  !locPermissionState.status.isGranted ) {
             false -> {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -82,7 +88,7 @@ fun TripsRecentActivityScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = if (tripsState.isNoGps) stringResource(R.string.error_no_gps_location_found)
+                        text = if (!locPermissionState.status.isGranted) stringResource(R.string.error_no_gps_location_found)
                         else stringResource(
                             R.string.error_retrieving_api_success_response
                         ),
