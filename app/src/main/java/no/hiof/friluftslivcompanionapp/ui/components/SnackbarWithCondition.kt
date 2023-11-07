@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.components
 
+import android.util.Log
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,6 +18,7 @@ fun SnackbarWithCondition(
                 message = message,
                 actionLabel = actionLabel
             )
+            Log.d("Snackbar", "Snackbar shown: $message")
         }
     }
 }

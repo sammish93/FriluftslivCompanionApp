@@ -1,6 +1,9 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
 import android.Manifest
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,10 +53,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -98,6 +103,18 @@ fun TripsCreateScreen(
 
     val locPermissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val context = LocalContext.current
+
+    // Code inspired by ChatGPT V3.5
+    // Retrieves a boolean value as to whether the user currently has internet connectivity.
+    val connectivityManager = remember { context.getSystemService(ConnectivityManager::class.java) }
+    val isNetworkAvailable = remember {
+        val network = connectivityManager?.activeNetwork
+        val capabilities = connectivityManager?.getNetworkCapabilities(network)
+        capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+    }
+    val isNotNetworkAvailable = !isNetworkAvailable
 
     Box(){when (tripState.isLoading) {
         true -> CustomLoadingScreen()
@@ -154,6 +171,12 @@ fun TripsCreateScreen(
                         },
                         onClick = {
                             showBottomSheet = true
+
+                            if(isNotNetworkAvailable){
+                                showBottomSheet = false
+                                Toast.makeText(context,"No internet connection", Toast.LENGTH_LONG).show()
+                            }
+
                         }
                     )
                 },

@@ -1,10 +1,13 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
 import android.annotation.SuppressLint
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +23,8 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -29,25 +34,24 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.data.states.WeatherState
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
 import no.hiof.friluftslivcompanionapp.ui.components.LocationAutoFillList
+import no.hiof.friluftslivcompanionapp.ui.components.SnackbarWithCondition
 import no.hiof.friluftslivcompanionapp.ui.components.cards.PrimaryWeatherCard
 import no.hiof.friluftslivcompanionapp.ui.components.cards.SecondaryWeatherCard
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
@@ -73,6 +77,21 @@ fun WeatherSearchScreen(
     var resultListShown by remember { mutableStateOf(false) }
     var weatherResultsShown by remember { mutableStateOf(false) }
     val hasApiBeenCalled = remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val context = LocalContext.current
+    // Code inspired by ChatGPT V3.5
+    // Retrieves a boolean value as to whether the user currently has internet connectivity.
+    val connectivityManager = remember { context.getSystemService(ConnectivityManager::class.java) }
+    val isNetworkAvailable = remember{
+        val network = connectivityManager?.activeNetwork
+        val capabilities = connectivityManager?.getNetworkCapabilities(network)
+        capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+    }
+
+    val isNotNetworkAvailable = !isNetworkAvailable
+
+    Log.d("NetworkStatus", "NetworkAvailable: $isNetworkAvailable, isNotNetworkAvailable: $isNotNetworkAvailable")
 
     // This resets the focus when a location has been selected from the Places API.
     val focusedElement = LocalFocusManager.current
@@ -119,6 +138,7 @@ fun WeatherSearchScreen(
             }
         )
 
+
         // Shows the results of the search dynamically updating.
         when (resultListShown) {
             true -> {
@@ -134,7 +154,22 @@ fun WeatherSearchScreen(
                 )
             }
 
-            else -> {}
+            else ->{
+                //if(isNotNetworkAvailable){}
+                Box(){
+                    SnackbarHost(
+                        hostState = snackbarHostState,
+                        modifier = Modifier.align(Alignment.BottomCenter)
+                    )
+
+                    SnackbarWithCondition(
+                        snackbarHostState = snackbarHostState,
+                        message = stringResource(R.string.no_internett_connection),
+                        actionLabel = stringResource(R.string.understood),
+                        condition = isNotNetworkAvailable
+                    )
+                }
+            }
         }
 
         // Shows the weather forecast for the location chosen.

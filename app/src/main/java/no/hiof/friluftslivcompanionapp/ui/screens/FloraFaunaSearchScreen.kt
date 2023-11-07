@@ -2,6 +2,8 @@ package no.hiof.friluftslivcompanionapp.ui.screens
 
 import android.Manifest
 import android.location.Geocoder
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
@@ -15,6 +17,7 @@ import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -74,6 +77,17 @@ fun FloraFaunaSearchScreen(
         1
     )
 
+    val context = LocalContext.current
+    // Code inspired by ChatGPT V3.5
+    // Retrieves a boolean value as to whether the user currently has internet connectivity.
+    val connectivityManager = remember { context.getSystemService(ConnectivityManager::class.java) }
+    val isNetworkAvailable = remember{
+        val network = connectivityManager?.activeNetwork
+        val capabilities = connectivityManager?.getNetworkCapabilities(network)
+        capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+    }
+
+    val isNotNetworkAvailable = !isNetworkAvailable
 
     var text by remember { mutableStateOf("") }
     var speciesResultsShown by remember { mutableStateOf(false) }
@@ -101,19 +115,37 @@ fun FloraFaunaSearchScreen(
                     resultListShown = true
                 },
                 label = {
-                    Text(
+
+                    if(isNotNetworkAvailable){
+                        Text(
+                            text = stringResource(R.string.enable_network_to_search_for_a_place),
+                            style = CustomTypography.labelLarge
+                        )
+
+                    } else{
+                        Text(
                         text = stringResource(R.string.search_search_for_a_place),
                         style = CustomTypography.labelLarge
-                    )
+                    )}
                 },
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.extraLarge,
                 colors = TextFieldDefaults.colors(),
                 leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = stringResource(R.string.search_icon)
-                    )
+
+                    if (isNotNetworkAvailable){
+                        Icon(
+                            imageVector = Icons.Default.Warning,
+                            contentDescription = stringResource(R.string.warningicon)
+                        )
+
+                    }else{
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = stringResource(R.string.search_icon)
+                        )
+                    }
+
                 },
                 trailingIcon = {
                     Icon(
@@ -192,7 +224,8 @@ fun FloraFaunaSearchScreen(
                         // retrieved and the location is in Norway.
                         enabled = locPermissionState.status.isGranted &&
                                 !locations.isNullOrEmpty() && locations[0].countryCode == "NO" &&
-                                userState.lastKnownLocation != null
+                                userState.lastKnownLocation != null &&
+                                !isNotNetworkAvailable
                     ) {
                         Text(text = stringResource(R.string.flora_fauna_use_my_location))
                     }

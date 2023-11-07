@@ -137,4 +137,9 @@
     <string name="no_gps_location_found_using_default_oslo">No GPS location found. Using default:Oslo</string>
     <string name="not_share_location_msg_TripScreen">You are currently not sharing your location. You can still browse trips!</string>
     <string name="noGpsMsg_CreateTripScreen">You are currently not sharing your location. You can still create a trip!</string>
+    <string name="no_internett_connection">No internett connection</string>
+    <string name="warning">Warning</string>
+    <string name="no_internett_no_search">No internett connection. You are not able to search this area</string>
+    <string name="enable_network_to_search_for_a_place">Enable network to search for a place</string>
+    <string name="warningicon">WarningIcon</string>
 </resources>

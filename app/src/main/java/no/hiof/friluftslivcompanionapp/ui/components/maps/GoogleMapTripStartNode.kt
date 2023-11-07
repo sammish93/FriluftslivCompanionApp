@@ -1,14 +1,19 @@
 package no.hiof.friluftslivcompanionapp.ui.components.maps
 
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -63,6 +68,16 @@ fun GoogleMapTripStartNodes(
     val lastKnownLocation = userState.lastKnownLocation
     val userLocation = getLastKnownLocation(lastKnownLocation)
 
+    // Code inspired by ChatGPT V3.5
+    // Retrieves a boolean value as to whether the user currently has internet connectivity.
+    val connectivityManager = remember { context.getSystemService(ConnectivityManager::class.java) }
+    val isNetworkAvailable = remember {
+        val network = connectivityManager?.activeNetwork
+        val capabilities = connectivityManager?.getNetworkCapabilities(network)
+        capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+    }
+    val isNotNetworkAvailable = !isNetworkAvailable
+
     val cameraPosition = getCameraPosition(
         userLocation ?: LatLng(
             DefaultLocation.OSLO.lat,
@@ -111,7 +126,11 @@ fun GoogleMapTripStartNodes(
                 if (trips.isEmpty()) {
                     Toast.makeText(context,"There are no trips in this radius", Toast.LENGTH_LONG).show()
                 }
-            }
+                if (isNotNetworkAvailable) {
+                    Toast.makeText(context,"No internet connection", Toast.LENGTH_LONG).show()
+                }
+
+            },
         )
     }
 
