@@ -58,7 +58,8 @@ fun GoogleMapTripStartNodes(
     userViewModel: UserViewModel = viewModel(),
     trips: List<Hike>,
     modifier: Modifier = Modifier,
-    onSearchAreaRequested: (LatLng) -> Unit) {
+    onSearchAreaRequested: (LatLng) -> Unit
+) {
 
     val cameraPositionState = rememberCameraPositionState()
     val latestBoundsState = rememberUpdatedState(computeBounds(trips))
@@ -71,12 +72,11 @@ fun GoogleMapTripStartNodes(
     // Code inspired by ChatGPT V3.5
     // Retrieves a boolean value as to whether the user currently has internet connectivity.
     val connectivityManager = remember { context.getSystemService(ConnectivityManager::class.java) }
-    val isNetworkAvailable = remember {
+    val isNetworkAvailable by rememberUpdatedState {
         val network = connectivityManager?.activeNetwork
         val capabilities = connectivityManager?.getNetworkCapabilities(network)
         capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
     }
-    val isNotNetworkAvailable = !isNetworkAvailable
 
     val cameraPosition = getCameraPosition(
         userLocation ?: LatLng(
@@ -109,29 +109,36 @@ fun GoogleMapTripStartNodes(
                 navController = navController
             )
         }
-        ExtendedFloatingActionButton(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp),
-            text = { Text("Search this area") },
-            icon = {
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = stringResource(id = R.string.search))
-            },
-            onClick = {
-                searchInCurrentMapArea()
-                /* TODO: Need to have a state in the viewModel that checks if the search is over
+        if (isNetworkAvailable()) {
+            ExtendedFloatingActionButton(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 16.dp),
+                text = { Text("Search this area") },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = stringResource(id = R.string.search)
+                    )
+                },
+                onClick = {
+                    searchInCurrentMapArea()
+                    /* TODO: Need to have a state in the viewModel that checks if the search is over
                          or not. That is because 'searchInCurrentMapArea' is an asynchronous operation. */
-                if (trips.isEmpty()) {
-                    Toast.makeText(context,"There are no trips in this radius", Toast.LENGTH_LONG).show()
-                }
-                if (isNotNetworkAvailable) {
-                    Toast.makeText(context,"No internet connection", Toast.LENGTH_LONG).show()
-                }
+                    if (trips.isEmpty()) {
+                        Toast.makeText(
+                            context,
+                            "There are no trips in this radius",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    if (!isNetworkAvailable()) {
+                        Toast.makeText(context, "No internet connection", Toast.LENGTH_LONG).show()
+                    }
 
-            },
-        )
+                },
+            )
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -151,7 +158,8 @@ fun GoogleMapTripStartNodes(
 fun HikerMarker(
     navController: NavController,
     tripsViewModel: TripsViewModel = viewModel(),
-    trips: List<Hike>) {
+    trips: List<Hike>
+) {
 
     val context = LocalContext.current
     when (trips.isEmpty()) {
@@ -162,9 +170,11 @@ fun HikerMarker(
                         val tripStartPosition = LatLng(lat, lng)
                         Marker(
                             MarkerState(position = tripStartPosition),
-                            icon = BitmapDescriptorFactory.fromBitmap(TripFactory.changeIconColor(
-                                context, R.drawable.icons8_region_48, trip.difficulty!!
-                            )),
+                            icon = BitmapDescriptorFactory.fromBitmap(
+                                TripFactory.changeIconColor(
+                                    context, R.drawable.icons8_region_48, trip.difficulty!!
+                                )
+                            ),
                             onClick = {
                                 tripsViewModel.updateSelectedTrip(trip)
                                 navController.navigate(Screen.TRIPS_ADDITIONAL_INFO.name)
@@ -175,6 +185,7 @@ fun HikerMarker(
                 }
             }
         }
+
         true -> {}
     }
 }

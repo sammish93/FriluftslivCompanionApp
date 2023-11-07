@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -83,15 +84,13 @@ fun WeatherSearchScreen(
     // Code inspired by ChatGPT V3.5
     // Retrieves a boolean value as to whether the user currently has internet connectivity.
     val connectivityManager = remember { context.getSystemService(ConnectivityManager::class.java) }
-    val isNetworkAvailable = remember{
+    val isNetworkAvailable by rememberUpdatedState {
         val network = connectivityManager?.activeNetwork
         val capabilities = connectivityManager?.getNetworkCapabilities(network)
         capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
     }
 
-    val isNotNetworkAvailable = !isNetworkAvailable
-
-    Log.d("NetworkStatus", "NetworkAvailable: $isNetworkAvailable, isNotNetworkAvailable: $isNotNetworkAvailable")
+    Log.d("NetworkStatus", "NetworkAvailable: $isNetworkAvailable, isNotNetworkAvailable: ${!isNetworkAvailable()}")
 
     // This resets the focus when a location has been selected from the Places API.
     val focusedElement = LocalFocusManager.current
@@ -112,19 +111,34 @@ fun WeatherSearchScreen(
                 resultListShown = true
             },
             label = {
-                Text(
-                    text = stringResource(R.string.search_search_for_a_place),
-                    style = CustomTypography.labelLarge
-                )
+                if(!isNetworkAvailable()){
+                    Text(
+                        text = stringResource(R.string.enable_network_to_search_for_a_place),
+                        style = CustomTypography.labelLarge
+                    )
+
+                } else{
+                    Text(
+                        text = stringResource(R.string.search_search_for_a_place),
+                        style = CustomTypography.labelLarge
+                    )}
             },
             modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.extraLarge,
             colors = TextFieldDefaults.colors(),
             leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = stringResource(R.string.search_icon)
-                )
+                if (!isNetworkAvailable()){
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = stringResource(R.string.warningicon)
+                    )
+
+                } else{
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = stringResource(R.string.search_icon)
+                    )
+                }
             },
             trailingIcon = {
                 Icon(
@@ -166,7 +180,7 @@ fun WeatherSearchScreen(
                         snackbarHostState = snackbarHostState,
                         message = stringResource(R.string.no_internett_connection),
                         actionLabel = stringResource(R.string.understood),
-                        condition = isNotNetworkAvailable
+                        condition = !isNetworkAvailable()
                     )
                 }
             }

@@ -69,14 +69,11 @@ fun TripsRecentActivityScreen(
     // Code inspired by ChatGPT V3.5
     // Retrieves a boolean value as to whether the user currently has internet connectivity.
     val connectivityManager = remember { context.getSystemService(ConnectivityManager::class.java) }
-    val isNetworkAvailable = remember {
+    val isNetworkAvailable by rememberUpdatedState {
         val network = connectivityManager?.activeNetwork
         val capabilities = connectivityManager?.getNetworkCapabilities(network)
         capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
     }
-
-    val isNotNetworkAvailable = !isNetworkAvailable
-
 
     LaunchedEffect(userState) {
         val geoPoint = userState.lastKnownLocation?.let { GeoPoint(it.latitude, it.longitude) }
@@ -87,7 +84,7 @@ fun TripsRecentActivityScreen(
 
     when {
         tripsState.isLoading -> CustomLoadingScreen()
-        tripsState.isFailure || isNotNetworkAvailable -> {
+        tripsState.isFailure || !isNetworkAvailable() -> {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -104,7 +101,7 @@ fun TripsRecentActivityScreen(
                         modifier = modifier.wrapContentSize(Alignment.Center)
                     )
                 }
-                if (isNotNetworkAvailable) {
+                if (!isNetworkAvailable()) {
                     Text(
                         text = stringResource(R.string.no_internett_connection),
                         style = CustomTypography.headlineMedium,

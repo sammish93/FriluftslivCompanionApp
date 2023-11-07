@@ -81,13 +81,11 @@ fun FloraFaunaSearchScreen(
     // Code inspired by ChatGPT V3.5
     // Retrieves a boolean value as to whether the user currently has internet connectivity.
     val connectivityManager = remember { context.getSystemService(ConnectivityManager::class.java) }
-    val isNetworkAvailable = remember{
+    val isNetworkAvailable by rememberUpdatedState {
         val network = connectivityManager?.activeNetwork
         val capabilities = connectivityManager?.getNetworkCapabilities(network)
         capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
     }
-
-    val isNotNetworkAvailable = !isNetworkAvailable
 
     var text by remember { mutableStateOf("") }
     var speciesResultsShown by remember { mutableStateOf(false) }
@@ -116,7 +114,7 @@ fun FloraFaunaSearchScreen(
                 },
                 label = {
 
-                    if(isNotNetworkAvailable){
+                    if(!isNetworkAvailable()){
                         Text(
                             text = stringResource(R.string.enable_network_to_search_for_a_place),
                             style = CustomTypography.labelLarge
@@ -133,13 +131,13 @@ fun FloraFaunaSearchScreen(
                 colors = TextFieldDefaults.colors(),
                 leadingIcon = {
 
-                    if (isNotNetworkAvailable){
+                    if (!isNetworkAvailable()){
                         Icon(
                             imageVector = Icons.Default.Warning,
                             contentDescription = stringResource(R.string.warningicon)
                         )
 
-                    }else{
+                    } else{
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = stringResource(R.string.search_icon)
@@ -225,7 +223,7 @@ fun FloraFaunaSearchScreen(
                         enabled = locPermissionState.status.isGranted &&
                                 !locations.isNullOrEmpty() && locations[0].countryCode == "NO" &&
                                 userState.lastKnownLocation != null &&
-                                !isNotNetworkAvailable
+                                isNetworkAvailable()
                     ) {
                         Text(text = stringResource(R.string.flora_fauna_use_my_location))
                     }

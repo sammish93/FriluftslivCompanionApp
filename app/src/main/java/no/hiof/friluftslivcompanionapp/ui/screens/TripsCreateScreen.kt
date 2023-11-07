@@ -109,80 +109,87 @@ fun TripsCreateScreen(
     // Code inspired by ChatGPT V3.5
     // Retrieves a boolean value as to whether the user currently has internet connectivity.
     val connectivityManager = remember { context.getSystemService(ConnectivityManager::class.java) }
-    val isNetworkAvailable = remember {
+    val isNetworkAvailable by rememberUpdatedState {
         val network = connectivityManager?.activeNetwork
         val capabilities = connectivityManager?.getNetworkCapabilities(network)
         capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
     }
-    val isNotNetworkAvailable = !isNetworkAvailable
 
-    Box(){when (tripState.isLoading) {
-        true -> CustomLoadingScreen()
-        else -> if (!locPermissionState.status.isGranted) {
+    Box() {
+        when (tripState.isLoading) {
+            true -> CustomLoadingScreen()
+            else -> if (!locPermissionState.status.isGranted) {
 
 
-            Scaffold(
-                // A button that allows the user to click and display the Bottom Sheet.
-                floatingActionButton = {
-                    ExtendedFloatingActionButton(
-                        text = { Text(stringResource(id = R.string.trips_create_create_trip)) },
-                        icon = {
-                            Icon(
-                                Icons.Filled.Add,
-                                contentDescription = stringResource(id = R.string.trips_create_create_trip)
+                Scaffold(
+                    // A button that allows the user to click and display the Bottom Sheet.
+                    floatingActionButton = {
+                        if (isNetworkAvailable()) {
+                            ExtendedFloatingActionButton(
+                                text = { Text(stringResource(id = R.string.trips_create_create_trip)) },
+                                icon = {
+                                    Icon(
+                                        Icons.Filled.Add,
+                                        contentDescription = stringResource(id = R.string.trips_create_create_trip)
+                                    )
+                                },
+                                onClick = {
+                                    showBottomSheet = true
+                                }
                             )
-                        },
-                        onClick = {
-                            showBottomSheet = true
                         }
+                    },
+                    floatingActionButtonPosition = FabPosition.Center
+                ) { contentPadding ->
+                    GoogleMapCreate(userViewModel, viewModel, modifier.padding(contentPadding))
+                    SnackbarHost(
+                        hostState = snackbarHostState,
+                        modifier = Modifier.align(Alignment.BottomCenter)
                     )
-                },
-                floatingActionButtonPosition = FabPosition.Center
-            ) { contentPadding ->
-                GoogleMapCreate(userViewModel, viewModel, modifier.padding(contentPadding))
-                SnackbarHost(
-                    hostState = snackbarHostState,
-                    modifier = Modifier.align(Alignment.BottomCenter)
-                )
 
-                SnackbarWithCondition(
-                    snackbarHostState = snackbarHostState,
-                    message = (stringResource(R.string.noGpsMsg_CreateTripScreen)),
-                    actionLabel = stringResource(R.string.understood),
-                    condition = !locPermissionState.status.isGranted
-                )
-            }
-        } else if (tripState.isFailure) {
-            ErrorView(message = stringResource(R.string.error_retrieving_api_success_response))
+                    SnackbarWithCondition(
+                        snackbarHostState = snackbarHostState,
+                        message = (stringResource(R.string.noGpsMsg_CreateTripScreen)),
+                        actionLabel = stringResource(R.string.understood),
+                        condition = !locPermissionState.status.isGranted
+                    )
+                }
+            } else if (tripState.isFailure) {
+                ErrorView(message = stringResource(R.string.error_retrieving_api_success_response))
 
 
-        }
-        else{
-            Scaffold(
-                // A button that allows the user to click and display the Bottom Sheet.
-                floatingActionButton = {
-                    ExtendedFloatingActionButton(
-                        text = { Text(stringResource(id = R.string.trips_create_create_trip)) },
-                        icon = {
-                            Icon(
-                                Icons.Filled.Add,
-                                contentDescription = stringResource(id = R.string.trips_create_create_trip)
+            } else {
+                Scaffold(
+                    // A button that allows the user to click and display the Bottom Sheet.
+                    floatingActionButton = {
+                        if (isNetworkAvailable()) {
+                            ExtendedFloatingActionButton(
+                                text = { Text(stringResource(id = R.string.trips_create_create_trip)) },
+                                icon = {
+                                    Icon(
+                                        Icons.Filled.Add,
+                                        contentDescription = stringResource(id = R.string.trips_create_create_trip)
+                                    )
+                                },
+                                onClick = {
+                                    showBottomSheet = true
+
+                                    if (!isNetworkAvailable()) {
+                                        showBottomSheet = false
+                                        Toast.makeText(
+                                            context,
+                                            "No internet connection",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+
+                                }
                             )
-                        },
-                        onClick = {
-                            showBottomSheet = true
-
-                            if(isNotNetworkAvailable){
-                                showBottomSheet = false
-                                Toast.makeText(context,"No internet connection", Toast.LENGTH_LONG).show()
-                            }
-
                         }
-                    )
-                },
-                floatingActionButtonPosition = FabPosition.Center
-            ) { contentPadding ->
-                GoogleMapCreate(userViewModel, viewModel, modifier.padding(contentPadding))
+                    },
+                    floatingActionButtonPosition = FabPosition.Center
+                ) { contentPadding ->
+                    GoogleMapCreate(userViewModel, viewModel, modifier.padding(contentPadding))
                 }
             }
         }
@@ -286,8 +293,9 @@ private fun TripsCreateSheet(
                     text = (DateFormatter.formatDurationToPrettyString(
                         tripState.createTripDuration,
                         stringResource(R.string.hours),
-                        stringResource(R.string.minutes))),
-                        style = CustomTypography.headlineSmall
+                        stringResource(R.string.minutes)
+                    )),
+                    style = CustomTypography.headlineSmall
                 )
 
                 Spacer(modifier = Modifier.padding(vertical = 4.dp))
@@ -303,7 +311,11 @@ private fun TripsCreateSheet(
                             .weight(1f),
                         horizontalAlignment = Alignment.Start
                     ) {
-                        Text(text = stringResource(R.string.hours), textAlign = TextAlign.Center, style = CustomTypography.titleMedium)
+                        Text(
+                            text = stringResource(R.string.hours),
+                            textAlign = TextAlign.Center,
+                            style = CustomTypography.titleMedium
+                        )
 
                         // Buttons to increment and decrement trip duration's hour.
                         Row {
@@ -314,7 +326,10 @@ private fun TripsCreateSheet(
                                     )
                                 )
                             }) {
-                                Text(text = stringResource(R.string.symbol_minus), style = CustomTypography.headlineMedium)
+                                Text(
+                                    text = stringResource(R.string.symbol_minus),
+                                    style = CustomTypography.headlineMedium
+                                )
                             }
 
                             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
@@ -326,7 +341,10 @@ private fun TripsCreateSheet(
                                     )
                                 )
                             }) {
-                                Text(text = stringResource(R.string.symbol_plus), style = CustomTypography.headlineMedium)
+                                Text(
+                                    text = stringResource(R.string.symbol_plus),
+                                    style = CustomTypography.headlineMedium
+                                )
                             }
                         }
                     }
@@ -336,7 +354,11 @@ private fun TripsCreateSheet(
                             .weight(1f),
                         horizontalAlignment = Alignment.End
                     ) {
-                        Text(text = stringResource(R.string.minutes), textAlign = TextAlign.Center, style = CustomTypography.titleMedium)
+                        Text(
+                            text = stringResource(R.string.minutes),
+                            textAlign = TextAlign.Center,
+                            style = CustomTypography.titleMedium
+                        )
 
                         // Buttons to increment and decrement trip duration's minutes.
                         Row {
@@ -347,7 +369,10 @@ private fun TripsCreateSheet(
                                     )
                                 )
                             }) {
-                                Text(text = stringResource(R.string.symbol_minus), style = CustomTypography.headlineMedium)
+                                Text(
+                                    text = stringResource(R.string.symbol_minus),
+                                    style = CustomTypography.headlineMedium
+                                )
                             }
 
                             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
@@ -359,7 +384,10 @@ private fun TripsCreateSheet(
                                     )
                                 )
                             }) {
-                                Text(text = stringResource(R.string.symbol_plus), style = CustomTypography.headlineMedium)
+                                Text(
+                                    text = stringResource(R.string.symbol_plus),
+                                    style = CustomTypography.headlineMedium
+                                )
                             }
                         }
                     }
@@ -375,18 +403,29 @@ private fun TripsCreateSheet(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     ElevatedButton(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty - 1) }) {
-                        Text(text = stringResource(R.string.symbol_minus), style = CustomTypography.headlineMedium)
+                        Text(
+                            text = stringResource(R.string.symbol_minus),
+                            style = CustomTypography.headlineMedium
+                        )
                     }
 
                     Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
-                    Text(TripFactory.convertTripDifficultyFromIntToString(tripState.createTripDifficulty, language),
-                        style = CustomTypography.headlineSmall)
+                    Text(
+                        TripFactory.convertTripDifficultyFromIntToString(
+                            tripState.createTripDifficulty,
+                            language
+                        ),
+                        style = CustomTypography.headlineSmall
+                    )
 
                     Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
                     ElevatedButton(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty + 1) }) {
-                        Text(text = stringResource(R.string.symbol_plus), style = CustomTypography.headlineMedium)
+                        Text(
+                            text = stringResource(R.string.symbol_plus),
+                            style = CustomTypography.headlineMedium
+                        )
                     }
                 }
             }
