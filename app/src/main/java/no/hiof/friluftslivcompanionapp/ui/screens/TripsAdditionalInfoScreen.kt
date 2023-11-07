@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -98,90 +99,199 @@ fun TripsAdditionalInfoScreen(
                             .fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .weight(3f)
-                                .fillMaxSize()
-                                .fillMaxHeight()
-                                .verticalScroll(rememberScrollState()),
-                            verticalArrangement = Arrangement.Top
-                        ) {
-                            // Inspired from: https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#ListItem(kotlin.Function0,androidx.compose.ui.Modifier,kotlin.Function0,kotlin.Function0,kotlin.Function0,kotlin.Function0,androidx.compose.material3.ListItemColors,androidx.compose.ui.unit.Dp,androidx.compose.ui.unit.Dp)
-                            tripsState.selectedTrip?.duration?.let {
-                                DateFormatter.formatDurationToPrettyString(it, stringResource(R.string.hours), stringResource(R.string.minutes))
-                            }?.let { formattedDuration ->
-                                Item(
-                                    headline = stringResource(R.string.duration),
-                                    support = formattedDuration,
-                                    icon = painterResource(id = R.drawable.timer),
-                                    iconDescription = stringResource(R.string.duration)
-                                )
-                            }
-                            val roundedDistance = tripsState.selectedTrip!!.distanceKm?.let {
-                                kotlin.math.round(it * 10) / 10
-                            }
-                            Item(
-                                headline = stringResource(R.string.distance),
-                                support = "${roundedDistance.toString()} km",
-                                icon = painterResource(id = R.drawable.distance),
-                                iconDescription = stringResource(R.string.distance)
-                            )
-                            tripsState.selectedTrip?.difficulty?.let {
-                                TripFactory.convertTripDifficultyFromIntToString(it)
-                            }?.let { formattedDifficulty ->
-                                Item(
-                                    headline = stringResource(R.string.difficulty),
-                                    support = formattedDifficulty,
-                                    icon = painterResource(id = R.drawable.lock),
-                                    iconDescription = stringResource(R.string.difficulty)
-                                )
-                            }
-                            tripsState.selectedTrip!!.description?.let { description ->
-                                Item(
-                                    headline = stringResource(R.string.trips_create_description),
-                                    support = description.replaceFirstChar { it.uppercase() },
-                                    icon = painterResource(id = R.drawable.description),
-                                    iconDescription = stringResource(R.string.trips_create_description)
-                                )
-                            }
-                        }
+                        when (userState.windowSizeClass.widthSizeClass) {
+                            WindowWidthSizeClass.Compact -> {
+                                Column(
+                                    modifier = Modifier
+                                        .weight(3f)
+                                        .fillMaxSize()
+                                        .fillMaxHeight()
+                                        .verticalScroll(rememberScrollState()),
+                                    verticalArrangement = Arrangement.Top
+                                ) {
+                                    // Inspired from: https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#ListItem(kotlin.Function0,androidx.compose.ui.Modifier,kotlin.Function0,kotlin.Function0,kotlin.Function0,kotlin.Function0,androidx.compose.material3.ListItemColors,androidx.compose.ui.unit.Dp,androidx.compose.ui.unit.Dp)
+                                    tripsState.selectedTrip?.duration?.let {
+                                        DateFormatter.formatDurationToPrettyString(
+                                            it,
+                                            stringResource(R.string.hours),
+                                            stringResource(R.string.minutes)
+                                        )
+                                    }?.let { formattedDuration ->
+                                        Item(
+                                            headline = stringResource(R.string.duration),
+                                            support = formattedDuration,
+                                            icon = painterResource(id = R.drawable.timer),
+                                            iconDescription = stringResource(R.string.duration)
+                                        )
+                                    }
+                                    val roundedDistance =
+                                        tripsState.selectedTrip!!.distanceKm?.let {
+                                            kotlin.math.round(it * 10) / 10
+                                        }
+                                    Item(
+                                        headline = stringResource(R.string.distance),
+                                        support = "${roundedDistance.toString()} km",
+                                        icon = painterResource(id = R.drawable.distance),
+                                        iconDescription = stringResource(R.string.distance)
+                                    )
+                                    tripsState.selectedTrip?.difficulty?.let {
+                                        TripFactory.convertTripDifficultyFromIntToString(it)
+                                    }?.let { formattedDifficulty ->
+                                        Item(
+                                            headline = stringResource(R.string.difficulty),
+                                            support = formattedDifficulty,
+                                            icon = painterResource(id = R.drawable.lock),
+                                            iconDescription = stringResource(R.string.difficulty)
+                                        )
+                                    }
+                                    tripsState.selectedTrip!!.description?.let { description ->
+                                        Item(
+                                            headline = stringResource(R.string.trips_create_description),
+                                            support = description.replaceFirstChar { it.uppercase() },
+                                            icon = painterResource(id = R.drawable.description),
+                                            iconDescription = stringResource(R.string.trips_create_description)
+                                        )
+                                    }
+                                }
 
-                        //TODO add if (!tripsState.isSelectedTripRecentActivity) then show this.
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Button(
-                                onClick = {
-                                    showBottomSheet = true
-                                },
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = stringResource(R.string.add),
-                                )
-                                Text(
-                                    stringResource(R.string.trips_add_to_trip_log),
-                                    modifier = Modifier.padding(start = 4.dp)
-                                )
+                                //TODO add if (!tripsState.isSelectedTripRecentActivity) then show this.
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Button(
+                                        onClick = {
+                                            showBottomSheet = true
+                                        },
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Add,
+                                            contentDescription = stringResource(R.string.add),
+                                        )
+                                        Text(
+                                            stringResource(R.string.trips_add_to_trip_log),
+                                            modifier = Modifier.padding(start = 4.dp)
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+
+                                    //TODO Add date picker here.
+                                }
+
+                                Column(
+                                    modifier = Modifier
+                                        .weight(2f)
+                                        .clip(RoundedCornerShape(20.dp)),
+                                    verticalArrangement = Arrangement.Bottom
+                                ) {
+
+                                    GoogleMapTripAdditionalInfo(nodes = tripsState.selectedTrip!!.route)
+                                }
                             }
 
-                            Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+                            else -> {
+                                Row {
+                                    Column(
+                                        modifier = Modifier
+                                            .weight(1f),
+                                        horizontalAlignment = Alignment.Start
+                                    ) {
+                                        Column(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(20.dp))
+                                        ) {
 
-                            //TODO Add date picker here.
-                        }
+                                            GoogleMapTripAdditionalInfo(nodes = tripsState.selectedTrip!!.route)
+                                        }
+                                    }
 
-                        Column(
-                            modifier = Modifier
-                                .weight(2f)
-                                .clip(RoundedCornerShape(20.dp)),
-                            verticalArrangement = Arrangement.Bottom
-                        ) {
+                                    Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
-                            GoogleMapTripAdditionalInfo(nodes = tripsState.selectedTrip!!.route)
+                                    Column(
+                                        modifier = Modifier
+                                            .weight(2f)
+                                            .fillMaxSize()
+                                            .fillMaxHeight()
+                                            .verticalScroll(rememberScrollState()),
+                                        verticalArrangement = Arrangement.Top
+                                    ) {
+                                        // Inspired from: https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#ListItem(kotlin.Function0,androidx.compose.ui.Modifier,kotlin.Function0,kotlin.Function0,kotlin.Function0,kotlin.Function0,androidx.compose.material3.ListItemColors,androidx.compose.ui.unit.Dp,androidx.compose.ui.unit.Dp)
+                                        tripsState.selectedTrip?.duration?.let {
+                                            DateFormatter.formatDurationToPrettyString(
+                                                it,
+                                                stringResource(R.string.hours),
+                                                stringResource(R.string.minutes)
+                                            )
+                                        }?.let { formattedDuration ->
+                                            Item(
+                                                headline = stringResource(R.string.duration),
+                                                support = formattedDuration,
+                                                icon = painterResource(id = R.drawable.timer),
+                                                iconDescription = stringResource(R.string.duration)
+                                            )
+                                        }
+                                        val roundedDistance =
+                                            tripsState.selectedTrip!!.distanceKm?.let {
+                                                kotlin.math.round(it * 10) / 10
+                                            }
+                                        Item(
+                                            headline = stringResource(R.string.distance),
+                                            support = "${roundedDistance.toString()} km",
+                                            icon = painterResource(id = R.drawable.distance),
+                                            iconDescription = stringResource(R.string.distance)
+                                        )
+                                        tripsState.selectedTrip?.difficulty?.let {
+                                            TripFactory.convertTripDifficultyFromIntToString(it)
+                                        }?.let { formattedDifficulty ->
+                                            Item(
+                                                headline = stringResource(R.string.difficulty),
+                                                support = formattedDifficulty,
+                                                icon = painterResource(id = R.drawable.lock),
+                                                iconDescription = stringResource(R.string.difficulty)
+                                            )
+                                        }
+                                        tripsState.selectedTrip!!.description?.let { description ->
+                                            Item(
+                                                headline = stringResource(R.string.trips_create_description),
+                                                support = description.replaceFirstChar { it.uppercase() },
+                                                icon = painterResource(id = R.drawable.description),
+                                                iconDescription = stringResource(R.string.trips_create_description)
+                                            )
+                                        }
+
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 8.dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Button(
+                                                onClick = {
+                                                    showBottomSheet = true
+                                                },
+                                                modifier = Modifier.weight(1f)
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Add,
+                                                    contentDescription = stringResource(R.string.add),
+                                                )
+                                                Text(
+                                                    stringResource(R.string.trips_add_to_trip_log),
+                                                    modifier = Modifier.padding(start = 4.dp)
+                                                )
+                                            }
+
+                                            Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+
+                                            //TODO Add date picker here.
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
