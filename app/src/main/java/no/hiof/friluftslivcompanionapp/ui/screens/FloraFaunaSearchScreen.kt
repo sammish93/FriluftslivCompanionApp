@@ -47,6 +47,7 @@ import no.hiof.friluftslivcompanionapp.ui.components.ListComponentWide
 import no.hiof.friluftslivcompanionapp.ui.components.LocationAutoFillList
 import no.hiof.friluftslivcompanionapp.ui.components.SnackbarWithCondition
 import no.hiof.friluftslivcompanionapp.ui.components.cards.FloraFaunaCard
+import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import java.util.Locale
 
@@ -102,16 +103,12 @@ fun FloraFaunaSearchScreen(
                 label = {
                     Text(
                         text = stringResource(R.string.search_search_for_a_place),
-                        style = TextStyle(fontWeight = FontWeight.Medium)
+                        style = CustomTypography.labelLarge
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.extraLarge,
                 colors = TextFieldDefaults.colors(),
-                textStyle = TextStyle(
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 18.sp
-                ),
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Search,

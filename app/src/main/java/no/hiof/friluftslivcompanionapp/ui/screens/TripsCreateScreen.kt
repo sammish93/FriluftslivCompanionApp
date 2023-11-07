@@ -260,11 +260,11 @@ private fun TripsCreateSheet(
 
                 // Duration of trip in hours and minutes.
                 Text(
-                    DateFormatter.formatDurationToPrettyString(
+                    text = (DateFormatter.formatDurationToPrettyString(
                         tripState.createTripDuration,
                         stringResource(R.string.hours),
-                        stringResource(R.string.minutes)
-                    )
+                        stringResource(R.string.minutes))),
+                        style = CustomTypography.headlineSmall
                 )
 
                 Spacer(modifier = Modifier.padding(vertical = 4.dp))
@@ -280,7 +280,7 @@ private fun TripsCreateSheet(
                             .weight(1f),
                         horizontalAlignment = Alignment.Start
                     ) {
-                        Text(text = stringResource(R.string.hours), textAlign = TextAlign.Center)
+                        Text(text = stringResource(R.string.hours), textAlign = TextAlign.Center, style = CustomTypography.titleMedium)
 
                         // Buttons to increment and decrement trip duration's hour.
                         Row {
@@ -291,7 +291,7 @@ private fun TripsCreateSheet(
                                     )
                                 )
                             }) {
-                                Text(text = stringResource(R.string.symbol_minus))
+                                Text(text = stringResource(R.string.symbol_minus), style = CustomTypography.headlineMedium)
                             }
 
                             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
@@ -303,7 +303,7 @@ private fun TripsCreateSheet(
                                     )
                                 )
                             }) {
-                                Text(text = stringResource(R.string.symbol_plus))
+                                Text(text = stringResource(R.string.symbol_plus), style = CustomTypography.headlineMedium)
                             }
                         }
                     }
@@ -313,7 +313,7 @@ private fun TripsCreateSheet(
                             .weight(1f),
                         horizontalAlignment = Alignment.End
                     ) {
-                        Text(text = stringResource(R.string.minutes), textAlign = TextAlign.Center)
+                        Text(text = stringResource(R.string.minutes), textAlign = TextAlign.Center, style = CustomTypography.titleMedium)
 
                         // Buttons to increment and decrement trip duration's minutes.
                         Row {
@@ -324,7 +324,7 @@ private fun TripsCreateSheet(
                                     )
                                 )
                             }) {
-                                Text(text = stringResource(R.string.symbol_minus))
+                                Text(text = stringResource(R.string.symbol_minus), style = CustomTypography.headlineMedium)
                             }
 
                             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
@@ -336,7 +336,7 @@ private fun TripsCreateSheet(
                                     )
                                 )
                             }) {
-                                Text(text = stringResource(R.string.symbol_plus))
+                                Text(text = stringResource(R.string.symbol_plus), style = CustomTypography.headlineMedium)
                             }
                         }
                     }
@@ -352,17 +352,18 @@ private fun TripsCreateSheet(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     ElevatedButton(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty - 1) }) {
-                        Text(text = stringResource(R.string.symbol_minus))
+                        Text(text = stringResource(R.string.symbol_minus), style = CustomTypography.headlineMedium)
                     }
 
                     Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
-                    Text(TripFactory.convertTripDifficultyFromIntToString(tripState.createTripDifficulty, language))
+                    Text(TripFactory.convertTripDifficultyFromIntToString(tripState.createTripDifficulty, language),
+                        style = CustomTypography.headlineSmall)
 
                     Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
                     ElevatedButton(onClick = { viewModel.updateCreateTripDifficulty(tripState.createTripDifficulty + 1) }) {
-                        Text(text = stringResource(R.string.symbol_plus))
+                        Text(text = stringResource(R.string.symbol_plus), style = CustomTypography.headlineMedium)
                     }
                 }
             }

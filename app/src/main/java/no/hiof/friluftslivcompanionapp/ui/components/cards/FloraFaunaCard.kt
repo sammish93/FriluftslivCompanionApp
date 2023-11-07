@@ -28,6 +28,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
@@ -69,7 +70,7 @@ fun <T> FloraFaunaCard(
                     ) {
                         Text(
                             text = title,
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = CustomTypography.bodySmall,
                             fontWeight = FontWeight.Bold
                         )
 
@@ -77,14 +78,14 @@ fun <T> FloraFaunaCard(
 
                         Text(
                             text = header,
-                            style = MaterialTheme.typography.bodyMedium
+                            style = CustomTypography.headlineSmall
                         )
 
                         Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
                         Text(
                             text = subHeader,
-                            style = MaterialTheme.typography.bodySmall,
+                            style = CustomTypography.titleSmall,
                             fontStyle = FontStyle.Italic
                         )
                     }
@@ -120,21 +121,22 @@ fun <T> FloraFaunaCard(
                     ) {
                         Text(
                             text = title,
-                            style = MaterialTheme.typography.headlineMedium
+                            style = CustomTypography.bodySmall
                         )
 
                         Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
                         Text(
                             text = header,
-                            style = MaterialTheme.typography.bodyMedium
+                            style = CustomTypography.headlineSmall
                         )
 
                         Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
                         Text(
-                            text = header,
-                            style = MaterialTheme.typography.bodyMedium
+                            text = subHeader,
+                            style = CustomTypography.titleSmall,
+                            fontStyle = FontStyle.Italic
                         )
                     }
                 }

@@ -127,7 +127,8 @@ fun ProfileScreen(
                 verticalArrangement = Arrangement.Top
             ) {
                 // Section of the page that shows a user's stats for the year.
-                Text(text = stringResource(R.string.profile_your_year_so_far, LocalDate.now().year))
+                Text(text = stringResource(R.string.profile_your_year_so_far, LocalDate.now().year),
+                    style = CustomTypography.headlineSmall)
 
                 Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
@@ -174,7 +175,8 @@ fun ProfileScreen(
                 HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
                 // Section to display the top species spotters and trip-goers.
-                Text(text = stringResource(R.string.profile_year_leaderboard, LocalDate.now().year))
+                Text(text = stringResource(R.string.profile_year_leaderboard, LocalDate.now().year),
+                    style = CustomTypography.headlineSmall)
 
                 Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
@@ -192,7 +194,8 @@ fun ProfileScreen(
                     ) {
 
                         //TODO Implement functionality to get top 3 people with most recentactivity.
-                        Text(text = stringResource(R.string.profile_trips_taken))
+                        Text(text = stringResource(R.string.profile_trips_taken),
+                            style = CustomTypography.titleLarge)
 
                         topThreeTrips?.forEachIndexed { index, user ->
                             Spacer(modifier = Modifier.padding(vertical = 4.dp))
@@ -210,7 +213,8 @@ fun ProfileScreen(
                         HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
                         //TODO Implement functionality to get top 3 people with most sightings.
-                        Text(text = stringResource(R.string.profile_species_spotted))
+                        Text(text = stringResource(R.string.profile_species_spotted),
+                                style = CustomTypography.titleLarge)
                         topThreeSpecies?.forEachIndexed { index, user ->
                             Spacer(modifier = Modifier.padding(vertical = 4.dp))
                             LeaderboardRow(
