@@ -21,6 +21,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -42,6 +43,7 @@ import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
 import no.hiof.friluftslivcompanionapp.ui.components.ErrorView
 import no.hiof.friluftslivcompanionapp.ui.components.ListComponent
+import no.hiof.friluftslivcompanionapp.ui.components.ListComponentWide
 import no.hiof.friluftslivcompanionapp.ui.components.LocationAutoFillList
 import no.hiof.friluftslivcompanionapp.ui.components.SnackbarWithCondition
 import no.hiof.friluftslivcompanionapp.ui.components.cards.FloraFaunaCard
@@ -259,29 +261,55 @@ fun FloraFaunaSearchScreen(
 
                 }
                 else {
-                        ListComponent(floraFaunaState.speciesResults) { species, textStyle ->
+                    when (userState.windowSizeClass.widthSizeClass) {
+                            WindowWidthSizeClass.Compact -> {
+                                ListComponent(floraFaunaState.speciesResults) { species, textStyle ->
 
-                            val subclass = FloraFaunaMapper.mapClassToEnum(species)
-                            val subclassToString =
-                                subclass?.let { stringResource(it.label) } ?: stringResource(R.string.unknown)
+                                    val subclass = FloraFaunaMapper.mapClassToEnum(species)
+                                    val subclassToString =
+                                        subclass?.let { stringResource(it.label) } ?: stringResource(R.string.unknown)
 
-                            Spacer(modifier = Modifier.height(6.dp))
+                                    Spacer(modifier = Modifier.height(6.dp))
 
-                            FloraFaunaCard(
-                                species,
-                                textStyle,
-                                title = subclassToString,
-                                header = species.speciesName ?: stringResource(R.string.flora_fauna_unknown_common_name),
-                                subHeader = species.speciesNameScientific,
-                                fetchImage = { it.photoUrl ?: "Photo of ${it.speciesName}" },
-                                onMoreInfoClick = {
-                                    viewModel.updateSelectedSpeciesInfo(species)
-                                    navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
+                                    FloraFaunaCard(
+                                        species,
+                                        textStyle,
+                                        title = subclassToString,
+                                        header = species.speciesName ?: stringResource(R.string.flora_fauna_unknown_common_name),
+                                        subHeader = species.speciesNameScientific,
+                                        fetchImage = { it.photoUrl ?: "Photo of ${it.speciesName}" },
+                                        onMoreInfoClick = {
+                                            viewModel.updateSelectedSpeciesInfo(species)
+                                            navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
+                                        }
+                                    )
+
+                                    Spacer(modifier = Modifier.height(6.dp))
                                 }
-                            )
+                            }
 
-                            Spacer(modifier = Modifier.height(6.dp))
+                        else -> {
+                            ListComponentWide(floraFaunaState.speciesResults) { species, textStyle ->
+
+                                val subclass = FloraFaunaMapper.mapClassToEnum(species)
+                                val subclassToString =
+                                    subclass?.let { stringResource(it.label) } ?: stringResource(R.string.unknown)
+
+                                FloraFaunaCard(
+                                    species,
+                                    textStyle,
+                                    title = subclassToString,
+                                    header = species.speciesName ?: stringResource(R.string.flora_fauna_unknown_common_name),
+                                    subHeader = species.speciesNameScientific,
+                                    fetchImage = { it.photoUrl ?: "Photo of ${it.speciesName}" },
+                                    onMoreInfoClick = {
+                                        viewModel.updateSelectedSpeciesInfo(species)
+                                        navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
+                                    }
+                                )
+                            }
                         }
+                    }
                 }
             }
         }
