@@ -94,6 +94,7 @@ fun SettingsScreen(
     val context = LocalContext.current
 
     // Code inspired by ChatGPT V3.5
+    // Retrieves a boolean value as to whether the user currently has internet connectivity.
     val connectivityManager = remember { context.getSystemService(ConnectivityManager::class.java) }
     val isNetworkAvailable by rememberUpdatedState {
         val network = connectivityManager?.activeNetwork
@@ -101,12 +102,8 @@ fun SettingsScreen(
         capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
     }
 
+    // Geocoder API which is used below to display a user's location.
     val geocoder = Geocoder(LocalContext.current, Locale.getDefault())
-    val location = geocoder.getFromLocation(
-        userState.lastKnownLocation?.latitude ?: DefaultLocation.OSLO.lat,
-        userState.lastKnownLocation?.longitude ?: DefaultLocation.OSLO.lon,
-        1
-    )
 
     val openLanguageDialogue = remember { mutableStateOf(false) }
     val openLocDialogue = remember { mutableStateOf(false) }
@@ -404,6 +401,7 @@ fun SettingsScreen(
         }
     }
 
+    // Popup that allows the user to select a language.
     when (openLanguageDialogue.value) {
         true -> {
             LangAlertDialogue(
@@ -418,6 +416,7 @@ fun SettingsScreen(
         else -> {}
     }
 
+    // Popup that allows the user to turn on their location permission if they originally declined.
     when (openLocDialogue.value) {
         true -> {
             LocAlertDialogue(
@@ -430,6 +429,7 @@ fun SettingsScreen(
         else -> {}
     }
 
+    // Popup that allows the user to change their profile picture.
     when (openProfileDialogue.value) {
         true -> {
             ProfileAlertDialogue(
@@ -445,6 +445,7 @@ fun SettingsScreen(
     }
 }
 
+// Used by the app to allow the user to select a location via an alert.
 @Composable
 fun LangAlertDialogue(
     userViewModel: UserViewModel = viewModel(),
@@ -500,6 +501,7 @@ fun LangAlertDialogue(
         },
         confirmButton = {
             Button(onClick = {
+                // Updates the application language and then writes to the database.
                 userViewModel.updateLanguage(selectedLanguage)
                 onConfirmation()
                 coroutineScope.launch {
@@ -526,6 +528,8 @@ fun LangAlertDialogue(
     )
 }
 
+// Used by the app to allow the user to enable a prompt to share their location if they originally
+// declined.
 @Composable
 fun LocAlertDialogue(
     onConfirmation: () -> Unit,
@@ -553,6 +557,7 @@ fun LocAlertDialogue(
     )
 }
 
+// Used by the app to allow the user to select a display picture via an alert.
 @Composable
 fun ProfileAlertDialogue(
     userViewModel: UserViewModel = viewModel(),
@@ -615,6 +620,7 @@ fun ProfileAlertDialogue(
         },
         confirmButton = {
             Button(onClick = {
+                // Updates the user's display picture and then writes to the database.
                 userViewModel.updateDisplayPicture(selectedDisplayPicture)
                 onConfirmation()
             }) {

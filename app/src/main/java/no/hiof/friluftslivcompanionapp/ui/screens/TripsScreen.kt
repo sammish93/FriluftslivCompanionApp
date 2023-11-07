@@ -48,6 +48,7 @@ fun TripsScreen(
     val tripsInArea by viewModel.hikes.collectAsState()
     val tripState by viewModel.tripsState.collectAsState()
 
+    // Retrieves the trips near a user's GPS location in a 50km radius.
     LaunchedEffect(Unit) {
         val geoPoint = userState.lastKnownLocation?.let { GeoPoint(it.latitude, it.longitude) }
         if (geoPoint != null) {
@@ -59,6 +60,7 @@ fun TripsScreen(
     ) { contentPadding ->
         when {
             tripState.isLoading -> CustomLoadingScreen()
+
             !locPermissionState.status.isGranted -> {
 
                 Column(
@@ -66,6 +68,7 @@ fun TripsScreen(
                         .fillMaxSize()
                         .padding(contentPadding)
                 ) {
+                    // Displays the map based on a default location.
                     GoogleMapTripStartNodes(
                         navController = navController,
                         tripsViewModel = viewModel,
@@ -77,25 +80,28 @@ fun TripsScreen(
                                 viewModel.getTripsNearUsersLocation(geoPoint, 50.0, 5)
                         }
                     )
-
                 }
+
                 SnackbarWithCondition(
                     snackbarHostState = snackbarHostState,
                     message = stringResource(R.string.not_share_location_msg_TripScreen),
                     actionLabel = stringResource(R.string.understood),
                     condition = !locPermissionState.status.isGranted
                 )
+
                 Box{
                     SnackbarHost(hostState = snackbarHostState,
                         modifier = Modifier.align(Alignment.BottomCenter)
                     )
                 }
             }
+
             tripState.isFailure -> {
                 ErrorView(message = stringResource(R.string.error_retrieving_api_success_response))
             }
 
             else -> {
+                // Displays the map based on a user's GPS.
                 GoogleMapTripStartNodes(
                     navController = navController,
                     tripsViewModel = viewModel,

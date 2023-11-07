@@ -100,6 +100,8 @@ fun TripsAdditionalInfoScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         when (userState.windowSizeClass.widthSizeClass) {
+                            // Layout of info when screen width is compact. Single column with
+                            // scrollable description.
                             WindowWidthSizeClass.Compact -> {
                                 Column(
                                     modifier = Modifier
@@ -194,6 +196,9 @@ fun TripsAdditionalInfoScreen(
                             }
 
                             else -> {
+                                // Layout of info when screen width is wide. Two columns. Left-most
+                                // includes a map. Right-most includes trip info (scrollable) with
+                                // a button to add to trip log.
                                 Row {
                                     Column(
                                         modifier = Modifier

@@ -51,6 +51,7 @@ import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,6 +61,10 @@ import no.hiof.friluftslivcompanionapp.ui.components.CustomNavigationBar
 import no.hiof.friluftslivcompanionapp.ui.components.CustomTabsBar
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.data.managers.LocationManager
 import no.hiof.friluftslivcompanionapp.data.managers.PermissionManager
 import no.hiof.friluftslivcompanionapp.CustomNavGraph.floraFaunaGraph
@@ -159,8 +164,6 @@ class MainActivity : AppCompatActivity() {
                 // Code was based on examples shown here -
                 // https://medium.com/@fierydinesh/multi-language-support-android-localization-in-app-and-system-settings-change-language-e00957e9c48c
                 AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(userViewModel.getLanguage().code))
-
-                userViewModel.updateLocationManagerCalled(true)
             }
         } else {
             // No user signed in, start SignInActivity
@@ -173,7 +176,15 @@ class MainActivity : AppCompatActivity() {
 
 // Screen used when a user's GPS location is being fetched.
 @Composable
-fun WaitingScreen() {
+fun WaitingScreen(userViewModel: UserViewModel = viewModel()) {
+
+    LaunchedEffect(true) {
+        // If the user's location is switched off then access to the application will be given
+        // after 5 seconds. This prevents an infinite loop.
+        delay(5000)
+        userViewModel.updateLocationManagerCalled(true)
+    }
+
     CustomLoadingScreen()
 }
 
@@ -194,6 +205,8 @@ fun FriluftslivApp(
     val weatherViewModel = hiltViewModel<WeatherViewModel>()
     val userState by userViewModel.state.collectAsState()
 
+    // Navigation bars. Bottom bar is shown in phone portrait. Everything else generally uses
+    // landscape.
     val bottomBarShown = remember { mutableStateOf(userState.windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact) }
     val railBarShown = remember { mutableStateOf(userState.windowSizeClass.widthSizeClass != WindowWidthSizeClass.Compact) }
 
@@ -228,6 +241,7 @@ fun FriluftslivApp(
                 },
                 bottomBar = {
                     when (bottomBarShown.value) {
+                        // Shows bottom nav bar.
                         true -> CustomNavigationBar(navController)
 
                         else -> {}
@@ -236,6 +250,8 @@ fun FriluftslivApp(
                 floatingActionButton = {
                     when (bottomBarShown.value) {
                         false -> {
+                            // Shows button which allows side nav bar to be shown on click. Button
+                            // is hidden when side nav bar is already shown.
                             when (userState.isRailBarOpened) {
                                 false -> FloatingActionButton(
                                     onClick = {
@@ -256,6 +272,7 @@ fun FriluftslivApp(
             ) { innerPadding ->
 
                 when (railBarShown.value) {
+                    // Shows side nav bar.
                     true -> CustomNavigationRail(navController, userViewModel)
 
                     else -> {}
@@ -308,7 +325,7 @@ fun FriluftslivApp(
                 }
             }
 
-        else -> WaitingScreen()
+        else -> WaitingScreen(userViewModel)
     }
 }
 

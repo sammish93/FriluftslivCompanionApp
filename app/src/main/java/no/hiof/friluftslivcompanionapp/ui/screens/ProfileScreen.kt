@@ -95,9 +95,7 @@ fun ProfileScreen(
     val topThreeTrips by userViewModel.topThreeUsersByTripCount.collectAsState()
     val topThreeSpecies by userViewModel.topThreeUsersBySpeciesCount.collectAsState()
 
-
-
-
+    // Queries the database for a user's stats for the current year.
     LaunchedEffect(true) {
         userViewModel.fetchTripCountForTheYear()
         userViewModel.fetchTotalKilometersForTheYear()
@@ -105,7 +103,6 @@ fun ProfileScreen(
         userViewModel.fetchTopThreeUsersByTripCount()
         userViewModel.fetchTopThreeUsersBySpeciesCount()
     }
-
 
     Scaffold(
         topBar = {
@@ -129,6 +126,7 @@ fun ProfileScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
+                // Section of the page that shows a user's stats for the year.
                 Text(text = stringResource(R.string.profile_your_year_so_far, LocalDate.now().year))
 
                 Spacer(modifier = Modifier.padding(vertical = 4.dp))
@@ -147,10 +145,13 @@ fun ProfileScreen(
                     ) {
                         //TODO Implement functionality to calculate amount of recentactivity and
                         // lifelist.
+
+                        // Number of trails a user has added to their trip log.
                         Text(text = stringResource(R.string.profile_number_trails_completed, "$tripCount"))
 
                         Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
+                        // Number of kilometers travelled (trips total distance)
                         Text(
                             text = stringResource(
                                 R.string.profile_number_kilometers_travelled,
@@ -160,6 +161,7 @@ fun ProfileScreen(
 
                         Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
+                        // Number of species added to their lifelist.
                         Text(
                             text = stringResource(
                                 R.string.profile_number_individual_species_identified,
@@ -171,6 +173,7 @@ fun ProfileScreen(
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
+                // Section to display the top species spotters and trip-goers.
                 Text(text = stringResource(R.string.profile_year_leaderboard, LocalDate.now().year))
 
                 Spacer(modifier = Modifier.padding(vertical = 4.dp))
@@ -224,8 +227,6 @@ fun ProfileScreen(
                     }
                 }
                 /*
-
-                //TODO Implement functionality to get top 3 people with most recentactivity.
                 Text(text = stringResource(R.string.profile_trips_taken))
 
                 Spacer(modifier = Modifier.padding(vertical = 4.dp))
@@ -242,7 +243,6 @@ fun ProfileScreen(
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
-                //TODO Implement functionality to get top 3 people with most sightings.
                 Text(text = stringResource(R.string.profile_species_spotted))
 
                 Spacer(modifier = Modifier.padding(vertical = 4.dp))
@@ -258,11 +258,10 @@ fun ProfileScreen(
                 LeaderboardRow(DisplayPicture.DP_FIVE, "Colm", 82, 3, 8, 0.8F)
             }
         }
-
-
                  */
                 HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
+                // Button which allows the user to log out.
                 Button(modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         //TODO Implement logout behaviour so the user is returned to
@@ -283,7 +282,9 @@ fun ProfileScreen(
     }
 }
 
-
+// Composable which displays a user leaderboard. Padding and scale values are given in the above
+// composable to create an effect which allows the leaderboard to cascade downwards with first place
+// being largest, 2nd being smaller, 3rd being smallest.
 @Composable
 private fun LeaderboardRow(
     displayPicture: DisplayPicture,

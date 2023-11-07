@@ -281,6 +281,8 @@ private fun TripsCreateSheet(
                         horizontalAlignment = Alignment.Start
                     ) {
                         Text(text = stringResource(R.string.hours), textAlign = TextAlign.Center)
+
+                        // Buttons to increment and decrement trip duration's hour.
                         Row {
                             ElevatedButton(onClick = {
                                 viewModel.updateCreateTripDuration(
@@ -312,6 +314,8 @@ private fun TripsCreateSheet(
                         horizontalAlignment = Alignment.End
                     ) {
                         Text(text = stringResource(R.string.minutes), textAlign = TextAlign.Center)
+
+                        // Buttons to increment and decrement trip duration's minutes.
                         Row {
                             ElevatedButton(onClick = {
                                 viewModel.updateCreateTripDuration(
@@ -412,6 +416,7 @@ private fun TripsCreateSheet(
     }
 
     if (showCreatePopup) {
+        // Alerts the user to confirm that they want to create a trip.
         AlertDialog(
             onDismissRequest = {
                 showCreatePopup = false
@@ -442,6 +447,7 @@ private fun TripsCreateSheet(
         )
     }
 
+    // Alerts the user that they want to clear all trip related information.
     if (showClearPopup) {
         AlertDialog(
             onDismissRequest = { showClearPopup = false },
@@ -470,6 +476,7 @@ private fun TripsCreateSheet(
     }
 }
 
+// Popup that explains how the user can create a trip on the map.
 @Composable
 fun InfoButtonWithPopup() {
     var showPopup by remember { mutableStateOf(false) }
@@ -509,6 +516,7 @@ fun InfoButtonWithPopup() {
     }
 }
 
+// Used with the InfoButtonWithPopup above - this is the actual popup contents.
 @Composable
 fun CardPopup() {
     Column {

@@ -74,7 +74,6 @@ fun FloraFaunaSearchScreen(
     )
 
 
-
     var text by remember { mutableStateOf("") }
     var speciesResultsShown by remember { mutableStateOf(false) }
     var resultListShown by remember { mutableStateOf(false) }
@@ -91,6 +90,7 @@ fun FloraFaunaSearchScreen(
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            // Places search box restricted to ONLY locations in Norway.
             OutlinedTextField(
                 value = text,
                 onValueChange = {
@@ -131,6 +131,7 @@ fun FloraFaunaSearchScreen(
             )
         }
 
+        // List of locations dynamically updated by a search in the Places search box.
         when (resultListShown) {
             true -> {
                 LocationAutoFillList(
@@ -151,6 +152,7 @@ fun FloraFaunaSearchScreen(
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
+                    // Button to send an API request to eBird to get birds in user's GPS area.
                     Button(
                         onClick = {
                             if (!locations.isNullOrEmpty()) {
@@ -189,6 +191,8 @@ fun FloraFaunaSearchScreen(
                             .weight(1f)
                             .fillMaxWidth()
                             .height(40.dp),
+                        // This button is greyed out unless a non-default GPS location can be
+                        // retrieved and the location is in Norway.
                         enabled = locPermissionState.status.isGranted &&
                                 !locations.isNullOrEmpty() && locations[0].countryCode == "NO" &&
                                 userState.lastKnownLocation != null
@@ -198,6 +202,7 @@ fun FloraFaunaSearchScreen(
 
                     Spacer(modifier = Modifier.width(8.dp))
 
+                    // Button to send an API request to eBird to get birds in the search box area.
                     Button(
                         onClick = {
                             val locality = placesState?.county ?: "Oslo"
@@ -219,6 +224,8 @@ fun FloraFaunaSearchScreen(
                             .weight(1f)
                             .fillMaxWidth()
                             .height(40.dp),
+                        // This location is enabled only if the user selected a valid location from
+                        // the Places search box.
                         enabled = text.isNotEmpty()
 
                     ) {
@@ -246,8 +253,10 @@ fun FloraFaunaSearchScreen(
                 true -> CustomLoadingScreen()
                 else -> if ((!locPermissionState.status.isGranted || userState.lastKnownLocation == null) && text.isEmpty()) {
                     ErrorView(message = stringResource(R.string.error_no_gps_location_found))
-                    SnackbarHost(hostState = snackbarHostState,
-                        modifier = Modifier.align(Alignment.BottomCenter))
+                    SnackbarHost(
+                        hostState = snackbarHostState,
+                        modifier = Modifier.align(Alignment.BottomCenter)
+                    )
 
                     SnackbarWithCondition(
                         snackbarHostState = snackbarHostState,
@@ -256,50 +265,56 @@ fun FloraFaunaSearchScreen(
                         condition = !locPermissionState.status.isGranted && text.isEmpty()
                     )
 
-                } else if (floraFaunaState.isFailure){
+                } else if (floraFaunaState.isFailure) {
                     ErrorView(message = stringResource(R.string.error_retrieving_api_success_response))
 
-                }
-                else {
+                } else {
+                    // Displays eBird API results, complete with MediaWiki pictures.
                     when (userState.windowSizeClass.widthSizeClass) {
-                            WindowWidthSizeClass.Compact -> {
-                                ListComponent(floraFaunaState.speciesResults) { species, textStyle ->
-
-                                    val subclass = FloraFaunaMapper.mapClassToEnum(species)
-                                    val subclassToString =
-                                        subclass?.let { stringResource(it.label) } ?: stringResource(R.string.unknown)
-
-                                    Spacer(modifier = Modifier.height(6.dp))
-
-                                    FloraFaunaCard(
-                                        species,
-                                        textStyle,
-                                        title = subclassToString,
-                                        header = species.speciesName ?: stringResource(R.string.flora_fauna_unknown_common_name),
-                                        subHeader = species.speciesNameScientific,
-                                        fetchImage = { it.photoUrl ?: "Photo of ${it.speciesName}" },
-                                        onMoreInfoClick = {
-                                            viewModel.updateSelectedSpeciesInfo(species)
-                                            navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
-                                        }
-                                    )
-
-                                    Spacer(modifier = Modifier.height(6.dp))
-                                }
-                            }
-
-                        else -> {
-                            ListComponentWide(floraFaunaState.speciesResults) { species, textStyle ->
+                        // Layout of bird results when screen width is compact. Single column.
+                        WindowWidthSizeClass.Compact -> {
+                            ListComponent(floraFaunaState.speciesResults) { species, textStyle ->
 
                                 val subclass = FloraFaunaMapper.mapClassToEnum(species)
                                 val subclassToString =
-                                    subclass?.let { stringResource(it.label) } ?: stringResource(R.string.unknown)
+                                    subclass?.let { stringResource(it.label) }
+                                        ?: stringResource(R.string.unknown)
+
+                                Spacer(modifier = Modifier.height(6.dp))
 
                                 FloraFaunaCard(
                                     species,
                                     textStyle,
                                     title = subclassToString,
-                                    header = species.speciesName ?: stringResource(R.string.flora_fauna_unknown_common_name),
+                                    header = species.speciesName
+                                        ?: stringResource(R.string.flora_fauna_unknown_common_name),
+                                    subHeader = species.speciesNameScientific,
+                                    fetchImage = { it.photoUrl ?: "Photo of ${it.speciesName}" },
+                                    onMoreInfoClick = {
+                                        viewModel.updateSelectedSpeciesInfo(species)
+                                        navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
+                                    }
+                                )
+
+                                Spacer(modifier = Modifier.height(6.dp))
+                            }
+                        }
+
+                        else -> {
+                            // Layout of bird results when screen width is wide. Two columns.
+                            ListComponentWide(floraFaunaState.speciesResults) { species, textStyle ->
+
+                                val subclass = FloraFaunaMapper.mapClassToEnum(species)
+                                val subclassToString =
+                                    subclass?.let { stringResource(it.label) }
+                                        ?: stringResource(R.string.unknown)
+
+                                FloraFaunaCard(
+                                    species,
+                                    textStyle,
+                                    title = subclassToString,
+                                    header = species.speciesName
+                                        ?: stringResource(R.string.flora_fauna_unknown_common_name),
                                     subHeader = species.speciesNameScientific,
                                     fetchImage = { it.photoUrl ?: "Photo of ${it.speciesName}" },
                                     onMoreInfoClick = {

@@ -72,8 +72,11 @@ fun WeatherSearchScreen(
     var resultListShown by remember { mutableStateOf(false) }
     var weatherResultsShown by remember { mutableStateOf(false) }
     val hasApiBeenCalled = remember { mutableStateOf(false) }
+
+    // This resets the focus when a location has been selected from the Places API.
     val focusedElement = LocalFocusManager.current
 
+    // Shows the Places API - the search bar.
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -119,6 +122,7 @@ fun WeatherSearchScreen(
             }
         )
 
+        // Shows the results of the search dynamically updating.
         when (resultListShown) {
             true -> {
                 LocationAutoFillList(
@@ -136,6 +140,7 @@ fun WeatherSearchScreen(
             else -> {}
         }
 
+        // Shows the weather forecast for the location chosen.
         when (weatherResultsShown) {
             true -> {
                 when (weatherState.isLoading || userState.isLocationSearchUpdating) {
@@ -170,6 +175,7 @@ fun WeatherSearchScreen(
                             false -> {
                                 // The main content of the screen is in this block.
                                 when (userState.windowSizeClass.widthSizeClass) {
+                                    // Layout of the cards when screen width is compact.
                                     WindowWidthSizeClass.Compact -> {
                                         ForecastCardsForSearch(
                                             weatherState,
@@ -178,6 +184,7 @@ fun WeatherSearchScreen(
                                         )
                                     }
 
+                                    // Layout of the cards for everything else.
                                     else -> {
                                         ForecastCardsForSearch(
                                             weatherState,
@@ -206,9 +213,8 @@ private fun ForecastCardsForSearch(
     isWide: Boolean
 ) {
 
-    // This section before the next column remains in position while the rest
-    // of the list is scrollable.
     when (isWide) {
+        // The whole list is scrollable when screen width is wide.
         true -> {
             Column(
                 modifier = Modifier
@@ -260,6 +266,8 @@ private fun ForecastCardsForSearch(
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.Top
             ) {
+                // This section before the next column remains in position while the rest
+                // of the list is scrollable.
                 Spacer(modifier = Modifier.height(20.dp))
 
                 weatherState.currentWeather?.let {

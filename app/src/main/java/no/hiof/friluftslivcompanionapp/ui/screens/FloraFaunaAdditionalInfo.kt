@@ -124,6 +124,7 @@ fun FloraFaunaAdditionalInfo(
                 null -> NoSpeciesFoundScreen()
 
                 else -> {
+                    // Displays information relating to the species selected.
                     var species = floraFaunaState.selectedSpecies
                     Column(
                         modifier = Modifier
@@ -131,6 +132,8 @@ fun FloraFaunaAdditionalInfo(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         when (userState.windowSizeClass.widthSizeClass) {
+                            // Layout of info when screen width is compact. Single column with
+                            // scrollable description.
                             WindowWidthSizeClass.Compact -> {
                                 Column(
                                     modifier = Modifier
@@ -153,6 +156,7 @@ fun FloraFaunaAdditionalInfo(
 
                                 Spacer(modifier = Modifier.height(8.dp))
 
+                                // Image spans the whole width of the screen.
                                 Image(
                                     painter = rememberImagePainter(data = species?.photoUrl),
                                     contentDescription = "${species?.speciesName}",
@@ -181,6 +185,9 @@ fun FloraFaunaAdditionalInfo(
                                 }
                             }
 
+                            // Layout of info when screen width is wide. Two columns with right-most
+                            // col including scrollable description. Left column includes species
+                            // name and image.
                             else -> {
                                 Column {
                                     Row {
@@ -246,6 +253,7 @@ fun FloraFaunaAdditionalInfo(
         }
     }
 
+    // Bottom sheet for adding species to lifelist.
     if (showBottomSheet) {
         ModalBottomSheet(
             onDismissRequest = {
@@ -277,7 +285,10 @@ fun NoSpeciesFoundScreen() {
     }
 }
 
-//TODO Add functionality to select a location if we have enough time.
+// TODO Add functionality to select a location if we have enough time.
+
+// Bottom sheet where user can select a date they saw the bird. The user then adds the sighting to
+// their lifelist using their current GPS location.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SpeciesBottomSheet(

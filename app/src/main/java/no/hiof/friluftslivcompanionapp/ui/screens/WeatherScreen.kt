@@ -117,10 +117,12 @@ fun WeatherScreen(
 
                     // The main content of the screen is in this block.
                     when (userState.windowSizeClass.widthSizeClass) {
+                        // Layout of the cards when screen width is compact.
                         WindowWidthSizeClass.Compact -> {
                             ForecastCards(contentPadding, weatherState, userState.language, false)
                         }
 
+                        // Layout of the cards for everything else.
                         else -> {
                             ForecastCards(contentPadding, weatherState, userState.language, true)
                         }
@@ -185,9 +187,9 @@ private fun ForecastCards(
     language: SupportedLanguage,
     isWide: Boolean
 ) {
-        // This section before the next column remains in position while the rest
-        // of the list is scrollable.
+
         when (isWide) {
+            // The whole list is scrollable when screen width is wide.
             true -> {
                 Column(
                     modifier = Modifier
@@ -223,7 +225,6 @@ private fun ForecastCards(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // This column is scrollable.
                     Column(
                         modifier = Modifier
                             .fillMaxSize(),
@@ -245,6 +246,8 @@ private fun ForecastCards(
                         .fillMaxSize(),
                     verticalArrangement = Arrangement.Top
                 ) {
+                    // This section before the next column remains in position while the rest
+                    // of the list is scrollable.
                     Spacer(modifier = Modifier.height(20.dp))
 
                     weatherState.currentWeather?.let {
@@ -286,6 +289,7 @@ private fun ForecastCards(
         }
     }
 
+// Cards shown for the following 7 days of weather forecasts.
 @Composable
 private fun SecondaryCards(
     weatherState: WeatherState,
