@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
@@ -36,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -128,53 +130,116 @@ fun FloraFaunaAdditionalInfo(
                             .fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .padding(start = 20.dp, end = 20.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "${species?.speciesName}",
-                                style = CustomTypography.headlineSmall
-                            )
+                        when (userState.windowSizeClass.widthSizeClass) {
+                            WindowWidthSizeClass.Compact -> {
+                                Column(
+                                    modifier = Modifier
+                                        .padding(start = 20.dp, end = 20.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = "${species?.speciesName}",
+                                        style = CustomTypography.headlineSmall
+                                    )
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                                    Spacer(modifier = Modifier.height(8.dp))
 
-                            Text(
-                                text = "${species?.speciesNameScientific}",
-                                style = CustomTypography.bodyLarge,
-                                fontStyle = FontStyle.Italic
-                            )
+                                    Text(
+                                        text = "${species?.speciesNameScientific}",
+                                        style = CustomTypography.bodyLarge,
+                                        fontStyle = FontStyle.Italic
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Image(
+                                    painter = rememberImagePainter(data = species?.photoUrl),
+                                    contentDescription = "${species?.speciesName}",
+                                    modifier = Modifier
+                                        .height(180.dp)
+                                        .fillMaxWidth(),
+                                    //.clip(RoundedCornerShape(12.dp))
+                                    //.wrapContentHeight(),
+                                    contentScale = ContentScale.Crop
+                                )
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Column(
+                                    modifier = Modifier
+                                        .padding(start = 20.dp, end = 20.dp)
+                                        .verticalScroll(rememberScrollState()),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = "${species?.description}",
+                                        style = CustomTypography.bodyMedium
+                                    )
+
+                                    Spacer(modifier = Modifier.height(80.dp))
+                                }
+                            }
+
+                            else -> {
+                                Column {
+                                    Row {
+                                        Column(
+                                            modifier = Modifier
+                                                .weight(1f),
+                                            horizontalAlignment = Alignment.Start
+                                        ) {
+                                            Text(
+                                                modifier = Modifier.padding(start = 4.dp),
+                                                text = "${species?.speciesName}",
+                                                style = CustomTypography.headlineSmall
+                                            )
+
+                                            Spacer(modifier = Modifier.height(8.dp))
+
+                                            Text(
+                                                modifier = Modifier.padding(start = 4.dp),
+                                                text = "${species?.speciesNameScientific}",
+                                                style = CustomTypography.bodyLarge,
+                                                fontStyle = FontStyle.Italic
+                                            )
+
+                                            Spacer(modifier = Modifier.height(8.dp))
+
+                                            Image(
+                                                painter = rememberImagePainter(data = species?.photoUrl),
+                                                contentDescription = "${species?.speciesName}",
+                                                modifier = Modifier
+                                                    .height(180.dp)
+                                                    .fillMaxWidth(),
+                                                //.clip(RoundedCornerShape(12.dp))
+                                                //.wrapContentHeight(),
+                                                contentScale = ContentScale.Crop
+                                            )
+                                        }
+
+                                        Spacer(modifier = Modifier.width(8.dp))
+
+                                        Column(
+                                            modifier = Modifier
+                                                .padding(start = 20.dp, end = 20.dp)
+                                                .verticalScroll(rememberScrollState())
+                                                .weight(2f),
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Text(
+                                                text = "${species?.description}",
+                                                style = CustomTypography.bodyMedium
+                                            )
+
+                                            Spacer(modifier = Modifier.height(80.dp))
+                                        }
+                                    }
+                                }
+                            }
                         }
 
-                        Spacer(modifier = Modifier.height(8.dp))
 
-                        Image(
-                            painter = rememberImagePainter(data = species?.photoUrl),
-                            contentDescription = "${species?.speciesName}",
-                            modifier = Modifier
-                                .height(180.dp)
-                                .fillMaxWidth(),
-                            //.clip(RoundedCornerShape(12.dp))
-                            //.wrapContentHeight(),
-                            contentScale = ContentScale.Crop
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Column(
-                            modifier = Modifier
-                                .padding(start = 20.dp, end = 20.dp)
-                                .verticalScroll(rememberScrollState()),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "${species?.description}",
-                                style = CustomTypography.bodyMedium
-                            )
-
-                            Spacer(modifier = Modifier.height(80.dp))
-                        }
                     }
                 }
             }
