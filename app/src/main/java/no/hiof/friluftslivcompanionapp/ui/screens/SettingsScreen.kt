@@ -51,8 +51,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Build
@@ -116,271 +119,268 @@ fun SettingsScreen(
                 modifier = Modifier
                     .padding(20.dp)
                     .align(Alignment.TopCenter)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
+                    .fillMaxHeight()
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
             ) {
+                    // Language selector.
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.clickable {
+                            openLanguageDialogue.value = true
+                        }
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.Menu,
+                                contentDescription = stringResource(R.string.settings_change_language)
+                            )
 
-                // Language selector.
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.clickable {
-                        openLanguageDialogue.value = true
-                    }
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                            Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+
+                            Text(
+                                text = stringResource(R.string.lang_language) + " - ",
+                                textAlign = TextAlign.Start
+                            )
+
+                            Text(
+                                text = stringResource(userState.language.nameLocalized),
+                                textAlign = TextAlign.Start
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.weight(1f))
+
                         Icon(
-                            Icons.Default.Menu,
-                            contentDescription = stringResource(R.string.settings_change_language)
-                        )
-
-                        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
-
-                        Text(
-                            text = stringResource(R.string.lang_language) + " - ",
-                            textAlign = TextAlign.Start
-                        )
-
-                        Text(
-                            text = stringResource(userState.language.nameLocalized),
-                            textAlign = TextAlign.Start
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = stringResource(id = R.string.settings_change_language)
                         )
                     }
 
-                    Spacer(modifier = Modifier.weight(1f))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
-                    Icon(
-                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = stringResource(id = R.string.settings_change_language)
-                    )
-                }
+                    // Profile picture selector.
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.clickable {
+                            openProfileDialogue.value = true
+                        }
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.AccountCircle,
+                                contentDescription = stringResource(R.string.settings_update_profile_picture)
+                            )
 
-                HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
+                            Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
-                // Profile picture selector.
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.clickable {
-                        openProfileDialogue.value = true
-                    }
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = stringResource(R.string.settings_profile_picture),
+                                textAlign = TextAlign.Start
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.weight(1f))
+
                         Icon(
-                            Icons.Default.AccountCircle,
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = stringResource(R.string.settings_update_profile_picture)
                         )
-
-                        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
-
-                        Text(
-                            text = stringResource(R.string.settings_profile_picture),
-                            textAlign = TextAlign.Start
-                        )
                     }
 
-                    Spacer(modifier = Modifier.weight(1f))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
-                    Icon(
-                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = stringResource(R.string.settings_update_profile_picture)
-                    )
-                }
+                    // GPS Location updater.
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.LocationOn,
+                                contentDescription = stringResource(R.string.settings_update_gps_location)
+                            )
 
-                HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
+                            Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
-                // GPS Location updater.
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            Icons.Default.LocationOn,
-                            contentDescription = stringResource(R.string.settings_update_gps_location)
-                        )
+                            Text(
+                                text = stringResource(R.string.settings_gps_location),
+                                textAlign = TextAlign.Start
+                            )
+                        }
 
-                        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+                        Spacer(modifier = Modifier.weight(1f))
 
-                        Text(
-                            text = stringResource(R.string.settings_gps_location),
-                            textAlign = TextAlign.Start
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Switch(
-                        checked = locPermissionState.status.isGranted,
-                        onCheckedChange = {
-                            if (locPermissionState.status.isGranted) {
-                                Toast.makeText(
-                                    context,
-                                    R.string.settings_you_are_already_sharing_your_gps_location,
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } else if (locPermissionState.status.shouldShowRationale) {
-                                locPermissionState.launchPermissionRequest()
-                            } else {
-                                openLocDialogue.value = true
+                        Switch(
+                            checked = locPermissionState.status.isGranted,
+                            onCheckedChange = {
+                                if (locPermissionState.status.isGranted) {
+                                    Toast.makeText(
+                                        context,
+                                        R.string.settings_you_are_already_sharing_your_gps_location,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else if (locPermissionState.status.shouldShowRationale) {
+                                    locPermissionState.launchPermissionRequest()
+                                } else {
+                                    openLocDialogue.value = true
+                                }
                             }
+                        )
+                    }
+
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
+
+                    // Dark mode selector.
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.Build,
+                                contentDescription = stringResource(R.string.settings_toggle_dark_mode)
+                            )
+
+                            Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+
+                            Text(
+                                text = stringResource(R.string.settings_dark_mode),
+                                textAlign = TextAlign.Start
+                            )
                         }
-                    )
-                }
 
-                HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
+                        Spacer(modifier = Modifier.weight(1f))
 
-                // Dark mode selector.
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                        Switch(
+                            checked = isDarkMode,
+                            onCheckedChange = { isChecked ->
+                                userViewModel.updateDarkMode(isChecked)
+                            }
+                        )
+                    }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Bottom
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            Icons.Default.Build,
-                            contentDescription = stringResource(R.string.settings_toggle_dark_mode)
-                        )
 
-                        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
-                        Text(
-                            text = stringResource(R.string.settings_dark_mode),
-                            textAlign = TextAlign.Start
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Switch(
-                        checked = isDarkMode,
-                        onCheckedChange = {isChecked ->
-                            userViewModel.updateDarkMode(isChecked)
+                    when (userState.currentUser?.isAnonymous) {
+                        true -> {
+                            Text(
+                                text = stringResource(R.string.settings_email_not_registered),
+                                style = CustomTypography.bodySmall
+                            )
                         }
-                    )
-                }
-            }
 
-            Column(
-                modifier = Modifier
-                    .padding(20.dp)
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Bottom
-            ) {
-
-                HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
-
-                when (userState.currentUser?.isAnonymous) {
-                    true -> {
-                        Text(
-                            text = stringResource(R.string.settings_email_not_registered),
-                            style = CustomTypography.bodySmall
-                        )
-                    }
-
-                    else -> {
-                        Text(
-                            text =
+                        else -> {
+                            Text(
+                                text =
                                 stringResource(
                                     R.string.settings_email,
                                     (if (!userState.currentUser?.email?.isNullOrBlank()!!) userState.currentUser?.email else stringResource(
                                         id = R.string.unknown
                                     ))!!
                                 ),
-                            style = CustomTypography.bodySmall
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.padding(vertical = 2.dp))
-
-                when (locPermissionState.status.isGranted) {
-                    false -> {
-                        Text(
-                            text = stringResource(R.string.settings_no_gps_location_permission_given),
-                            style = CustomTypography.bodySmall
-                        )
-                        Spacer(modifier = Modifier.padding(vertical = 2.dp))
+                                style = CustomTypography.bodySmall
+                            )
+                        }
                     }
 
-                    else -> {}
-                }
+                    Spacer(modifier = Modifier.padding(vertical = 2.dp))
 
-                Text(
-                    text =
-                    stringResource(
-                        R.string.settings_municipality,
-                        (if (!location?.get(0)?.subAdminArea.isNullOrBlank()) location?.get(0)?.subAdminArea else stringResource(
-                            id = R.string.unknown
-                        ))!!
-                    ),
-                    style = CustomTypography.bodySmall
-                )
+                    when (locPermissionState.status.isGranted) {
+                        false -> {
+                            Text(
+                                text = stringResource(R.string.settings_no_gps_location_permission_given),
+                                style = CustomTypography.bodySmall
+                            )
+                            Spacer(modifier = Modifier.padding(vertical = 2.dp))
+                        }
 
-                Spacer(modifier = Modifier.padding(vertical = 2.dp))
+                        else -> {}
+                    }
 
-                Text(
-                    text =
+                    Text(
+                        text =
+                        stringResource(
+                            R.string.settings_municipality,
+                            (if (!location?.get(0)?.subAdminArea.isNullOrBlank()) location?.get(0)?.subAdminArea else stringResource(
+                                id = R.string.unknown
+                            ))!!
+                        ),
+                        style = CustomTypography.bodySmall
+                    )
+
+                    Spacer(modifier = Modifier.padding(vertical = 2.dp))
+
+                    Text(
+                        text =
                         stringResource(
                             R.string.settings_county,
                             (if (!location?.get(0)?.adminArea.isNullOrBlank()) location?.get(0)?.adminArea else stringResource(
                                 id = R.string.unknown
                             ))!!
                         ),
-                    style = CustomTypography.bodySmall
-                )
+                        style = CustomTypography.bodySmall
+                    )
 
-                Spacer(modifier = Modifier.padding(vertical = 2.dp))
+                    Spacer(modifier = Modifier.padding(vertical = 2.dp))
 
-                Text(
-                    text =
-                    stringResource(
-                        R.string.settings_country,
-                        (if (!location?.get(0)?.countryName.isNullOrBlank()) location?.get(0)?.countryName else stringResource(
-                            id = R.string.unknown
-                        ))!!
-                    ),
-                    style = CustomTypography.bodySmall
-                )
+                    Text(
+                        text =
+                        stringResource(
+                            R.string.settings_country,
+                            (if (!location?.get(0)?.countryName.isNullOrBlank()) location?.get(0)?.countryName else stringResource(
+                                id = R.string.unknown
+                            ))!!
+                        ),
+                        style = CustomTypography.bodySmall
+                    )
 
-                Spacer(modifier = Modifier.padding(vertical = 2.dp))
+                    Spacer(modifier = Modifier.padding(vertical = 2.dp))
 
-                Text(
-                    text = "Lon: ${userState.lastKnownLocation?.longitude}, Lat: ${userState.lastKnownLocation?.latitude}",
-                    style = CustomTypography.bodySmall
-                )
+                    Text(
+                        text = "Lon: ${userState.lastKnownLocation?.longitude}, Lat: ${userState.lastKnownLocation?.latitude}",
+                        style = CustomTypography.bodySmall
+                    )
 
-                // Button to register an anonymous account.
-                when (userState.currentUser?.isAnonymous) {
-                    true -> {
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
+                    // Button to register an anonymous account.
+                    when (userState.currentUser?.isAnonymous) {
+                        true -> {
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Button(
-                                onClick = {
-                                    //TODO Implement click behaviour that handles
-                                    // registering of an anonymous account.
-                                },
-                                modifier = Modifier.weight(1f)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = stringResource(R.string.settings_register_account),
-                                )
-                                Text(
-                                    stringResource(R.string.settings_register_account),
-                                    modifier = Modifier.padding(start = 4.dp)
-                                )
+                                Button(
+                                    onClick = {
+                                        //TODO Implement click behaviour that handles
+                                        // registering of an anonymous account.
+                                    },
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = stringResource(R.string.settings_register_account),
+                                    )
+                                    Text(
+                                        stringResource(R.string.settings_register_account),
+                                        modifier = Modifier.padding(start = 4.dp)
+                                    )
+                                }
                             }
                         }
-                    }
 
-                    else -> {}
+                        else -> {}
+                    }
                 }
             }
         }

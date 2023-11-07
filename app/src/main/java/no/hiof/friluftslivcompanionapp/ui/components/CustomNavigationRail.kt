@@ -48,8 +48,6 @@ import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 
 
-// Consult this website for additional information:
-// https://developer.android.com/jetpack/compose/navigation#bottom-nav
 @Composable
 fun CustomNavigationRail(navController: NavController, userViewModel: UserViewModel = viewModel()) {
 

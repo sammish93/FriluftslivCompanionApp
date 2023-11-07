@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -23,6 +25,7 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Text
@@ -41,6 +44,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -50,59 +54,28 @@ import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 
-
-// Consult this website for additional information:
-// https://developer.android.com/jetpack/compose/navigation#bottom-nav
 @Composable
 fun CustomNavigationDrawer(navController: NavController, userViewModel: UserViewModel = viewModel()) {
 
     val userState by userViewModel.state.collectAsState()
     val drawerState = rememberDrawerState(initialValue = userState.isDrawerBarOpened)
 
-    /*
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    val bottomNavOptions = mapOf(
+
+        Screen.HOME to painterResource(id = R.drawable.icons8_tent_48),
+        Screen.TRIPS to painterResource(id = R.drawable.icons8_map_48),
+        Screen.WEATHER to painterResource(id = R.drawable.icons8_partly_cloudy_day_48),
+        Screen.FLORA_FAUNA to painterResource(id = R.drawable.icons8_oak_leaf_48),
+        Screen.PROFILE to painterResource(id = R.drawable.icons8_male_user_48)
+    )
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                Text("Drawer title", modifier = Modifier.padding(16.dp))
-                Divider()
-                NavigationDrawerItem(
-                    label = { Text(text = "Drawer Item") },
-                    selected = false,
-                    onClick = { /*TODO*/ }
-                )
-                // ...other drawer items
-            }
-        },
-    )
-
-     */
-
-    NavigationRail(
-        header = {
-            IconButton(onClick = { userViewModel.updateIsRailBarOpened(!userState.isRailBarOpened)}) {
-                Icon(
-                    imageVector = Icons.Default.Menu, contentDescription = "Menu"
-                )
-            }
-        }
-    ) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentDestination = navBackStackEntry?.destination
-
-        val bottomNavOptions = mapOf(
-
-            Screen.HOME to painterResource(id = R.drawable.icons8_tent_48),
-            Screen.TRIPS to painterResource(id = R.drawable.icons8_map_48),
-            Screen.WEATHER to painterResource(id = R.drawable.icons8_partly_cloudy_day_48),
-            Screen.FLORA_FAUNA to painterResource(id = R.drawable.icons8_oak_leaf_48),
-            Screen.PROFILE to painterResource(id = R.drawable.icons8_male_user_48)
-        )
-
-        when (userState.isRailBarOpened) {
-            true -> Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-            ) {
                 bottomNavOptions.forEach { screen ->
                     val screenPage = screen.key
                     val icon = screen.value
@@ -116,7 +89,7 @@ fun CustomNavigationDrawer(navController: NavController, userViewModel: UserView
                         else -> stringResource(R.string.unknown)
                     }
 
-                    NavigationRailItem(
+                    NavigationDrawerItem(
                         icon = { Icon(icon, contentDescription = contentDescription) },
                         label = { Text(stringResource(screenPage.navBarLabel)) },
                         selected = currentDestination?.hierarchy?.any { it.route == screenPage.route } == true,
@@ -138,8 +111,8 @@ fun CustomNavigationDrawer(navController: NavController, userViewModel: UserView
                     )
                 }
             }
+        },
+    ) {
 
-            else -> {}
-        }
     }
 }
