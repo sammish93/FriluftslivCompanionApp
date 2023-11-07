@@ -149,7 +149,7 @@ fun FloraFaunaAdditionalInfo(
 
                                     Text(
                                         text = "${species?.speciesNameScientific}",
-                                        style = CustomTypography.bodyLarge,
+                                        style = CustomTypography.titleSmall,
                                         fontStyle = FontStyle.Italic
                                     )
                                 }
@@ -207,7 +207,7 @@ fun FloraFaunaAdditionalInfo(
                                             Text(
                                                 modifier = Modifier.padding(start = 4.dp),
                                                 text = "${species?.speciesNameScientific}",
-                                                style = CustomTypography.bodyLarge,
+                                                style = CustomTypography.titleSmall,
                                                 fontStyle = FontStyle.Italic
                                             )
 
