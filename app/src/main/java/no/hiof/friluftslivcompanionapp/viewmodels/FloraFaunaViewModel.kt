@@ -19,6 +19,7 @@ import no.hiof.friluftslivcompanionapp.data.states.FloraFaunaState
 import no.hiof.friluftslivcompanionapp.domain.FloraFaunaFactory
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.FloraFauna
+import no.hiof.friluftslivcompanionapp.models.Lifelist
 import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
@@ -213,6 +214,20 @@ class FloraFaunaViewModel @Inject constructor(
                         // Handle any exceptions
                     }
                 }
+            }
+        }
+    }
+
+    private val _lifeList = MutableStateFlow<List<Lifelist>?>(null)
+    val lifeList : StateFlow<List<Lifelist>?> = _lifeList.asStateFlow()
+
+    fun getUserLifeList(){
+        viewModelScope.launch {
+            try {
+                val listItems = lifelistRepository.getAllItemsInLifeList()
+                _lifeList.value = listItems
+            }catch (e: Exception){
+                    //TODO handle this
             }
         }
     }
