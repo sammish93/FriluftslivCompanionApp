@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
@@ -73,7 +74,9 @@ fun<T> RecentActivityCard(
                 Text(
                     text = subHeader,
                     style = CustomTypography.titleSmall,
-                    fontStyle = FontStyle.Italic
+                    fontStyle = FontStyle.Italic,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
