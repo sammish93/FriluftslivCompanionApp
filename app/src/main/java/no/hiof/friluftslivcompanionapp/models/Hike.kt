@@ -66,7 +66,10 @@ data class Hike(
                 description = map["description"] as? String,
                 duration = map["duration"] as? Duration,
                 distanceKm = (map["distanceKm"] as? Number)?.toDouble(),
-                difficulty = (map["difficulty"] as? Number)?.toInt()
+                difficulty = (map["difficulty"] as? Number)?.toInt(),
+                startGeoHash = map["startGeoHash"] as? String,
+                startLat = (map["startLat"] as? Number)?.toDouble(),
+                startLng = (map["startLng"] as? Number)?.toDouble()
             )
         }
     }
