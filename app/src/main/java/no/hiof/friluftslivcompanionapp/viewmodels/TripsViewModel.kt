@@ -18,15 +18,11 @@ import no.hiof.friluftslivcompanionapp.data.repositories.OperationResult
 import no.hiof.friluftslivcompanionapp.data.repositories.TripsRepository
 import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
 import no.hiof.friluftslivcompanionapp.data.states.TripsState
-import no.hiof.friluftslivcompanionapp.domain.FloraFaunaFactory
 import no.hiof.friluftslivcompanionapp.domain.LocationFormatter
 import no.hiof.friluftslivcompanionapp.domain.TripFactory
-import no.hiof.friluftslivcompanionapp.models.DummyTrip
 import no.hiof.friluftslivcompanionapp.models.Hike
-import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.Trip
 import no.hiof.friluftslivcompanionapp.models.TripActivity
-import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
@@ -292,22 +288,17 @@ class TripsViewModel @Inject constructor(
 
     private val _recentActivity = MutableStateFlow<List<TripActivity>?>(null)
     val recentActivity: StateFlow<List<TripActivity>?> = _recentActivity
-    fun recentActivity(){
-        viewModelScope.launch{
-            try{
-                when (val result = activityRepository.getUserTripActivities()){
-                    is OperationResult.Success -> _recentActivity.value = result.data
-                    is OperationResult.Error -> {
-
-                        Log.e(TAG, "Error fetching recent activity: ${result.exception.message}")
-
-                    }
-
-                    else -> {}
+    fun getRecentActivity(){
+        viewModelScope.launch {
+            viewModelScope.launch {
+                try {
+                    val activities = activityRepository.getUserTripActivities()
+                    _recentActivity.value = activities
+                } catch (e: Exception) {
+                    Log.e(TAG, "Exception fetching recent activities: ${e.message}")
+                    _recentActivity.value =
+                        listOf()
                 }
-
-            }catch (e: Exception){
-                Log.e(TAG, "Exception fetching recent activities: ${e.message}")
             }
         }
 
