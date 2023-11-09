@@ -156,7 +156,7 @@ fun TripsAdditionalInfoScreen(
                                     }
                                 }
 
-                                //TODO add if (!tripsState.isSelectedTripRecentActivity) then show this.
+                                if (!tripsState.isSelectedTripRecentActivity){
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -193,7 +193,7 @@ fun TripsAdditionalInfoScreen(
 
                                     GoogleMapTripAdditionalInfo(nodes = tripsState.selectedTrip!!.route)
                                 }
-                            }
+                            }}
 
                             else -> {
                                 // Layout of info when screen width is wide. Two columns. Left-most
