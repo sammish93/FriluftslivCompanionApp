@@ -25,7 +25,6 @@ import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,7 +38,7 @@ fun FloraFaunaScreen(
 
 ) {
 
-    val recentActivity by viewModel.lifeList.collectAsState()
+    val lifeList by viewModel.lifeList.collectAsState()
 
     val geocoder = Geocoder(LocalContext.current, Locale.getDefault())
 
@@ -52,7 +51,7 @@ fun FloraFaunaScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        recentActivity?.let{list ->
+        lifeList?.let{ list ->
             items(list){ item ->
                 val subclass = FloraFaunaMapper.mapClassToEnum(item.sightings.species)
                 val subclassToString =
