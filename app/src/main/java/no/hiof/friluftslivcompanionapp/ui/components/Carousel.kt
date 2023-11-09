@@ -48,9 +48,10 @@ fun Carousel(
         }
     }
     Spacer(modifier = Modifier.height(18.dp))
-    Indicators(size = trips.size, currentPage = currentPage)
+    // Indicators(size = trips.size, currentPage = currentPage)
 }
 
+/*
 @Composable
 fun Indicators(size: Int, currentPage: MutableState<Int>) {
     Row(
@@ -72,3 +73,5 @@ fun Indicators(size: Int, currentPage: MutableState<Int>) {
         }
     }
 }
+
+ */
