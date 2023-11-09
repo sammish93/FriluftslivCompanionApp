@@ -1,6 +1,7 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
 import android.Manifest
+import android.location.Geocoder
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import androidx.compose.foundation.layout.Arrangement
@@ -41,12 +42,17 @@ import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.models.DummyTrip
+import no.hiof.friluftslivcompanionapp.models.enums.Screen
+import no.hiof.friluftslivcompanionapp.models.enums.TripType
 import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
 import no.hiof.friluftslivcompanionapp.ui.components.SnackbarWithCondition
+import no.hiof.friluftslivcompanionapp.ui.components.cards.RecentActivityCard
 import no.hiof.friluftslivcompanionapp.ui.components.cards.TripCard
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 
 val dummyTrips: List<DummyTrip> = DummyTrip.getDummyData()
@@ -62,6 +68,10 @@ fun TripsRecentActivityScreen(
     val userState by userViewModel.state.collectAsState()
     val tripsInArea by tripsViewModel.hikes.collectAsState()
     val tripsState by tripsViewModel.tripsState.collectAsState()
+
+    val recentActivity by tripsViewModel.recentActivity.collectAsState()
+    val geocoder = Geocoder(LocalContext.current, Locale.getDefault())
+
    // val locPermissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
     //val snackbarHostState = remember { SnackbarHostState() }
 
@@ -75,11 +85,15 @@ fun TripsRecentActivityScreen(
         capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
     }
 
-    LaunchedEffect(userState) {
+    LaunchedEffect(true) {
+        /*
         val geoPoint = userState.lastKnownLocation?.let { GeoPoint(it.latitude, it.longitude) }
         if (geoPoint != null) {
             tripsViewModel.getTripsNearUsersLocation(geoPoint, 50.0, 5)
         }
+
+         */
+        tripsViewModel.getRecentActivity()
     }
 
     when {
@@ -117,13 +131,44 @@ fun TripsRecentActivityScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                items(tripsInArea) { trip ->
-                    //TODO send RecentActivity to trip instead of dummy data.
-                    TripCard(navController, trip, tripsViewModel, userViewModel)
+                recentActivity?.let{list ->
+                    items(list){item ->
+
+                        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+                        val dateString = dateFormat.format(item.date)
+
+                        val location = geocoder.getFromLocation(
+                            item.trip.route.first().latitude,
+                            item.trip.route.first().longitude,
+                            1
+                        )
+
+                        val municipality = location?.firstOrNull()?.subAdminArea ?: "Unkown Location"
+                        val county = location?.firstOrNull()?.adminArea ?: "Unknown Location"
+
+                        RecentActivityCard(
+                            item = item,
+                            textStyle = CustomTypography.headlineSmall ,
+                            title = TripType.HIKE.name,
+                            header = "$municipality, $county",
+                            subHeader = item.trip.description?: "",
+                            subHeader2 = dateString,
+                            onMoreInfoClick = {
+                                tripsViewModel.updateSelectedTrip(item.trip)
+                                navController.navigate(Screen.TRIPS_ADDITIONAL_INFO.name)
+                            }
+
+                        )
+
+                        }
+                    }
+
+
                 }
             }
         }
-    }
+
 }
 
 /*
