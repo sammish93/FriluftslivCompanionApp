@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
+import android.location.Geocoder
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,19 +12,21 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.domain.FloraFaunaMapper
-import no.hiof.friluftslivcompanionapp.models.Bird
-import no.hiof.friluftslivcompanionapp.models.FloraFauna
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
-import no.hiof.friluftslivcompanionapp.ui.components.cards.FloraFaunaCard
+import no.hiof.friluftslivcompanionapp.ui.components.cards.LifelistViewCard
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,6 +40,8 @@ fun FloraFaunaScreen(
 ) {
 
     val recentActivity by viewModel.lifeList.collectAsState()
+
+    val geocoder = Geocoder(LocalContext.current, Locale.getDefault())
 
     LaunchedEffect(true){
         viewModel.getUserLifeList()
@@ -54,25 +59,36 @@ fun FloraFaunaScreen(
                     subclass?.let { stringResource(it.label) }
                         ?: stringResource(R.string.unknown)
 
-                FloraFaunaCard(
-                        item = item,
-                        textStyle = CustomTypography.titleLarge,
-                        title = subclassToString,
-                        header = item.sightings.species.speciesName ?: "",
-                        subHeader = item.sightings.species.speciesNameScientific,
-                        fetchImage = {it.sightings.species.photoUrl ?: "Photo of ${it.sightings.species.speciesName}" },
-                        onMoreInfoClick = {
-                            viewModel.updateSelectedSpeciesInfo(item.sightings.species)
-                            navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
-                        }
-                    )
+                val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+                val dateString = dateFormat.format(item.sightings.date)
+
+                val location = geocoder.getFromLocation(
+                    item.sightings.location.lat,
+                    item.sightings.location.lon,
+                    1
+                )
+                val municipality = location?.firstOrNull()?.subAdminArea ?: "Unknown Location"
+                val county = location?.firstOrNull()?.adminArea ?: "Unknown Location"
+
+
+                LifelistViewCard(
+                    item = item,
+                    textStyle = CustomTypography.headlineMedium,
+                    title = subclassToString,
+                    header = item.sightings.species.speciesName ?: "",
+                    subHeader = dateString,
+                    subHeader2 = "$municipality, $county",
+                    fetchImage = {it.sightings.species.photoUrl ?: "Photo of ${it.sightings.species.speciesName}" },
+                    onMoreInfoClick = {
+                        viewModel.updateSelectedSpeciesInfo(item.sightings.species)
+                        navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
+                    }
+                )
                 }
 
             }
 
         }
-
-
-
 
 }
