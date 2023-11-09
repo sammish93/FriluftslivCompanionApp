@@ -12,11 +12,12 @@ data class FloraFaunaSighting(val species: FloraFauna, val date: Date, val locat
     }
 
     companion object {
-        fun fromMap(map: Map<String, Any?>): FloraFaunaSighting {
+        fun fromMap(map: Map<String, Any?>): FloraFaunaSighting? {
             val speciesMap = map["species"] as? Map<String, Any?> ?: emptyMap()
             val species = Bird.fromMap(speciesMap)
 
-            val date = map["date"] as? Date ?: Date()
+            val timestamp = map["date"] as? com.google.firebase.Timestamp
+            val date = timestamp?.toDate() ?: return null
 
             val locationMap = map["location"] as? Map<String, Any?> ?: emptyMap()
             val location = Location.fromMap(locationMap)
