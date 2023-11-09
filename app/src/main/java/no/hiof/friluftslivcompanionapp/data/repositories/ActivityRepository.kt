@@ -62,55 +62,36 @@ class ActivityRepository @Inject constructor(
         }
     }
 
-    suspend fun getUserTripActivities(): OperationResult<List<TripActivity>> {
-        val functionTag = "GetUserTripActivities"
+    suspend fun getUserTripActivities(): List<TripActivity> {
+        val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
 
         return withContext(Dispatchers.IO) {
             try {
-                Log.d(functionTag, "Initiating retrieval of user trip activities")
-
-                val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
-                Log.d(functionTag, "User is logged in with ID: $userId")
-
                 val activityCollectionRef = firestore.collection("users").document(userId).collection("tripActivity")
-                Log.d(functionTag, "Reference to 'tripActivities' collection obtained")
-
-                Log.d(functionTag, "Fetching trip activities from Firestore")
                 val querySnapshot = activityCollectionRef.get().await()
 
                 val tripActivities: MutableList<TripActivity> = mutableListOf()
 
-
-                Log.d(functionTag, "Processing documents from Firestore")
-
                 for (document in querySnapshot.documents) {
-                    Log.d(functionTag, "Processing document ID: ${document.id}")
-
-
                     val dateTimestamp = document.data?.get("date") as? com.google.firebase.Timestamp
                     val date = dateTimestamp?.toDate()
 
                     val tripMap = document.data?.get("trip") as? Map<String, Any?>
                     if (tripMap == null || date == null) {
-                        Log.w(functionTag, "Data missing or invalid data type in document: ${document.id}")
                         continue
                     }
 
-                    Log.d(functionTag, "Creating Trip object from document data")
                     val trip = Hike.fromMap(tripMap)
-
-                    Log.d(functionTag, "Adding new TripActivity")
                     tripActivities.add(TripActivity(trip, date))
                 }
 
-                Log.d(functionTag, "Successfully compiled list of TripActivities. Total count: ${tripActivities.size}")
-                OperationResult.Success(tripActivities)
+                tripActivities
             } catch (e: Exception) {
-                Log.e(functionTag, "Exception occurred while retrieving trip activities: ${e.message}", e)
-                OperationResult.Error(e)
+                throw e
             }
         }
     }
+
     suspend fun getUserTripCountForTheYear(): OperationResult<Int> {
         val functionTag = "GetUserTripCountForTheYear"
 
@@ -144,13 +125,11 @@ class ActivityRepository @Inject constructor(
 
     suspend fun getTotalKilometersForYear(): Double {
         val allTrips = getUserTripActivities()
-        if (allTrips is OperationResult.Success) {
 
-            return allTrips.data
-                .filter { it.date.after(getStartOfYear()) }
-                .sumOf { it.trip.distanceKm?: 0.0 }
-        }
-        return 0.0
+        return allTrips
+            .filter { it.date.after(getStartOfYear()) }
+            .sumOf { it.trip.distanceKm?: 0.0 }
+
     }
 
     private fun getStartOfYear(): Date {
