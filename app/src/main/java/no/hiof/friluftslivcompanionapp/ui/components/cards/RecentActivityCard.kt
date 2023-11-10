@@ -43,7 +43,7 @@ fun<T> RecentActivityCard(
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .height(150.dp)
+            .height(120.dp)
             .clickable { onMoreInfoClick() }
     ) {
         Row(
@@ -66,7 +66,9 @@ fun<T> RecentActivityCard(
                 Text(
 
                     text = header,
-                    style = CustomTypography.headlineSmall
+                    style = CustomTypography.headlineSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -83,7 +85,9 @@ fun<T> RecentActivityCard(
 
                 Text(
                     text = subHeader2,
-                    style = CustomTypography.titleSmall
+                    style = CustomTypography.titleSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }

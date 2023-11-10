@@ -23,6 +23,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
@@ -39,7 +40,7 @@ fun <T> LifelistViewCard(
     subHeader: String,
     subHeader2: String,
     fetchImage: (T) -> String,
-    onMoreInfoClick: () -> Unit
+    onMoreInfoClick: () -> Unit,
 ){
     val imageUrl = fetchImage(item)
 
@@ -51,7 +52,7 @@ fun <T> LifelistViewCard(
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .height(150.dp)
+            .height(120.dp)
             .clickable { onMoreInfoClick() }
     ) {
         if (imageUrl.isNotEmpty()) {
@@ -77,7 +78,9 @@ fun <T> LifelistViewCard(
 
                         Text(
                             text = header,
-                            style = CustomTypography.headlineSmall
+                            style = CustomTypography.headlineSmall,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
 
                         Spacer(modifier = Modifier.padding(vertical = 4.dp))
@@ -85,7 +88,9 @@ fun <T> LifelistViewCard(
                         Text(
                             text = subHeader,
                             style = CustomTypography.titleSmall,
-                            fontStyle = FontStyle.Italic
+                            fontStyle = FontStyle.Italic,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
 
                         Spacer(modifier = Modifier.padding(vertical = 4.dp))
@@ -93,7 +98,9 @@ fun <T> LifelistViewCard(
                         Text(
                             text = subHeader2,
                             style = CustomTypography.titleSmall,
-                            fontStyle = FontStyle.Italic
+                            fontStyle = FontStyle.Italic,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }

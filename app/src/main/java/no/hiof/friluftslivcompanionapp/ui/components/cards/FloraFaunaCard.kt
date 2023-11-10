@@ -28,6 +28,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 
 @OptIn(ExperimentalCoilApi::class)
@@ -78,7 +79,9 @@ fun <T> FloraFaunaCard(
 
                         Text(
                             text = header,
-                            style = CustomTypography.headlineSmall
+                            style = CustomTypography.headlineSmall,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
 
                         Spacer(modifier = Modifier.padding(vertical = 4.dp))
@@ -86,7 +89,9 @@ fun <T> FloraFaunaCard(
                         Text(
                             text = subHeader,
                             style = CustomTypography.titleSmall,
-                            fontStyle = FontStyle.Italic
+                            fontStyle = FontStyle.Italic,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -128,7 +133,9 @@ fun <T> FloraFaunaCard(
 
                         Text(
                             text = header,
-                            style = CustomTypography.headlineSmall
+                            style = CustomTypography.headlineSmall,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
 
                         Spacer(modifier = Modifier.padding(horizontal = 4.dp))
@@ -136,7 +143,9 @@ fun <T> FloraFaunaCard(
                         Text(
                             text = subHeader,
                             style = CustomTypography.titleSmall,
-                            fontStyle = FontStyle.Italic
+                            fontStyle = FontStyle.Italic,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
