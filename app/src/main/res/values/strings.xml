@@ -142,4 +142,16 @@
     <string name="no_internett_no_search">No internet connection. You are not able to search this area</string>
     <string name="enable_network_to_search_for_a_place">Enable network to search for a place</string>
     <string name="warningicon">WarningIcon</string>
+    <string name="username_hedgehog">Hedgehog</string>
+    <string name="username_squirrel">Squirrel</string>
+    <string name="username_polecat">Polecat</string>
+    <string name="username_mole">Mole</string>
+    <string name="username_badger">Badger</string>
+    <string name="username_fox">Fox</string>
+    <string name="username_magpie">Magpie</string>
+    <string name="username_mouse">Mouse</string>
+    <string name="username_robin">Robin</string>
+    <string name="username_adder">Adder</string>
+    <string name="username_deer">Deer</string>
+    <string name="username_moose">Moose</string>
 </resources>

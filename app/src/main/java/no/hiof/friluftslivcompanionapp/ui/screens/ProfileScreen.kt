@@ -69,6 +69,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
+import no.hiof.friluftslivcompanionapp.domain.NameFormatter
 import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.DisplayPicture
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
@@ -201,7 +202,7 @@ fun ProfileScreen(
                             Spacer(modifier = Modifier.padding(vertical = 4.dp))
                             LeaderboardRow(
 
-                                displayPicture = DisplayPicture.DP_DEFAULT,
+                                displayPicture = user.preferences.displayPicture,
                                 username = user.username,
                                 numberToDisplay = user.yearlyTripCount,
                                 placement = index + 1,
@@ -219,7 +220,7 @@ fun ProfileScreen(
                             Spacer(modifier = Modifier.padding(vertical = 4.dp))
                             LeaderboardRow(
 
-                                displayPicture = DisplayPicture.DP_DEFAULT,
+                                displayPicture = user.preferences.displayPicture,
                                 username = user.username,
                                 numberToDisplay = user.yearlySpeciesCount,
                                 placement = index + 1,
@@ -298,6 +299,10 @@ private fun LeaderboardRow(
     padding: Int = 0,
     scale: Float = 1.0F
 ) {
+    val formattedUsername = username.replaceFirstChar {
+        if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
+    }
+
     Row(
         modifier = Modifier
             .padding(start = padding.dp),
@@ -340,7 +345,9 @@ private fun LeaderboardRow(
             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
             Text(
-                text = username.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() },
+                text = if (formattedUsername == "DefaultUsername")
+                    stringResource(NameFormatter.getRandomName())
+                else formattedUsername,
                 textAlign = TextAlign.Start
             )
         }
