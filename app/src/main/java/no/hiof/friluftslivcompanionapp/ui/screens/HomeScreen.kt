@@ -1,6 +1,8 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
 import android.Manifest
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,8 +29,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -43,6 +47,7 @@ import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.ui.components.Carousel
 import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
+import no.hiof.friluftslivcompanionapp.ui.components.ErrorView
 import no.hiof.friluftslivcompanionapp.ui.components.SnackbarWithCondition
 import no.hiof.friluftslivcompanionapp.ui.components.items.BirdItem
 import no.hiof.friluftslivcompanionapp.ui.components.items.LifelistItem
@@ -62,6 +67,18 @@ fun HomeScreen(
     floraFaunaViewModel: FloraFaunaViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
+
+    val context = LocalContext.current
+    // Code inspired by ChatGPT V3.5
+    // Retrieves a boolean value as to whether the user currently has internet connectivity.
+    val connectivityManager = remember { context.getSystemService(ConnectivityManager::class.java) }
+    val isNetworkAvailable by rememberUpdatedState {
+        val network = connectivityManager?.activeNetwork
+        val capabilities = connectivityManager?.getNetworkCapabilities(network)
+        capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+    }
+
+
     // Sensors(userViewModel)
     val userLocation by userViewModel.state.collectAsState()
     val hikes by tripsViewModel.hikes.collectAsState()
@@ -102,10 +119,12 @@ fun HomeScreen(
 
     val currentPage = remember { mutableIntStateOf(0) }
 
-    when (tripsState.isLoading) {
-       true -> CustomLoadingScreen()
-        else -> when (tripsState.isFailure || !locPermissionState.status.isGranted) {
-            false -> {
+    when {
+        tripsState.isLoading -> {
+            CustomLoadingScreen()
+        }
+        else -> when (tripsState.isFailure || !locPermissionState.status.isGranted || !isNetworkAvailable()){
+            false->{
                 Column(
                     modifier = Modifier
                         .verticalScroll(scrollState)
@@ -119,12 +138,13 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     if (hikes.isNullOrEmpty()) {
-                        Text(
+                        /*Text(
                             text = stringResource(R.string.there_are_currently_no_trips_in_your_area),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Medium,
                             textAlign = TextAlign.Center
-                        )
+                        )*/
+                        CustomLoadingScreen()
                     } else {
                         Text(
                             text = stringResource(R.string.trips_in_your_area),
@@ -166,37 +186,35 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         recentActitivy?.let {
-                            Carousel(items = it , currentPage = currentPage) { recentActitivy ->
+                            Carousel(items = it, currentPage = currentPage) { recentActitivy ->
                                 RecentActivityListItems(recentActivity = recentActitivy)
 
                             }
                         }
-
-
                     }
-
                 }
             }
-            else -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .wrapContentSize(Alignment.Center)
-                        .padding(16.dp),
+            else ->{
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
+                    .padding(16.dp),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = if (!locPermissionState.status.isGranted) stringResource(R.string.error_no_gps_location_found)
-                        else stringResource(
-                            R.string.error_retrieving_api_success_response
-                        ),
+            ) {
+                Text(
+                    text = when {
+                        !locPermissionState.status.isGranted -> stringResource(R.string.error_no_gps_location_found)
+                        !isNetworkAvailable() -> stringResource(R.string.no_internett_connection)
+                        else -> stringResource(R.string.error_retrieving_api_success_response)
+                                },
                         style = CustomTypography.headlineMedium,
                         textAlign = TextAlign.Center,
                         modifier = modifier.wrapContentSize(Alignment.Center)
-                    )
-                    IconButton(onClick = {
-                        tripsViewModel.viewModelScope.launch {
+                )
+                IconButton(onClick = {
+                    tripsViewModel.viewModelScope.launch {
                             //TODO Add functionality to prompt the user to share their location if
                             // permissions aren't currently given.
                             val geoPoint = userLocation.lastKnownLocation?.let {
@@ -206,21 +224,19 @@ fun HomeScreen(
                                 tripsViewModel.getTripsNearUsersLocation(geoPoint, radiusInKm = 50.0, limit = 5)
                             }
                         }
-                    }) {
-                        Icon(
-                            Icons.Default.Refresh,
-                            contentDescription = stringResource(id = R.string.refresh)
-                        )
-                    }
-
+                }) {
+                    Icon(
+                        Icons.Default.Refresh,
+                        contentDescription = stringResource(id = R.string.refresh)
+                    )
                 }
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(bottom = 8.dp)
-                ) {
+                }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 8.dp)
+            ) {
                 SnackbarHost(hostState = snackbarHostState,  modifier = Modifier.align(Alignment.BottomCenter))
-
                 SnackbarWithCondition(
                     snackbarHostState = snackbarHostState,
                     message = (stringResource(R.string.not_share_location_msg_HomePage)),
@@ -228,10 +244,9 @@ fun HomeScreen(
                     condition = !locPermissionState.status.isGranted
 
                 )
-                }
             }
         }
-
     }
-}
+}}
+
 

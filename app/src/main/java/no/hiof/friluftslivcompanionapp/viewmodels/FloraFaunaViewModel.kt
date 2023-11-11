@@ -16,6 +16,8 @@ import javax.inject.Inject
 import no.hiof.friluftslivcompanionapp.data.network.Result
 import no.hiof.friluftslivcompanionapp.data.repositories.LifelistRepository
 import no.hiof.friluftslivcompanionapp.data.states.FloraFaunaState
+import no.hiof.friluftslivcompanionapp.data.states.LifeListState
+
 import no.hiof.friluftslivcompanionapp.domain.FloraFaunaFactory
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.FloraFauna
@@ -221,13 +223,20 @@ class FloraFaunaViewModel @Inject constructor(
     private val _lifeList = MutableStateFlow<List<Lifelist>?>(null)
     val lifeList : StateFlow<List<Lifelist>?> = _lifeList.asStateFlow()
 
+    private val _lifeListState = MutableStateFlow(LifeListState())
+    val lifeListState: StateFlow<LifeListState> = _lifeListState.asStateFlow()
     fun getUserLifeList(){
         viewModelScope.launch {
+            _lifeListState.value = _lifeListState.value.copy(isLoading = true)
             try {
                 val listItems = lifelistRepository.getAllItemsInLifeList()
                 _lifeList.value = listItems
+                _lifeListState.value = LifeListState(lifeList = listItems, isLoading = false)
+
             }catch (e: Exception){
                     //TODO handle this
+                _lifeListState.value = LifeListState(isLoading = false, isFailure = true)
+
             }
         }
     }

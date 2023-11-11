@@ -1,5 +1,7 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,9 +39,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
@@ -70,6 +74,17 @@ fun WeatherScreen(
     viewModel: WeatherViewModel = viewModel(),
     userViewModel: UserViewModel = viewModel(),
 ) {
+
+    val context = LocalContext.current
+    // Code inspired by ChatGPT V3.5
+    // Retrieves a boolean value as to whether the user currently has internet connectivity.
+    val connectivityManager = remember { context.getSystemService(ConnectivityManager::class.java) }
+    val isNetworkAvailable by rememberUpdatedState {
+        val network = connectivityManager?.activeNetwork
+        val capabilities = connectivityManager?.getNetworkCapabilities(network)
+        capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+    }
+
     // Variables for Bottom Sheet - see https://m3.material.io/components/bottom-sheets/overview
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -93,7 +108,7 @@ fun WeatherScreen(
         // is shown.
         true -> CustomLoadingScreen()
 
-        else -> when (weatherState.isFailure || weatherState.isNoGps) {
+        else -> when (weatherState.isFailure || weatherState.isNoGps || !isNetworkAvailable()) {
             // When a successful reponse has been returned then the following is displayed.
             false -> {
                 Scaffold(
@@ -141,9 +156,11 @@ fun WeatherScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = if (weatherState.isNoGps) stringResource(R.string.error_no_gps_location_found) else stringResource(
-                            R.string.error_retrieving_api_success_response
-                        ),
+                        text = when {
+                            (weatherState.isNoGps)-> stringResource(R.string.error_no_gps_location_found)
+                            !isNetworkAvailable() -> stringResource(R.string.no_internett_connection)
+                            else -> stringResource(R.string.error_retrieving_api_success_response)
+                        },
                         style = CustomTypography.headlineMedium,
                         textAlign = TextAlign.Center,
                         modifier = modifier.wrapContentSize(Alignment.Center)
