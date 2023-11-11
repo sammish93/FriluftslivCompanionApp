@@ -2,6 +2,7 @@ package no.hiof.friluftslivcompanionapp.data.repositories
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -55,10 +56,27 @@ class ActivityRepository @Inject constructor(
 
             userTripActivityRef.add(tripActivity.toMap()).await()
 
+            incrementYearlyTripCount(userId)
+
             Log.d(functionTag, "TripActivity added successfully to Firestore for user: $userId")
         } catch (e: Exception) {
             Log.e(functionTag, "Error adding trip activity: ${e.message}", e)
             throw e
+        }
+    }
+
+    private suspend fun incrementYearlyTripCount(uid: String): OperationResult<Unit> {
+        return try {
+            val userCollection = firestore.collection("users")
+            val userDocument = userCollection.document(uid)
+
+
+            userDocument.update("yearlyTripCount", FieldValue.increment(1)).await()
+
+            OperationResult.Success(Unit)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            OperationResult.Error(e)
         }
     }
 
