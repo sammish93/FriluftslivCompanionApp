@@ -313,6 +313,7 @@ fun FriluftslivApp(
                                 HomeScreen(
                                     userViewModel,
                                     tripsViewModel,
+                                    floraFaunaViewModel,
                                     modifier.padding(innerPadding)
                                 )
                             }
