@@ -4,11 +4,13 @@ import android.content.res.Resources
 import androidx.compose.ui.text.capitalize
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
+import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Date
 import java.util.Locale
 
 /**
@@ -92,5 +94,10 @@ object DateFormatter {
         val minutesUnit = (duration.seconds % 3600) / 60
 
         return "$hoursUnit $hoursLocalised $minutesUnit $minutesLocalised"
+    }
+
+    fun formatDate(date: Date): String {
+        val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+        return dateFormat.format(date)
     }
 }
