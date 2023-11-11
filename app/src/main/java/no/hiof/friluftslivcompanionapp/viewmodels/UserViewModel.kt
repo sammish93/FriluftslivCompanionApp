@@ -142,30 +142,36 @@ class UserViewModel @Inject constructor(
     val topThreeUsersByTripCount: StateFlow<List<User>?> get() = _topThreeUsersByTripCount
 
     fun fetchTopThreeUsersByTripCount() {
+        Log.d("UserTripCount", "Fetching top three users by trip count")
         viewModelScope.launch {
             val result = userRepository.getTopThreeUsersByTripCount()
             if (result is OperationResult.Success) {
                 _topThreeUsersByTripCount.value = result.data
+                Log.i("UserTripCount", "Successfully fetched top three users")
             } else {
-
                 _topThreeUsersByTripCount.value = null
+                Log.e("UserTripCount", "Failed to fetch top three users")
             }
         }
+        Log.d("UserTripCount", "Finished fetching top three users by trip count")
     }
 
     private val _topThreeUsersBySpeciesCount = MutableStateFlow<List<User>?>(null)
     val topThreeUsersBySpeciesCount: StateFlow<List<User>?> get() = _topThreeUsersBySpeciesCount
 
     fun fetchTopThreeUsersBySpeciesCount() {
+        Log.d("Profile:UserSpeciesCount", "Fetching top three users by species count")
         viewModelScope.launch {
             val result = userRepository.getTopThreeUsersBySpeciesCount()
             if (result is OperationResult.Success) {
                 _topThreeUsersBySpeciesCount.value = result.data
+                Log.i("Profile:UserSpeciesCount", "Successfully fetched top three users by species count")
             } else {
-
                 _topThreeUsersBySpeciesCount.value = null
+                Log.e("Profile:UserSpeciesCount", "Failed to fetch top three users by species count")
             }
         }
+        Log.d("Profile:UserSpeciesCount", "Finished fetching top three users by species count")
     }
 
 
@@ -209,8 +215,9 @@ class UserViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 preferencesRepository.updateUserDarkModePreference(isDarkMode)
-
+                Log.i("Profile:DarkModeUpdate", "Dark mode preference successfully updated:$isDarkMode")
             } catch (e: Exception) {
+                Log.e("Profile:DarkModeUpdate", "Error updating dark mode preference, Exception: ${e.message}")
 
                 _state.update { currentState ->
                     currentState.copy(
@@ -233,8 +240,13 @@ class UserViewModel @Inject constructor(
             try {
                 val isDarkModeFromDb = preferencesRepository.fetchUserDarkModePreference()
                 updateDarkMode(isDarkModeFromDb)
+                Log.i("DarkModePref", "Successfully fetched and updated dark mode preference for user ID: $userId")
+
             } catch (e: Exception) {
                 // Handle exception
+                Log.e("Profile:DarkModePreference",
+                    "Error fetching dark mode preference for user ID: $userId, Exception: ${e.message}")
+
             }
         }
     }
@@ -256,9 +268,11 @@ class UserViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 preferencesRepository.updateUserDisplayPicture(displayPicture)
+                Log.i("Profile: DisplayPictureUpdate", "Display picture successfully updated")
 
             } catch (e: Exception) {
                 // Handle exception
+                Log.e("Profile: DisplayPictureUpdate", "Error updating display picture, Exception: ${e.message}")
 
             }
         }
@@ -271,6 +285,7 @@ class UserViewModel @Inject constructor(
                 updateDisplayPicture(displayPictureFromDb)
             } catch (e: Exception) {
                 // Handle exception
+                Log.e("Profile:DisplayPicture", "Error fetching display picture for user ID: $userId, Exception: ${e.message}")
             }
         }
     }
@@ -310,8 +325,10 @@ class UserViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 preferencesRepository.updateUserLanguage(language)
-            }catch (e:Exception){
+                Log.i("Profile:LanguageUpdate", "Language successfully updated to: $language")
 
+            }catch (e:Exception){
+                Log.e("Profile:LanguageUpdate", "Error updating language, Exception: ${e.message}")
             }
         }
     }
@@ -321,9 +338,10 @@ class UserViewModel @Inject constructor(
             try {
                 val supportedLanguageFromDb = preferencesRepository.fetchUserSupportedLanguage()
                 updateLanguage(supportedLanguageFromDb)
+                Log.i("Profile:LanguagePreference", "Successfully updated language preference for user ID: $userId")
 
             }catch (e: Exception){
-
+                Log.e("Profile:LanguagePreference", "Error fetching language preference for user ID: $userId, Exception: ${e.message}")
             }
         }
     }

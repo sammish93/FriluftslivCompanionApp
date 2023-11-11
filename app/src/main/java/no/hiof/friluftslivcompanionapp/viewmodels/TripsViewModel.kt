@@ -209,11 +209,12 @@ class TripsViewModel @Inject constructor(
 
 
         if (trip != null) {
+            Log.d("TripCreation", "Trip object created successfully, proceeding to save trip")
             viewModelScope.launch {
                 when (val result = tripsRepository.createTrip(trip)) {
                     is OperationResult.Success -> {
-
                         clearTrip()
+                        Log.i("TripCreation", "Trip successfully saved to repository")
                     }
                     is OperationResult.Error -> {
 
@@ -221,10 +222,13 @@ class TripsViewModel @Inject constructor(
                         Log.e(TAG, "Error writing trip to Firestore: ${exception.message}")
                     }
 
-                    else -> {}
+                    else -> {
+                        Log.w("TripCreation", "Unhandled case in trip creation process")
+                    }
                 }
             }
         } else {
+            Log.e("TripCreation", "Failed to create Trip object, trip is null")
 
         }
     }
@@ -257,10 +261,12 @@ class TripsViewModel @Inject constructor(
                                     selectedTrip.documentId,
                                     tripActivityDate
                                 )
-
+                                Log.i("TripActivityCreation", "Trip activity successfully added to user")
                                 clearTripActivity()
+
                             } catch (e: Exception) {
                                 // Handle exceptions
+                                Log.e("TripActivityCreation", "Error adding trip activity to user, Exception: ${e.message}")
                             }
                         }
                     }

@@ -4,6 +4,7 @@ import android.Manifest
 import android.location.Geocoder
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
@@ -188,11 +189,11 @@ fun FloraFaunaSearchScreen(
                                 val locality = location.adminArea
 
                                 viewModel.viewModelScope.launch {
-                                    val (regionCode, message) = LocationFormatter.getRegionCodeByLocation(
+                                    val (regionCode) = LocationFormatter.getRegionCodeByLocation(
                                         locality
                                     )
-                                    println("Found your location: $regionCode")
-                                    println(message)
+                                    Log.i("Wildlife locationSearch","Found your location: $regionCode")
+
                                     viewModel.searchSpeciesByLocation(
                                         regionCode,
                                         20,
@@ -200,12 +201,12 @@ fun FloraFaunaSearchScreen(
                                     )
                                 }
                             } else {
-                                println("Unable to get location. Using default location: Oslo")
+                                Log.i("Wildlife locationSearch","Unable to get location. Using default location: Oslo")
                                 viewModel.viewModelScope.launch {
                                     val (regionCode, message) = LocationFormatter.getRegionCodeByLocation(
                                         "Oslo"
                                     )
-                                    println(message)
+                                    Log.i("Wildlife locationSearch",message)
                                     viewModel.searchSpeciesByLocation(
                                         regionCode,
                                         20,
@@ -236,11 +237,11 @@ fun FloraFaunaSearchScreen(
                             val locality = placesState?.county ?: "Oslo"
 
                             viewModel.viewModelScope.launch {
-                                val (regionCode, message) = LocationFormatter.getRegionCodeByLocation(
+                                val (regionCode) = LocationFormatter.getRegionCodeByLocation(
                                     locality
                                 )
-                                println("Found your location: $regionCode")
-                                println(message)
+                                Log.i("Wildlife search location","Found the searched location: $regionCode")
+
                                 viewModel.searchSpeciesByLocation(
                                     regionCode,
                                     20,

@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -124,13 +125,14 @@ class FloraFaunaViewModel @Inject constructor(
                         }
                         updateSpeciesResults(processedList)
                     } else {
-                        println("No species observations found in the past week in the specified location.")
+                        Log.i("searchSpeciesByLocation",
+                            "No species observations found in the past week in the specified location.")
                     }
                 } else if (result is Result.Failure) {
-                    println("API call failed: ${result.message}")
+                    Log.e("searchSpeciesByLocation", "API call failed: ${result.message}")
                 }
             } catch (e: Exception) {
-                println("Error: ${e.message}")
+                Log.e("searchSpeciesByLocation", "Error: ${e.message}")
             } finally {
                 updateLoadingSpeciesResponse(false)
             }
@@ -142,7 +144,9 @@ class FloraFaunaViewModel @Inject constructor(
         language: SupportedLanguage,
         maxResults: Int = 20
     ): Result<List<Bird>> {
-        println("No enough species observations found for the specified location. Making a secondary request...")
+        Log.i("SecondaryRequest",
+            "No enough species observations found for the specified location. Making a secondary request...")
+
 
         return api.getObservationsBetweenDates(
             languageCode = language,
@@ -213,7 +217,8 @@ class FloraFaunaViewModel @Inject constructor(
 
                         clearSighting()
                     } catch (e: Exception) {
-                        // Handle any exceptions
+                        Log.e("addSightingToLifeList", "Error add sighting to life list: ${e.message}")
+
                     }
                 }
             }
@@ -234,7 +239,7 @@ class FloraFaunaViewModel @Inject constructor(
                 _lifeListState.value = LifeListState(lifeList = listItems, isLoading = false)
 
             }catch (e: Exception){
-                    //TODO handle this
+                Log.e("getUserLifeList", "Error retrieving the life list: ${e.message}")
                 _lifeListState.value = LifeListState(isLoading = false, isFailure = true)
 
             }

@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
@@ -63,6 +64,8 @@ class WeatherViewModel @Inject constructor(
     // Retrieves a WeatherForecast object composed of a Location and a List<Weather> wrapped by
     // a Result.
     suspend fun getWeatherForecast(lat: Double?, lon: Double?, isForSearch: Boolean = false) {
+        Log.d("WeatherForecast", "Starting weather forecast retrieval.")
+
         // Makes sure to reset failure state to false so request can be retried.
         updateFailureWeatherResponse(false)
         updateNoGps(false)
@@ -79,17 +82,27 @@ class WeatherViewModel @Inject constructor(
                 units = weatherState.value.unitChoice
             )
 
-            if (result is Result.Success) {
-                // Updates individual Weather objects from a single WeatherForecast
-                if (isForSearch) updateWeatherStateForSearch(result.value)
-                else updateWeatherState(result.value)
-            } else {
-                updateFailureWeatherResponse(true)
+            when (result) {
+                is Result.Success -> {
+                    Log.i("WeatherForecast", "Weather forecast retrieved successfully.")
+                    if (isForSearch) {
+                        updateWeatherStateForSearch(result.value)
+                        Log.d("WeatherForecast", "Weather state updated for search.")
+                    } else {
+                        updateWeatherState(result.value)
+                        Log.d("WeatherForecast", "Weather state updated.")
+                    }
+                }
+                is Result.Failure -> {
+                    Log.e("WeatherForecast", "Failed to retrieve weather forecast: ${result.message}")
+                    updateFailureWeatherResponse(true)
+                }
             }
         }
-
         // Changes loading state to false.
         updateLoadingWeatherResponse(false)
+        Log.d("WeatherForecast", "Weather forecast retrieval process completed.")
+
     }
 
     // Updates tab selection visualisation after navigation.
