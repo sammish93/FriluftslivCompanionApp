@@ -110,37 +110,6 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun incrementYearlyTripCount(uid: String): OperationResult<Unit> {
-        return try {
-            val userCollection = firestore.collection("users")
-            val userDocument = userCollection.document(uid)
-
-
-            userDocument.update("yearlyTripCount", FieldValue.increment(1)).await()
-
-            OperationResult.Success(Unit)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            OperationResult.Error(e)
-        }
-    }
-
-    suspend fun incrementYearlySpeciesCount(uid: String): OperationResult<Unit> {
-        return try {
-            val userCollection = firestore.collection("users")
-            val userDocument = userCollection.document(uid)
-
-
-            userDocument.update("yearlySpeciesCount", FieldValue.increment(1)).await()
-
-            OperationResult.Success(Unit)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            OperationResult.Error(e)
-        }
-    }
-
-
     suspend fun addYearlyFieldsToAllUsers(): OperationResult<Unit> {
         return try {
             val userCollection = firestore.collection("users")

@@ -1,7 +1,7 @@
 package no.hiof.friluftslivcompanionapp.data.repositories
 
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import no.hiof.friluftslivcompanionapp.models.FloraFaunaSighting
@@ -24,6 +24,8 @@ class LifelistRepository @Inject constructor(
 
 
         val sightingData = newSighting.toMap()
+
+        incrementYearlySpeciesCount(currentUser.uid)
 
 
         lifelistSubcollectionRef.add(sightingData).await()
@@ -67,17 +69,20 @@ class LifelistRepository @Inject constructor(
         return filteredSightingsForThisYear.map { it.species }.count()
     }
 
+    private suspend fun incrementYearlySpeciesCount(uid: String): OperationResult<Unit> {
+        return try {
+            val userCollection = firestore.collection("users")
+            val userDocument = userCollection.document(uid)
 
 
+            userDocument.update("yearlySpeciesCount", FieldValue.increment(1)).await()
 
-
-
-
-
-
-
-
-
+            OperationResult.Success(Unit)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            OperationResult.Error(e)
+        }
+    }
 
 }
 

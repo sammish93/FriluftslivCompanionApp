@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
@@ -23,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,7 +44,13 @@ import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.ui.components.Carousel
 import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
 import no.hiof.friluftslivcompanionapp.ui.components.SnackbarWithCondition
+import no.hiof.friluftslivcompanionapp.ui.components.items.BirdItem
+import no.hiof.friluftslivcompanionapp.ui.components.items.LifelistItem
+import no.hiof.friluftslivcompanionapp.ui.components.items.RecentActivityListItems
+import no.hiof.friluftslivcompanionapp.ui.components.items.TripItem
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
+import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
+
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 
@@ -50,15 +59,25 @@ import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 fun HomeScreen(
     userViewModel: UserViewModel = viewModel(),
     tripsViewModel: TripsViewModel = viewModel(),
+    floraFaunaViewModel: FloraFaunaViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
     // Sensors(userViewModel)
     val userLocation by userViewModel.state.collectAsState()
     val hikes by tripsViewModel.hikes.collectAsState()
     val tripsState by tripsViewModel.tripsState.collectAsState()
+
+    val lifelist by floraFaunaViewModel.lifeList.collectAsState()
+    val recentActitivy by tripsViewModel.recentActivity.collectAsState()
+
+
+
     val error = tripsViewModel.errorMessage.value
     val locPermissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val scrollState = rememberScrollState()
+    val isTripCarouselQueryCalled = remember { mutableStateOf(false) }
 
     if (error != null) {
         Snackbar(modifier = Modifier.padding(16.dp)) {
@@ -67,11 +86,19 @@ fun HomeScreen(
     }
 
     LaunchedEffect(userLocation) {
-        val geoPoint = userLocation.lastKnownLocation?.let { GeoPoint(it.latitude, it.longitude) }
-        if (geoPoint != null) {
-            tripsViewModel.getTripsNearUsersLocation(geoPoint, radiusInKm = 50.0, limit = 5)
+        if (!isTripCarouselQueryCalled.value) {
+            val geoPoint = userLocation.lastKnownLocation?.let { GeoPoint(it.latitude, it.longitude) }
+            if (geoPoint != null) {
+                tripsViewModel.getTripsNearUsersLocation(geoPoint, radiusInKm = 50.0, limit = 5)
+                isTripCarouselQueryCalled.value = true
+
+            }
+
+            floraFaunaViewModel.getUserLifeList()
+            tripsViewModel.getRecentActivity()
         }
     }
+
 
     val currentPage = remember { mutableIntStateOf(0) }
 
@@ -80,12 +107,14 @@ fun HomeScreen(
         else -> when (tripsState.isFailure || !locPermissionState.status.isGranted) {
             false -> {
                 Column(
-                    modifier = Modifier.padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 8.dp,
-                        bottom = 8.dp
-                    ),
+                    modifier = Modifier
+                        .verticalScroll(scrollState)
+                        .padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = 8.dp,
+                            bottom = 8.dp
+                        ),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -99,15 +128,53 @@ fun HomeScreen(
                     } else {
                         Text(
                             text = "Trips in your area",
-                            style = MaterialTheme.typography.headlineLarge,
+                            style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Left
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        Carousel(
-                            trips = hikes,
-                            currentPage = currentPage
+
+                        Carousel(items = hikes, currentPage = currentPage) { hike ->
+                            TripItem(trip = hike)
+                        }
+
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text(
+                            text = "Recent Sightings",
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Medium,
                         )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        lifelist?.let {
+                            Carousel(items = it, currentPage = currentPage) { sighting ->
+                                LifelistItem(lifeList = sighting)
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text(
+                            text = "Recent Activity",
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Medium,
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        recentActitivy?.let {
+                            Carousel(items = it , currentPage = currentPage) { recentActitivy ->
+                                RecentActivityListItems(recentActivity = recentActitivy)
+
+                            }
+                        }
+
+
                     }
+
                 }
             }
             else -> {

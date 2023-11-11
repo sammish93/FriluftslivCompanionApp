@@ -51,30 +51,7 @@ data class Bird(
             val number = (map["number"] as Long).toInt()
             val description = map["description"] as? String
             val photoUrl = map["photoUrl"] as? String
-            val rawObservationDate = map["observationDate"]
 
-            val observationDate: LocalDateTime? = when (rawObservationDate) {
-                is com.google.firebase.Timestamp -> {
-                    // Convert Timestamp to LocalDateTime
-                    try {
-                        rawObservationDate.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
-                    } catch (e: Exception) {
-                        // Handle any exceptions during conversion
-                        Log.e("DATE_CONVERSION", "Error converting Timestamp to LocalDateTime", e)
-                        null
-                    }
-                }
-                is Map<*, *> -> {
-                    // Handle case where date is stored as a map
-                    Log.e("DATE_CONVERSION", "Expected Timestamp, but found Map for observationDate")
-                    null
-                }
-                else -> {
-                    // Handle other potential formats or log an error
-                    Log.e("DATE_CONVERSION", "Unexpected type for observationDate: ${rawObservationDate?.javaClass?.name}")
-                    null
-                }
-            }
 
 
 

@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import no.hiof.friluftslivcompanionapp.R
@@ -31,7 +32,7 @@ fun TripItem(trip: Hike) {
         modifier = Modifier
             .padding(2.dp)
             .fillMaxWidth()
-            .height(480.dp)
+            .height(200.dp)
             .aspectRatio(0.59f),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
@@ -54,7 +55,9 @@ fun TripItem(trip: Hike) {
                 fontWeight = FontWeight.ExtraBold,
                 modifier = Modifier
                     .align(Alignment.TopStart)
-                    .padding(8.dp)
+                    .padding(8.dp),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             Column(
                 modifier = Modifier.align(Alignment.BottomStart)

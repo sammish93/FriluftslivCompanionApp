@@ -1,5 +1,7 @@
 package no.hiof.friluftslivcompanionapp.domain
 
+import com.firebase.geofire.GeoFireUtils
+import com.firebase.geofire.GeoLocation
 import no.hiof.friluftslivcompanionapp.models.FloraFauna
 import no.hiof.friluftslivcompanionapp.models.FloraFaunaSighting
 import no.hiof.friluftslivcompanionapp.models.Location
@@ -17,6 +19,10 @@ object FloraFaunaFactory {
             println("Error: Invalid location.")
             return null
         }
+
+        val geohash = GeoFireUtils.getGeoHashForLocation(GeoLocation(location.lat, location.lon))
+
+        location.geoHash = geohash
 
         return FloraFaunaSighting(species = species, date = date, location = location)
     }
