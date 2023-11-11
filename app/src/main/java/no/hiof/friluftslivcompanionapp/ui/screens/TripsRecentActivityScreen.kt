@@ -96,79 +96,78 @@ fun TripsRecentActivityScreen(
         tripsViewModel.getRecentActivity()
     }
 
-    when {
-        tripsState.isLoading -> CustomLoadingScreen()
-        tripsState.isFailure || !isNetworkAvailable() -> {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .wrapContentSize(Alignment.Center)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                if (tripsState.isFailure) {
-                    Text(
-                        text = stringResource(R.string.error_retrieving_api_success_response),
-                        style = CustomTypography.headlineMedium,
-                        textAlign = TextAlign.Center,
-                        modifier = modifier.wrapContentSize(Alignment.Center)
-                    )
-                }
-                if (!isNetworkAvailable()) {
-                    Text(
-                        text = stringResource(R.string.no_internett_connection),
-                        style = CustomTypography.headlineMedium,
-                        textAlign = TextAlign.Center,
-                        modifier = modifier.wrapContentSize(Alignment.Center)
-                    )
-                }
-            }
-        }
+    when(tripsState.isLoading) {
+        true -> CustomLoadingScreen()
         else -> {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                recentActivity?.let{list ->
-                    items(list){item ->
-
-                        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-
-                        val dateString = dateFormat.format(item.date)
-
-                        val location = geocoder.getFromLocation(
-                            item.trip.route.first().latitude,
-                            item.trip.route.first().longitude,
-                            1
+            if (tripsState.isFailure || !isNetworkAvailable()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.Center)
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (tripsState.isFailure) {
+                        Text(
+                            text = stringResource(R.string.error_retrieving_api_success_response),
+                            style = CustomTypography.headlineMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = modifier.wrapContentSize(Alignment.Center)
                         )
-
-                        val municipality = location?.firstOrNull()?.subAdminArea ?: "Unkown Location"
-                        val county = location?.firstOrNull()?.adminArea ?: "Unknown Location"
-
-                        RecentActivityCard(
-                            item = item,
-                            textStyle = CustomTypography.headlineSmall ,
-                            title = TripType.HIKE.name,
-                            header = "$municipality, $county",
-                            subHeader = item.trip.description?: "",
-                            subHeader2 = dateString,
-                            onMoreInfoClick = {
-                                tripsViewModel.updateSelectedTrip(item.trip)
-                                navController.navigate(Screen.TRIPS_ADDITIONAL_INFO.name)
-                            }
-
+                    }
+                    if (!isNetworkAvailable()) {
+                        Text(
+                            text = stringResource(R.string.no_internett_connection),
+                            style = CustomTypography.headlineMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = modifier.wrapContentSize(Alignment.Center)
                         )
+                    }
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    recentActivity?.let { list ->
+                        items(list) { item ->
+
+                            val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+                            val dateString = dateFormat.format(item.date)
+
+                            val location = geocoder.getFromLocation(
+                                item.trip.route.first().latitude,
+                                item.trip.route.first().longitude,
+                                1
+                            )
+
+                            val municipality =
+                                location?.firstOrNull()?.subAdminArea ?: "Unkown Location"
+                            val county = location?.firstOrNull()?.adminArea ?: "Unknown Location"
+
+                            RecentActivityCard(
+                                item = item,
+                                textStyle = CustomTypography.headlineSmall,
+                                title = TripType.HIKE.name,
+                                header = "$municipality, $county",
+                                subHeader = item.trip.description ?: "",
+                                subHeader2 = dateString,
+                                onMoreInfoClick = {
+                                    tripsViewModel.updateSelectedTrip(item.trip)
+                                    navController.navigate(Screen.TRIPS_ADDITIONAL_INFO.name)
+                                }
+
+                            )
 
                         }
                     }
-
-
                 }
             }
         }
-
+    }
 }
 
 /*

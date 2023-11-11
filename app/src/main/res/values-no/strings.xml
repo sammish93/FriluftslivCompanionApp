@@ -116,7 +116,7 @@
     <string name="flora_fauna_unknown_common_name">Ukjent navn</string>
     <string name="flora_fauna_use_my_location">Bruk min lokasjon</string>
     <string name="search">Søk</string>
-    <string name="trips_add_to_trip_log">Legg til i trip loggen</string>
+    <string name="trips_add_to_trip_log">Legg til i tur loggen</string>
     <string name="trips_date_of_trip">Dato for turen</string>
     <string name="trips_choose_a_date">Velg en dato</string>
     <string name="trips_add_to_trip_log_question">Legg til i triploggen?</string>
