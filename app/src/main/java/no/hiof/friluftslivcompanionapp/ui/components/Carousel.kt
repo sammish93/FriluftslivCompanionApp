@@ -1,15 +1,9 @@
 package no.hiof.friluftslivcompanionapp.ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -22,14 +16,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import no.hiof.friluftslivcompanionapp.models.Hike
+import no.hiof.friluftslivcompanionapp.models.Lifelist
+import no.hiof.friluftslivcompanionapp.models.TripActivity
+import no.hiof.friluftslivcompanionapp.ui.components.items.LifelistItem
 import no.hiof.friluftslivcompanionapp.ui.components.items.TripItem
 
 // Inspiration taken from: https://levelup.gitconnected.com/animated-carousel-with-jetpack-compose-7406a5a2b246
 
+
 @Composable
-fun Carousel(
-    trips: List<Hike>,
-    currentPage: MutableState<Int>
+fun <T> Carousel(
+    items: List<T>,
+    currentPage: MutableState<Int>,
+    itemContent: @Composable (T) -> Unit
 ) {
     val listState = rememberLazyListState()
 
@@ -43,13 +42,14 @@ fun Carousel(
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(trips) { trip ->
-            TripItem(trip = trip)
+        items(items) { item ->
+            itemContent(item)
         }
     }
     Spacer(modifier = Modifier.height(18.dp))
-    // Indicators(size = trips.size, currentPage = currentPage)
+    // Optionally, include indicators if needed
 }
+
 
 /*
 @Composable
