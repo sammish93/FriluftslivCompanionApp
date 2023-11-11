@@ -1,11 +1,14 @@
 package no.hiof.friluftslivcompanionapp.models
 
+import com.firebase.geofire.core.GeoHash
+
 // The properties 'lat' and 'lon' (latitude and longitude) are currently mutable (var).
-data class Location(var lat: Double, var lon: Double){
-    fun toMap(): Map<String, Double> {
+data class Location(var lat: Double, var lon: Double, var geoHash: String? = null){
+    fun toMap(): Map<String, Any?> {
         return mapOf(
             "lat" to lat,
-            "lon" to lon
+            "lon" to lon,
+            "geoHash" to geoHash
         )
     }
 
@@ -13,7 +16,8 @@ data class Location(var lat: Double, var lon: Double){
         fun fromMap(map: Map<String, Any?>): Location {
             val lat = map["lat"] as? Double ?: throw IllegalArgumentException("Latitude is missing")
             val lon = map["lon"] as? Double ?: throw IllegalArgumentException("Longitude is missing")
-            return Location(lat, lon)
+            val geoHash = map["geoHash"] as? String
+            return Location(lat, lon, geoHash)
         }
     }
 
