@@ -110,7 +110,7 @@
     <string name="settings_county">Fylke: %1$s</string>
     <string name="settings_country">Land: %1$s</string>
     <string name="profile_year_leaderboard">%1$s Toppliste</string>
-    <string name="profile_trips_taken">Gjennomførte turer/Turer lagret</string>
+    <string name="profile_trips_taken">Turer tatt</string>
     <string name="profile_species_spotted">Arter Sett</string>
     <string name="log_out">Logg ut</string>
     <string name="flora_fauna_unknown_common_name">Ukjent navn</string>
