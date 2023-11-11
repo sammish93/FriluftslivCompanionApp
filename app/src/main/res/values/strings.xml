@@ -154,4 +154,9 @@
     <string name="username_adder">Adder</string>
     <string name="username_deer">Deer</string>
     <string name="username_moose">Moose</string>
+    <string name="search_this_area">Search this area</string>
+    <string name="trips_in_your_area">Trips in your area</string>
+    <string name="there_are_currently_no_trips_in_your_area">There are currently no trips in your area</string>
+    <string name="recent_sightings">Recent Sightings</string>
+    <string name="recent_activity">Recent Activity</string>
 </resources>

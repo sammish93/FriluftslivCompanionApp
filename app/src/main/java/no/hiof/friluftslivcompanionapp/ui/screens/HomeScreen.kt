@@ -120,14 +120,14 @@ fun HomeScreen(
                 ) {
                     if (hikes.isNullOrEmpty()) {
                         Text(
-                            text = "There are currently no trips in your area",
+                            text = stringResource(R.string.there_are_currently_no_trips_in_your_area),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Medium,
                             textAlign = TextAlign.Center
                         )
                     } else {
                         Text(
-                            text = "Trips in your area",
+                            text = stringResource(R.string.trips_in_your_area),
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Medium,
                             textAlign = TextAlign.Left
@@ -142,7 +142,7 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
-                            text = "Recent Sightings",
+                            text = stringResource(R.string.recent_sightings),
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Medium,
                         )
@@ -158,7 +158,7 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
-                            text = "Recent Activity",
+                            text = stringResource(R.string.recent_activity),
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Medium,
                         )

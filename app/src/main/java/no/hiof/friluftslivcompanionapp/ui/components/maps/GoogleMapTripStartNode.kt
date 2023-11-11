@@ -114,7 +114,7 @@ fun GoogleMapTripStartNodes(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 16.dp),
-                text = { Text("Search this area") },
+                text = { Text(stringResource(R.string.search_this_area)) },
                 icon = {
                     Icon(
                         imageVector = Icons.Filled.Search,
