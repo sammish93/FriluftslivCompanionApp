@@ -1,8 +1,10 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.GeoPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,12 +18,14 @@ import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
 import javax.inject.Inject
 import no.hiof.friluftslivcompanionapp.data.network.Result
 import no.hiof.friluftslivcompanionapp.data.repositories.LifelistRepository
+import no.hiof.friluftslivcompanionapp.data.repositories.OperationResult
 import no.hiof.friluftslivcompanionapp.data.states.FloraFaunaState
 import no.hiof.friluftslivcompanionapp.data.states.LifeListState
 
 import no.hiof.friluftslivcompanionapp.domain.FloraFaunaFactory
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.FloraFauna
+import no.hiof.friluftslivcompanionapp.models.FloraFaunaSighting
 import no.hiof.friluftslivcompanionapp.models.Lifelist
 import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
@@ -245,6 +249,30 @@ class FloraFaunaViewModel @Inject constructor(
             }
         }
     }
+
+    private val _sightingsFlow = MutableStateFlow<List<FloraFaunaSighting>>(emptyList())
+    val sightingsFlow = _sightingsFlow.asStateFlow()
+
+    fun getSightingsNearLocation(geoPoint: GeoPoint, radiusInKm: Double, limit: Int) {
+        viewModelScope.launch {
+            Log.d("FloraFauna", "Getting trips near user location: $geoPoint")
+            when (val result = lifelistRepository.getSightingsNearLocation(geoPoint, radiusInKm, limit)) {
+                is OperationResult.Success -> {
+
+
+                    _sightingsFlow.value = result.data
+                    Log.d("FloraFauna", "Fetched ${result.data.size} species")
+                }
+                is OperationResult.Error -> {
+                    Log.e("FlorFauna", "Error fetching hikes: ${result.exception}")
+
+                }
+
+                else -> {}
+            }
+        }
+    }
+
 
     // Function to clear all data relating to create sighting.
     fun clearSighting() {
