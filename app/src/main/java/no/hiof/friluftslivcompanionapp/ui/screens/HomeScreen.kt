@@ -86,6 +86,8 @@ fun HomeScreen(
 
     val lifelist by floraFaunaViewModel.lifeList.collectAsState()
     val recentActitivy by tripsViewModel.recentActivity.collectAsState()
+    
+    val sightings by floraFaunaViewModel.sightingsFlow.collectAsState()
 
 
 
@@ -108,6 +110,9 @@ fun HomeScreen(
             if (geoPoint != null) {
                 tripsViewModel.getTripsNearUsersLocation(geoPoint, radiusInKm = 50.0, limit = 5)
                 isTripCarouselQueryCalled.value = true
+                
+                floraFaunaViewModel.getSightingsNearLocation(geoPoint, 50.0, 5)
+                
 
             }
 
@@ -156,6 +161,19 @@ fun HomeScreen(
 
                         Carousel(items = hikes, currentPage = currentPage) { hike ->
                             TripItem(trip = hike)
+                        }
+
+                        Text(
+                            text = "Sighting in your area",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Medium,
+                        )
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        Carousel(items = sightings, currentPage = currentPage) {sighting ->
+                            BirdItem(sighting = sighting)
+                            
                         }
 
 
