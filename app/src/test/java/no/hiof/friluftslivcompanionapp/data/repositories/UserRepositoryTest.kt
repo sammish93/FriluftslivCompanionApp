@@ -11,6 +11,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
+import junit.framework.TestCase.fail
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.mockito.kotlin.whenever
 import kotlinx.coroutines.test.runTest
@@ -146,47 +147,48 @@ class UserRepositoryTest {
         whenever(mockDocument.get()).thenReturn(successfulTask)
 
         val result = userRepository.getUser(uid)
-
-        assertTrue(result is OperationResult.Success)
-        assertEquals(expectedUser, (result as OperationResult.Success).data)
+        assertEquals(expectedUser, result)
 
     }
 
     @Test
-    fun getUserNoUserExistsReturnError() = runTest {
+    fun getUserNoUserExistsReturnException() = runTest {
         val uid = "whatever"
-        val exception = Exception("Firestore exception")
 
         val documentSnapshot: DocumentSnapshot = mock()
         whenever(documentSnapshot.exists()).thenReturn(false)
 
         whenever(mockCollection.document(uid)).thenReturn(mockDocument)
 
-        val successfulTask = Tasks.forResult((documentSnapshot))
+        val successfulTask = Tasks.forResult(documentSnapshot)
         whenever(mockDocument.get()).thenReturn(successfulTask)
 
-        val result = userRepository.getUser(uid)
-
-        assertTrue(result is OperationResult.Error)
-        assertEquals("No User found with the provided UID.", (result as OperationResult.Error).exception.message)
+        try {
+            userRepository.getUser(uid)
+            fail("Expected an exception to be thrown, but none was.")
+        } catch (e: Exception) {
+            assertEquals("No User found with the provided UID.", e.message)
+        }
     }
 
     @Test
-    fun testExceptionErrorOccursDuringGetUserOperation() = runTest {
+    fun testExceptionErrorWhenDocumentNotConvertedToUserObject() = runTest {
         val uid = "validId"
-        val exception = Exception("Firestore exeption")
+        val exception = Exception("Failed to convert document to User object")
 
         whenever(mockCollection.document(uid)).thenReturn(mockDocument)
 
         val failedTask = Tasks.forException<DocumentSnapshot>(exception)
         whenever(mockDocument.get()).thenReturn(failedTask)
 
-        val result = userRepository.getUser(uid)
-
-        assertTrue(result is OperationResult.Error)
-        assertEquals(exception, (result as OperationResult.Error).exception)
-
+        try {
+            userRepository.getUser(uid)
+            fail("Expected an exception to be thrown, but none was.")
+        } catch (e: Exception) {
+            assertEquals("Failed to convert document to User object", e.message)
+        }
     }
+
 
     @Test
     fun deleteUserSuccessfullyWithValidId() = runTest{
