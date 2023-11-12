@@ -8,6 +8,8 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.SetOptions
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
@@ -256,6 +258,53 @@ class UserRepositoryTest {
         assertTrue(result is OperationResult.Error)
         assertEquals(exception, (result as OperationResult.Error).exception)
     }
+
+    @Test
+    fun getTopThreeUsersByTripCountSuccess() = runTest {
+        val mockQuerySnapshot: QuerySnapshot = mock()
+        val mockQuery: Query = mock()
+
+
+        val user1 = User(userId = "user1", username = "User One", yearlyTripCount = 4)
+        val user2 = User(userId = "user2", username = "User Two", yearlySpeciesCount = 4)
+        val user3 = User(userId = "user3", username = "User Three", yearlyTripCount = 1)
+
+        val mockDocumentSnapshot1: DocumentSnapshot = mock()
+        val mockDocumentSnapshot2: DocumentSnapshot = mock()
+        val mockDocumentSnapshot3: DocumentSnapshot = mock()
+
+        whenever(mockDocumentSnapshot1.toObject(User::class.java)).thenReturn(user1)
+        whenever(mockDocumentSnapshot2.toObject(User::class.java)).thenReturn(user2)
+        whenever(mockDocumentSnapshot3.toObject(User::class.java)).thenReturn(user3)
+
+
+        whenever(mockQuery.get()).thenReturn(Tasks.forResult(mockQuerySnapshot))
+        whenever(mockFirestore.collection("users")).thenReturn(mockCollection)
+        whenever(mockCollection.orderBy("yearlyTripCount", Query.Direction.DESCENDING)).thenReturn(mockQuery)
+        whenever(mockQuery.limit(3)).thenReturn(mockQuery)
+        whenever(mockQuerySnapshot.documents).thenReturn(listOf(mockDocumentSnapshot1,mockDocumentSnapshot2,mockDocumentSnapshot3))
+
+        val result = userRepository.getTopThreeUsersByTripCount()
+
+        assertTrue(result is OperationResult.Success)
+        assertEquals(3, (result as OperationResult.Success).data.size)
+    }
+
+
+    @Test
+    fun getTopThreeUsersByTripCountFailure() = runTest {
+        val exception = RuntimeException("Firestore exception")
+
+        whenever(mockFirestore.collection("users")).thenReturn(mockCollection)
+        whenever(mockCollection.orderBy("yearlyTripCount", Query.Direction.DESCENDING)).thenThrow(exception)
+
+        val result = userRepository.getTopThreeUsersByTripCount()
+
+        assertTrue(result is OperationResult.Error)
+
+    }
+
+
 
 
 
