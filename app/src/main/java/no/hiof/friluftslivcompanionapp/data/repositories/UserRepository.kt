@@ -7,7 +7,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import no.hiof.friluftslivcompanionapp.models.User
 import javax.inject.Inject
 
@@ -31,6 +33,7 @@ class UserRepository @Inject constructor(
 
                 // Prepare the user data map
                 val userData = hashMapOf<String, Any?>(
+
 
                     "username" to user.username,
                     "email" to user.email,
@@ -58,33 +61,41 @@ class UserRepository @Inject constructor(
         }
     }
 
+    suspend fun getUser(uid: String): User {
+        val userCollection = firestore.collection("users")
+        val userDocument = userCollection.document(uid)
 
-    suspend fun getUser(uid: String): OperationResult<User> {
-        return try {
-            val userCollection = firestore.collection("users")
-            val userDocument = userCollection.document(uid)
+        val documentSnapshot = userDocument.get().await()
 
-            val documentSnapshot = userDocument.get().await()
+        if (documentSnapshot.exists()) {
+            val userData = documentSnapshot.toObject(User::class.java)
+            if (userData != null) {
 
-            if (documentSnapshot.exists()) {
 
-                val userData = documentSnapshot.toObject(User::class.java)
-                if (userData != null) {
-                    OperationResult.Success(userData.copy(userId = documentSnapshot.id))
-                } else {
+                return userData.copy(userId = documentSnapshot.id)
 
-                    OperationResult.Error(Exception("Failed to convert document to User object."))
-                }
             } else {
-
-                OperationResult.Error(Exception("No User found with the provided UID."))
+                throw Exception("Failed to convert document to User object.")
             }
-        } catch (e: Exception) {
-
-            e.printStackTrace()
-            OperationResult.Error(e)
+        } else {
+            throw Exception("No User found with the provided UID.")
         }
     }
+
+    //Used to update anonymous user account's username and email
+    suspend fun updateUser(user: User) = withContext(Dispatchers.IO) {
+        try {
+            firestore.collection("users").document(user.userId)
+
+                .set(user, SetOptions.merge()).await()
+
+            Log.d("UserRepository", "User successfully updated!")
+        } catch (e: Exception) {
+            Log.w("UserRepository", "Error updating user", e)
+            throw e
+        }
+    }
+
 
 
     suspend fun deleteUser(uid: String): OperationResult<Unit> {
