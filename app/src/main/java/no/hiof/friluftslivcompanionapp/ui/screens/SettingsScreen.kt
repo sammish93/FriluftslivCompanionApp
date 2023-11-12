@@ -45,6 +45,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.location.Geocoder
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -75,6 +76,7 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.shouldShowRationale
 import no.hiof.friluftslivcompanionapp.R
+import no.hiof.friluftslivcompanionapp.SignInActivity
 import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.ui.components.TopBar
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
@@ -377,8 +379,10 @@ fun SettingsScreen(
                             ) {
                                 Button(
                                     onClick = {
-                                        //TODO Implement click behaviour that handles
-                                        // registering of an anonymous account.
+
+                                        val intent = Intent(context, SignInActivity::class.java)
+                                        intent.putExtra("linkAccount", true)
+                                        context.startActivity(intent)
                                     },
                                     modifier = Modifier.weight(1f)
                                 ) {

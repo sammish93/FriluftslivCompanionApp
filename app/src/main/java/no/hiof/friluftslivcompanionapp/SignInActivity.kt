@@ -9,22 +9,17 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import no.hiof.friluftslivcompanionapp.data.repositories.ActivityRepository
-import no.hiof.friluftslivcompanionapp.data.repositories.LifelistRepository
 import no.hiof.friluftslivcompanionapp.data.repositories.UserRepository
-import no.hiof.friluftslivcompanionapp.models.Bird
-import no.hiof.friluftslivcompanionapp.models.FloraFaunaSighting
-import no.hiof.friluftslivcompanionapp.models.Lifelist
-import no.hiof.friluftslivcompanionapp.models.Location
+import no.hiof.friluftslivcompanionapp.models.User
 import no.hiof.friluftslivcompanionapp.models.UserPreferences
-import java.time.LocalDateTime
-import java.util.Date
 
 @AndroidEntryPoint
 class SignInActivity : AppCompatActivity() {
@@ -38,12 +33,6 @@ class SignInActivity : AppCompatActivity() {
     @Inject
     lateinit var userRepository: UserRepository
 
-    @Inject
-    lateinit var lifeListRepository: LifelistRepository
-
-    @Inject
-    lateinit var activityRepository: ActivityRepository
-
     private val signInLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(FirebaseAuthUIActivityResultContract()) { res ->
             onSignInResult(res)
@@ -51,7 +40,31 @@ class SignInActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        showSignInOptions()
+        if (intent.getBooleanExtra("linkAccount", false)) {
+
+            setupAuthUIForUpgrade()
+        } else {
+
+            showSignInOptions()
+        }
+    }
+
+    private fun setupAuthUIForUpgrade() {
+        val providers = arrayListOf(
+            AuthUI.IdpConfig.EmailBuilder().build(),
+            AuthUI.IdpConfig.GoogleBuilder().build()
+
+        )
+
+        val signInIntent = AuthUI.getInstance()
+            .createSignInIntentBuilder()
+            .setAvailableProviders(providers)
+            .setIsSmartLockEnabled(false)
+            .setTheme(R.style.Theme_FriluftslivCompanionApp)
+            .enableAnonymousUsersAutoUpgrade()
+            .build()
+
+        signInLauncher.launch(signInIntent)
     }
 
     private fun showSignInOptions() {
@@ -65,66 +78,61 @@ class SignInActivity : AppCompatActivity() {
             .createSignInIntentBuilder()
             .setAvailableProviders(providers)
             .setIsSmartLockEnabled(false)
-            .setTheme(no.hiof.friluftslivcompanionapp.R.style.Theme_FriluftslivCompanionApp)
+            .setTheme(R.style.Theme_FriluftslivCompanionApp)
             .build()
 
         signInLauncher.launch(signInIntent)
     }
 
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
-        val response = result.idpResponse
         if (result.resultCode == RESULT_OK) {
             val user = auth.currentUser
-
             if (user != null) {
-                launch {
-                    // You can define these values as needed or get them dynamically
-                    val location = Location(58.99107, 6.137688)
-                  //  val bird = Bird(null, "Big bird", 2, "Big yellow bird", null, LocalDateTime.now(),location)
-                   // val bird2 = Bird(null, "Big bird2", 2, "Big yellow bird", null, LocalDateTime.now(),location)
-                    /*
-                    val sampleSighting = FloraFaunaSighting(
-                        species = bird,
-                        date = Date(),
-                        location = location
-                    )
-                    val anotherSample = FloraFaunaSighting(
-                        species = bird2,
-                        date = Date(),
-                        location = location
-                    )
-                    
-                     */
-                    //val lifelist = Lifelist()
-                   // val waht = lifeListRepository.addSightingToLifeList(anotherSample)
+                if (!user.isAnonymous) {
 
-                    val sampleDate = Date()
-                    val sampleTripId = "qtSfnEnJutxgJqCc94l0"
+                    handleAccountUpgrade(user)
 
-                    val userData = no.hiof.friluftslivcompanionapp.models.User(
-                        userId = user.uid,
-                        email = user.email,
-                        username = "this user name",
-                        preferences = UserPreferences(),
-
-
-                    )
-
-                    userRepository.createUser(userData)
-
-                    activityRepository.addTripActivityToUser(sampleTripId,sampleDate)
-
-                    navigateToMainActivity()
+                } else {
+                    launch {
+                        userRepository.createUser(user.toUserModel())
+                        navigateToMainActivity()
+                    }
                 }
-
             } else {
-                Log.e("SignInActivity", "User is null")
+
+                Log.e("SignInActivity", "User is not authenticated")
+
             }
         } else {
-            val errorMessage = "Sign-in failed. Please try again."
-            Log.e("SignInActivity", errorMessage)
+
+            result.idpResponse?.error?.let { error ->
+                Log.e("SignInActivity", "Error during sign-in or account upgrade", error)
+            }
         }
     }
+
+    fun FirebaseUser.toUserModel(): User{
+        return User(
+            userId = this.uid,
+            email = this.email,
+            username = this.displayName ?: "",
+            preferences = UserPreferences()
+
+        )
+    }
+
+    private fun handleAccountUpgrade(user: FirebaseUser) {
+        launch {
+
+            val existingUserData = userRepository.getUser(user.uid)
+            existingUserData.email = user.email
+            existingUserData.username = user.displayName ?: ""
+            userRepository.updateUser(existingUserData)
+            navigateToMainActivity()
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
     private fun launch(block: suspend () -> Unit) {
         kotlinx.coroutines.GlobalScope.launch {
             withContext(Dispatchers.IO) {

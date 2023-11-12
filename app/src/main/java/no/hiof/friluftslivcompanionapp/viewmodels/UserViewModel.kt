@@ -5,10 +5,13 @@ import android.util.Log
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.mutableStateListOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,11 +56,16 @@ class UserViewModel @Inject constructor(
     private val activityRepository: ActivityRepository,
     private val lifeListRepository: LifelistRepository,
     private val userRepository: UserRepository,
-    private val preferencesRepository: PreferencesRepository
+    private val preferencesRepository: PreferencesRepository,
+    private val auth: FirebaseAuth
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UserState(lastKnownLocation = null))
     val state: StateFlow<UserState> = _state.asStateFlow()
+
+    private val _logoutState = MutableStateFlow<Boolean>(false)
+    val logoutState: StateFlow<Boolean> = _logoutState.asStateFlow()
+
 
     // Used for Places API.
     val locationAutoFill = mutableStateListOf<AutoCompleteState>()
@@ -437,4 +445,10 @@ class UserViewModel @Inject constructor(
             )
         }
     }
+
+    fun logout() {
+        auth.signOut()
+        _logoutState.value = true
+    }
+
 }
