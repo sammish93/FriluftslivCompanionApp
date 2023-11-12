@@ -1,8 +1,13 @@
 package no.hiof.friluftslivcompanionapp.data.repositories
 
+import com.firebase.geofire.GeoFireUtils
+import com.firebase.geofire.GeoLocation
+import com.firebase.geofire.GeoQueryBounds
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
+import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.tasks.await
 import no.hiof.friluftslivcompanionapp.models.FloraFaunaSighting
 import no.hiof.friluftslivcompanionapp.models.Lifelist
@@ -48,6 +53,63 @@ class LifelistRepository @Inject constructor(
             }
         }
     }
+
+    suspend fun getSightingsNearLocation(geoPoint: GeoPoint, radiusInKm: Double, limit: Int): OperationResult<List<FloraFaunaSighting>> {
+        return try {
+            val radiusInMeter = radiusInKm * 1000
+            val center = GeoLocation(geoPoint.latitude, geoPoint.longitude)
+            val bounds = GeoFireUtils.getGeoHashQueryBounds(center, radiusInMeter)
+            val matchingSightings = getSightingsWithinGeoHashBounds(bounds, limit, radiusInMeter, center)
+
+            OperationResult.Success(matchingSightings)
+        } catch (e: Exception) {
+            OperationResult.Error(e)
+        }
+    }
+    private suspend fun getSightingsWithinGeoHashBounds(
+        bounds: List<GeoQueryBounds>,
+        limit: Int,
+        radius: Double,
+        center: GeoLocation
+    ): List<FloraFaunaSighting> {
+        val matchingSightings: MutableList<FloraFaunaSighting> = ArrayList()
+        for (bound in bounds) {
+            val sightingsQuery = firestore.collectionGroup("lifelist")
+                .orderBy("location.geoHash")
+                .startAt(bound.startHash)
+                .endAt(bound.endHash)
+                .limit(limit.toLong())
+
+            val querySnapshot = sightingsQuery.get().await()
+            val sightingsFromSnapshot = getSightingsFromQuerySnapshot(querySnapshot, radius, center)
+            matchingSightings.addAll(sightingsFromSnapshot)
+        }
+        return matchingSightings
+    }
+
+    private fun getSightingsFromQuerySnapshot(
+        querySnapshot: QuerySnapshot,
+        radius: Double,
+        center: GeoLocation
+    ): List<FloraFaunaSighting> {
+        val sightings: MutableList<FloraFaunaSighting> = ArrayList()
+        for (doc in querySnapshot.documents) {
+            val lat = doc.getDouble("location.lat") ?: continue
+            val lng = doc.getDouble("location.lon") ?: continue
+
+            val docLocation = GeoLocation(lat, lng)
+            val distanceInM = GeoFireUtils.getDistanceBetween(docLocation, center)
+            if (distanceInM <= radius) {
+                val sightingMap = doc.data ?: continue
+                FloraFaunaSighting.fromMap(sightingMap)?.let { sighting ->
+                    sightings.add(sighting)
+                }
+            }
+        }
+        return sightings
+    }
+
+
 
     suspend fun countSpeciesSightedThisYear(): Int {
         val allLifelists = getAllItemsInLifeList()
