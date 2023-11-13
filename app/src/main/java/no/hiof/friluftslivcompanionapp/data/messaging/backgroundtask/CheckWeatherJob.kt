@@ -3,11 +3,62 @@ package no.hiof.friluftslivcompanionapp.data.messaging.backgroundtask
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import no.hiof.friluftslivcompanionapp.data.messaging.NotificationHelper
+import no.hiof.friluftslivcompanionapp.domain.WeatherDeserialiser
+import no.hiof.friluftslivcompanionapp.models.Weather
+import no.hiof.friluftslivcompanionapp.models.enums.WeatherTriggers
+import no.hiof.friluftslivcompanionapp.models.enums.WeatherType
 
 class CheckWeatherJob(appContext: Context, workerParams: WorkerParameters)
     : CoroutineWorker(appContext, workerParams) {
 
+    // Call weather api and check if we need to send out notification.
     override suspend fun doWork(): Result {
-        TODO("Not yet implemented")
+        val weatherApi = WeatherDeserialiser.getInstance()
+
+        return when (val call = weatherApi.getWeatherForecast(59.434031, 10.657711)) {
+            is no.hiof.friluftslivcompanionapp.data.network.Result.Success -> {
+                val weather = call.value.forecast[0]
+
+                checkForExtremeWeather(weather)
+                Result.success()
+            }
+
+            is no.hiof.friluftslivcompanionapp.data.network.Result.Failure -> {
+                // Handle error here.
+                Result.failure()
+            }
+        }
+    }
+
+    private fun sendNotification(title: String, body: String) {
+        NotificationHelper.showMessage(applicationContext, title, body)
+    }
+
+    private fun checkForExtremeWeather(weather: Weather) {
+
+        when (weather.weatherType) {
+            WeatherType.THUNDERSTORM -> {
+                sendNotification(
+                    "Thunder Storm",
+                    "Watch out there is a thunder storm in your area!"
+                )
+            }
+            WeatherType.SNOW -> {
+                sendNotification(
+                    "Snow",
+                    "It is snow in your area, be careful when driving!"
+                )
+            }
+
+            else -> {
+                if (weather.windSpeed > WeatherTriggers.WIND_IN_METER.threshold) {
+                    sendNotification(
+                        "Windy",
+                        "There is a lot of wind in your area, stay inside!"
+                        )
+                }
+            }
+        }
     }
 }
