@@ -63,7 +63,11 @@ class CheckWeatherJob(appContext: Context, workerParams: WorkerParameters)
                         )
                 }
                 else {
-
+                    sendNotification(
+                        "Nice Weather",
+                        R.drawable.nice_weather,
+                        "It is nice weather today with little wind :)"
+                    )
                     Log.d("CheckForExtremeWeather", "No extreme weather at the moment.")
                 }
             }

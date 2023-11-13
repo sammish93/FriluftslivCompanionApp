@@ -3,6 +3,7 @@ package no.hiof.friluftslivcompanionapp.data.messaging
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.graphics.BitmapFactory
 import androidx.core.app.NotificationCompat
 import no.hiof.friluftslivcompanionapp.R
 
