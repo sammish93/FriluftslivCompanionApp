@@ -41,12 +41,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHost
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
+import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.ui.components.Carousel
 import no.hiof.friluftslivcompanionapp.ui.components.SnackbarWithCondition
 import no.hiof.friluftslivcompanionapp.ui.components.items.BirdItem
@@ -62,6 +65,7 @@ import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen(
+    navController: NavController,
     userViewModel: UserViewModel = viewModel(),
     tripsViewModel: TripsViewModel = viewModel(),
     floraFaunaViewModel: FloraFaunaViewModel = viewModel(),
@@ -183,7 +187,11 @@ fun HomeScreen(
                         val hikesToDisplay = hikes.take(5)
 
                         Carousel(items = hikesToDisplay, currentPage = currentPage) { hike ->
-                            TripItem(trip = hike, height = height, aspectRatio = aspectRatio)
+                            TripItem(trip = hike, height = height, aspectRatio = aspectRatio,
+                                onClick = {
+                                tripsViewModel.updateSelectedTrip(hike)
+                                navController.navigate(Screen.TRIPS_ADDITIONAL_INFO.name)
+                            })
                         }
                     }
                 }
@@ -222,7 +230,11 @@ fun HomeScreen(
                             items = sightingsToDisplay,
                             currentPage = currentPage
                         ) { sighting ->
-                            BirdItem(sighting = sighting, height = height, aspectRatio = aspectRatio)
+                            BirdItem(sighting = sighting, height = height, aspectRatio = aspectRatio,
+                                onClick = {
+                                    floraFaunaViewModel.updateSelectedSpeciesInfo(sighting.species)
+                                    navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.name)
+                                })
                         }
                     }
                 }
@@ -252,7 +264,11 @@ fun HomeScreen(
                             items = sightingsToDisplay,
                             currentPage = currentPage
                         ) { sighting ->
-                            LifelistItem(lifeList = sighting, height = height, aspectRatio = aspectRatio)
+                            LifelistItem(lifeList = sighting, height = height, aspectRatio = aspectRatio,
+                                onClick = {
+                                    floraFaunaViewModel.updateSelectedSpeciesInfo(sighting.sightings.species)
+                                    navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.name)
+                                })
                         }
                     }
                 }
@@ -282,7 +298,11 @@ fun HomeScreen(
                             items = limitedActivity,
                             currentPage = currentPage
                         ) { recentActivity ->
-                            RecentActivityListItem(recentActivity = recentActivity, width = width)
+                            RecentActivityListItem(recentActivity = recentActivity, width = width,
+                                onClick = {
+                                    tripsViewModel.updateSelectedTrip(recentActivity.trip)
+                                    navController.navigate(Screen.TRIPS_ADDITIONAL_INFO.name)
+                                })
                         }
                     }
                 }

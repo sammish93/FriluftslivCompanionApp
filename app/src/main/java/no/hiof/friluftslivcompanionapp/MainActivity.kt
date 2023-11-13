@@ -311,6 +311,7 @@ fun FriluftslivApp(
                                     )
                                 }) {
                                 HomeScreen(
+                                    navController,
                                     userViewModel,
                                     tripsViewModel,
                                     floraFaunaViewModel,

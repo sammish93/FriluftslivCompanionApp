@@ -2,6 +2,7 @@ package no.hiof.friluftslivcompanionapp.ui.components.items
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -35,13 +36,14 @@ import java.util.Locale
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
-fun LifelistItem(lifeList: Lifelist, height: Dp, aspectRatio: Float) {
+fun LifelistItem(lifeList: Lifelist, height: Dp, aspectRatio: Float, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(2.dp)
             .fillMaxWidth()
             .height(height)
-            .aspectRatio(aspectRatio),
+            .aspectRatio(aspectRatio)
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Box(

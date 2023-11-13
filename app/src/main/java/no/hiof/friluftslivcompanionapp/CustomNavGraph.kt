@@ -339,7 +339,7 @@ object CustomNavGraph {
 
             // FLORA_FAUNA_ADDITIONAL_INFO-skjermen
             composable(
-                Screen.FLORA_FAUNA_ADDITIONAL_INFO.route,
+                Screen.FLORA_FAUNA_ADDITIONAL_INFO.name,
                 enterTransition = {
                     when (initialState.destination.route) {
                         Screen.FLORA_FAUNA.name -> enterTransition(

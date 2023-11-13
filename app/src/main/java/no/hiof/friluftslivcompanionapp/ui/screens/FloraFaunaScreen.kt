@@ -111,7 +111,7 @@ fun FloraFaunaScreen(
                                 },
                                 onMoreInfoClick = {
                                     viewModel.updateSelectedSpeciesInfo(item.sightings.species)
-                                    navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
+                                    navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.name)
                                 }
                             )
                         }

@@ -321,7 +321,7 @@ fun FloraFaunaSearchScreen(
                                     fetchImage = { it.photoUrl ?: "Photo of ${it.speciesName}" },
                                     onMoreInfoClick = {
                                         viewModel.updateSelectedSpeciesInfo(species)
-                                        navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
+                                        navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.name)
                                     }
                                 )
 
@@ -348,7 +348,7 @@ fun FloraFaunaSearchScreen(
                                     fetchImage = { it.photoUrl ?: "Photo of ${it.speciesName}" },
                                     onMoreInfoClick = {
                                         viewModel.updateSelectedSpeciesInfo(species)
-                                        navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
+                                        navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.name)
                                     }
                                 )
                             }

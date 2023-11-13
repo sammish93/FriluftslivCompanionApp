@@ -159,9 +159,7 @@ fun TripsRecentActivityScreen(
                                     tripsViewModel.updateSelectedTrip(item.trip)
                                     navController.navigate(Screen.TRIPS_ADDITIONAL_INFO.name)
                                 }
-
                             )
-
                         }
                     }
                 }

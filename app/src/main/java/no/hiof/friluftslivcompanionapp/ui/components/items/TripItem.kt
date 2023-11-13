@@ -2,6 +2,7 @@ package no.hiof.friluftslivcompanionapp.ui.components.items
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -31,13 +32,14 @@ import no.hiof.friluftslivcompanionapp.models.Hike
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 
 @Composable
-fun TripItem(trip: Hike, height: Dp, aspectRatio: Float) {
+fun TripItem(trip: Hike, height: Dp, aspectRatio: Float, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(2.dp)
             .fillMaxWidth()
             .height(height)
-            .aspectRatio(aspectRatio),
+            .aspectRatio(aspectRatio)
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Box(
