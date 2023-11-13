@@ -54,7 +54,7 @@ class NotificationService : FirebaseMessagingService() {
             .setSmallIcon(icon)
             .setContentTitle(title)
             .setContentText(body)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
     }
 
 }
