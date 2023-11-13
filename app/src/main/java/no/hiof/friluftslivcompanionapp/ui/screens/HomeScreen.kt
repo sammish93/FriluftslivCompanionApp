@@ -46,12 +46,10 @@ import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.ui.components.Carousel
-import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
-import no.hiof.friluftslivcompanionapp.ui.components.ErrorView
 import no.hiof.friluftslivcompanionapp.ui.components.SnackbarWithCondition
 import no.hiof.friluftslivcompanionapp.ui.components.items.BirdItem
 import no.hiof.friluftslivcompanionapp.ui.components.items.LifelistItem
-import no.hiof.friluftslivcompanionapp.ui.components.items.RecentActivityListItems
+import no.hiof.friluftslivcompanionapp.ui.components.items.RecentActivityListItem
 import no.hiof.friluftslivcompanionapp.ui.components.items.TripItem
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
@@ -85,10 +83,9 @@ fun HomeScreen(
     val tripsState by tripsViewModel.tripsState.collectAsState()
 
     val lifelist by floraFaunaViewModel.lifeList.collectAsState()
-    val recentActitivy by tripsViewModel.recentActivity.collectAsState()
-    
-    val sightings by floraFaunaViewModel.sightingsFlow.collectAsState()
+    val recentActivity by tripsViewModel.recentActivity.collectAsState()
 
+    val sightings by floraFaunaViewModel.sightingsFlow.collectAsState()
 
 
     val error = tripsViewModel.errorMessage.value
@@ -106,14 +103,13 @@ fun HomeScreen(
 
     LaunchedEffect(userLocation) {
         if (!isTripCarouselQueryCalled.value) {
-            val geoPoint = userLocation.lastKnownLocation?.let { GeoPoint(it.latitude, it.longitude) }
+            val geoPoint =
+                userLocation.lastKnownLocation?.let { GeoPoint(it.latitude, it.longitude) }
             if (geoPoint != null) {
                 tripsViewModel.getTripsNearUsersLocation(geoPoint, radiusInKm = 50.0, limit = 5)
                 isTripCarouselQueryCalled.value = true
-                
-                floraFaunaViewModel.getSightingsNearLocation(geoPoint, 50.0, 5)
-                
 
+                floraFaunaViewModel.getSightingsNearLocation(geoPoint, 50.0, 5)
             }
 
             floraFaunaViewModel.getUserLifeList()
@@ -121,140 +117,190 @@ fun HomeScreen(
         }
     }
 
-
     val currentPage = remember { mutableIntStateOf(0) }
 
-    when {
-        tripsState.isLoading -> {
-            CustomLoadingScreen()
-        }
-        else -> when (tripsState.isFailure || !locPermissionState.status.isGranted || !isNetworkAvailable()){
-            false->{
-                Column(
-                    modifier = Modifier
-                        .verticalScroll(scrollState)
-                        .padding(
-                            start = 16.dp,
-                            end = 16.dp,
-                            top = 8.dp,
-                            bottom = 8.dp
-                        ),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    if (hikes.isNullOrEmpty()) {
-                        /*Text(
-                            text = stringResource(R.string.there_are_currently_no_trips_in_your_area),
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Medium,
-                            textAlign = TextAlign.Center
-                        )*/
-                        CustomLoadingScreen()
-                    } else {
-                        Text(
-                            text = stringResource(R.string.trips_in_your_area),
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Medium,
-                            textAlign = TextAlign.Left
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
+    when (tripsState.isFailure || !locPermissionState.status.isGranted || !isNetworkAvailable()) {
+        false -> {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 8.dp,
+                        bottom = 8.dp
+                    ),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.trips_in_your_area),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Left
+                )
 
-                        Carousel(items = hikes, currentPage = currentPage) { hike ->
+                Spacer(modifier = Modifier.height(16.dp))
+
+                if (hikes.isNullOrEmpty()) {
+                    Text(
+                        text = stringResource(R.string.there_are_currently_no_trips_in_your_area),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center
+                    )
+                } else {
+                    hikes.let { hikes ->
+                        val hikesToDisplay = hikes.take(5)
+
+                        Carousel(items = hikesToDisplay, currentPage = currentPage) { hike ->
                             TripItem(trip = hike)
                         }
+                    }
+                }
 
-                        Text(
-                            text = "Sighting in your area",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Medium,
-                        )
-                        
-                        Spacer(modifier = Modifier.height(16.dp))
-                        
-                        Carousel(items = sightings, currentPage = currentPage) {sighting ->
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Sightings in your area",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Medium,
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                if (sightings.isNullOrEmpty()) {
+                    Text(
+                        text = "There are currently no sightings in your area",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center
+                    )
+                } else {
+                    sightings.let { sightings ->
+                        val sightingsToDisplay = sightings.take(5)
+
+                        Carousel(
+                            items = sightingsToDisplay,
+                            currentPage = currentPage
+                        ) { sighting ->
                             BirdItem(sighting = sighting)
-                            
                         }
+                    }
+                }
 
+                Spacer(modifier = Modifier.height(16.dp))
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = stringResource(R.string.recent_sightings),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Medium,
+                )
 
-                        Text(
-                            text = stringResource(R.string.recent_sightings),
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Medium,
-                        )
+                Spacer(modifier = Modifier.height(16.dp))
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                if (lifelist.isNullOrEmpty()) {
+                    Text(
+                        text = "You currently have no sightings in your lifelist",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center
+                    )
+                } else {
+                    lifelist?.let { lifeList ->
+                        val sightingsToDisplay = lifeList.take(5)
 
-                        lifelist?.let {
-                            Carousel(items = it, currentPage = currentPage) { sighting ->
-                                LifelistItem(lifeList = sighting)
-                            }
+                        Carousel(
+                            items = sightingsToDisplay,
+                            currentPage = currentPage
+                        ) { sighting ->
+                            LifelistItem(lifeList = sighting)
                         }
+                    }
+                }
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                        Text(
-                            text = stringResource(R.string.recent_activity),
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Medium,
-                        )
+                Text(
+                    text = stringResource(R.string.recent_activity),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Medium,
+                )
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                        recentActitivy?.let {
-                            Carousel(items = it, currentPage = currentPage) { recentActitivy ->
-                                RecentActivityListItems(recentActivity = recentActitivy)
+                if (recentActivity.isNullOrEmpty()) {
+                    Text(
+                        text = "You currently have no trips in your trip log",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center
+                    )
+                } else {
+                    recentActivity?.let { activityList ->
+                        val limitedActivity = activityList.take(5)
 
-                            }
+                        Carousel(
+                            items = limitedActivity,
+                            currentPage = currentPage
+                        ) { recentActivity ->
+                            RecentActivityListItem(recentActivity = recentActivity)
                         }
                     }
                 }
             }
-            else ->{
+        }
+
+        else -> {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .wrapContentSize(Alignment.Center)
                     .padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     text = when {
                         !locPermissionState.status.isGranted -> stringResource(R.string.error_no_gps_location_found)
                         !isNetworkAvailable() -> stringResource(R.string.no_internett_connection)
                         else -> stringResource(R.string.error_retrieving_api_success_response)
-                                },
-                        style = CustomTypography.headlineMedium,
-                        textAlign = TextAlign.Center,
-                        modifier = modifier.wrapContentSize(Alignment.Center)
+                    },
+                    style = CustomTypography.headlineMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = modifier.wrapContentSize(Alignment.Center)
                 )
                 IconButton(onClick = {
                     tripsViewModel.viewModelScope.launch {
-                            //TODO Add functionality to prompt the user to share their location if
-                            // permissions aren't currently given.
-                            val geoPoint = userLocation.lastKnownLocation?.let {
-                                GeoPoint(it.latitude, it.longitude)
-                            }
-                            if (geoPoint != null) {
-                                tripsViewModel.getTripsNearUsersLocation(geoPoint, radiusInKm = 50.0, limit = 5)
-                            }
+                        //TODO Add functionality to prompt the user to share their location if
+                        // permissions aren't currently given.
+                        val geoPoint = userLocation.lastKnownLocation?.let {
+                            GeoPoint(it.latitude, it.longitude)
                         }
+                        if (geoPoint != null) {
+                            tripsViewModel.getTripsNearUsersLocation(
+                                geoPoint,
+                                radiusInKm = 50.0,
+                                limit = 5
+                            )
+                        }
+                    }
                 }) {
                     Icon(
                         Icons.Default.Refresh,
                         contentDescription = stringResource(id = R.string.refresh)
                     )
                 }
-                }
+            }
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(bottom = 8.dp)
             ) {
-                SnackbarHost(hostState = snackbarHostState,  modifier = Modifier.align(Alignment.BottomCenter))
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                )
                 SnackbarWithCondition(
                     snackbarHostState = snackbarHostState,
                     message = (stringResource(R.string.not_share_location_msg_HomePage)),
@@ -265,6 +311,6 @@ fun HomeScreen(
             }
         }
     }
-}}
+}
 
 

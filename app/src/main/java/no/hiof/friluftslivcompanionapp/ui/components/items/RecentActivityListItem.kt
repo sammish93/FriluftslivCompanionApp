@@ -1,7 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.components.items
 
 import android.location.Geocoder
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -20,11 +19,10 @@ import androidx.compose.ui.unit.dp
 import no.hiof.friluftslivcompanionapp.domain.DateFormatter
 import no.hiof.friluftslivcompanionapp.models.TripActivity
 import no.hiof.friluftslivcompanionapp.models.enums.TripType
-import no.hiof.friluftslivcompanionapp.ui.components.cards.formatDate
 import java.util.Locale
 
 @Composable
-fun RecentActivityListItems(recentActivity: TripActivity) {
+fun RecentActivityListItem(recentActivity: TripActivity) {
     val geocoder = Geocoder(LocalContext.current, Locale.getDefault())
     val location = geocoder.getFromLocation(
         recentActivity.trip.route.first().latitude,
