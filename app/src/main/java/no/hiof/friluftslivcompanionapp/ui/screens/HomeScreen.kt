@@ -78,14 +78,12 @@ fun HomeScreen(
 
 
     // Sensors(userViewModel)
-    val userLocation by userViewModel.state.collectAsState()
-    val hikes by tripsViewModel.hikes.collectAsState()
+    val userState by userViewModel.state.collectAsState()
+    val hikesState by tripsViewModel.hikes.collectAsState()
     val tripsState by tripsViewModel.tripsState.collectAsState()
-
-    val lifelist by floraFaunaViewModel.lifeList.collectAsState()
-    val recentActivity by tripsViewModel.recentActivity.collectAsState()
-
-    val sightings by floraFaunaViewModel.sightingsFlow.collectAsState()
+    val lifelistState by floraFaunaViewModel.lifeList.collectAsState()
+    val recentActivityState by tripsViewModel.recentActivity.collectAsState()
+    val sightingsState by floraFaunaViewModel.sightingsFlow.collectAsState()
 
 
     val error = tripsViewModel.errorMessage.value
@@ -101,10 +99,10 @@ fun HomeScreen(
         }
     }
 
-    LaunchedEffect(userLocation) {
+    LaunchedEffect(userState) {
         if (!isTripCarouselQueryCalled.value) {
             val geoPoint =
-                userLocation.lastKnownLocation?.let { GeoPoint(it.latitude, it.longitude) }
+                userState.lastKnownLocation?.let { GeoPoint(it.latitude, it.longitude) }
             if (geoPoint != null) {
                 tripsViewModel.getTripsNearUsersLocation(geoPoint, radiusInKm = 50.0, limit = 5)
                 isTripCarouselQueryCalled.value = true
@@ -142,15 +140,24 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                if (hikes.isNullOrEmpty()) {
-                    Text(
-                        text = stringResource(R.string.there_are_currently_no_trips_in_your_area),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.Center
-                    )
+                if (hikesState.isNullOrEmpty()) {
+                    if ((!locPermissionState.status.isGranted || userState.lastKnownLocation == null)) {
+                        Text(
+                            text = "No trips can be found in your area because you aren't currently sharing your location",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(R.string.there_are_currently_no_trips_in_your_area),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 } else {
-                    hikes.let { hikes ->
+                    hikesState.let { hikes ->
                         val hikesToDisplay = hikes.take(5)
 
                         Carousel(items = hikesToDisplay, currentPage = currentPage) { hike ->
@@ -163,21 +170,30 @@ fun HomeScreen(
 
                 Text(
                     text = "Sightings in your area",
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Medium,
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                if (sightings.isNullOrEmpty()) {
-                    Text(
-                        text = "There are currently no sightings in your area",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.Center
-                    )
+                if (sightingsState.isNullOrEmpty()) {
+                    if ((!locPermissionState.status.isGranted || userState.lastKnownLocation == null)) {
+                        Text(
+                            text = "No sights can be found in your area because you aren't currently sharing your location",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        Text(
+                            text = "There are currently no sightings in your area",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 } else {
-                    sightings.let { sightings ->
+                    sightingsState.let { sightings ->
                         val sightingsToDisplay = sightings.take(5)
 
                         Carousel(
@@ -199,15 +215,15 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                if (lifelist.isNullOrEmpty()) {
+                if (lifelistState.isNullOrEmpty()) {
                     Text(
                         text = "You currently have no sightings in your lifelist",
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Center
                     )
                 } else {
-                    lifelist?.let { lifeList ->
+                    lifelistState?.let { lifeList ->
                         val sightingsToDisplay = lifeList.take(5)
 
                         Carousel(
@@ -229,15 +245,15 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                if (recentActivity.isNullOrEmpty()) {
+                if (recentActivityState.isNullOrEmpty()) {
                     Text(
                         text = "You currently have no trips in your trip log",
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Center
                     )
                 } else {
-                    recentActivity?.let { activityList ->
+                    recentActivityState?.let { activityList ->
                         val limitedActivity = activityList.take(5)
 
                         Carousel(
@@ -274,7 +290,7 @@ fun HomeScreen(
                     tripsViewModel.viewModelScope.launch {
                         //TODO Add functionality to prompt the user to share their location if
                         // permissions aren't currently given.
-                        val geoPoint = userLocation.lastKnownLocation?.let {
+                        val geoPoint = userState.lastKnownLocation?.let {
                             GeoPoint(it.latitude, it.longitude)
                         }
                         if (geoPoint != null) {
