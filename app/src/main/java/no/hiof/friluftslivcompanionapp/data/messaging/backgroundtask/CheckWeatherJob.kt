@@ -32,10 +32,6 @@ class CheckWeatherJob(appContext: Context, workerParams: WorkerParameters)
         }
     }
 
-    private fun sendNotification(title: String, body: String) {
-        NotificationHelper.showMessage(applicationContext, title, body)
-    }
-
     private fun checkForExtremeWeather(weather: Weather) {
 
         when (weather.weatherType) {
@@ -64,5 +60,9 @@ class CheckWeatherJob(appContext: Context, workerParams: WorkerParameters)
                 }
             }
         }
+    }
+
+    private fun sendNotification(title: String, body: String) {
+        NotificationHelper.showMessage(applicationContext, title, body)
     }
 }
