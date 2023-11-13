@@ -21,6 +21,7 @@ class CheckWeatherJob(appContext: Context, workerParams: WorkerParameters)
             is no.hiof.friluftslivcompanionapp.data.network.Result.Success -> {
                 val weather = call.value.forecast[0]
                 Log.d("CheckWeatherJob", "Successfully fetched weather data: ${call.value}")
+                Log.d("CheckWeatherJob", "Checking for extreme weather...")
                 checkForExtremeWeather(weather)
                 Result.success()
             }
@@ -49,7 +50,6 @@ class CheckWeatherJob(appContext: Context, workerParams: WorkerParameters)
                     "It is snow in your area, be careful when driving!"
                 )
             }
-
             else -> {
                 if (weather.windSpeed > WeatherTriggers.WIND_IN_METER.threshold) {
                     Log.d("CheckForExtremeWeather", "Sending notification for strong wind.")
@@ -57,6 +57,9 @@ class CheckWeatherJob(appContext: Context, workerParams: WorkerParameters)
                         "Windy",
                         "There is a lot of wind in your area, stay inside!"
                         )
+                }
+                else {
+                    Log.d("CheckForExtremeWeather", "No extreme weather at the moment.")
                 }
             }
         }

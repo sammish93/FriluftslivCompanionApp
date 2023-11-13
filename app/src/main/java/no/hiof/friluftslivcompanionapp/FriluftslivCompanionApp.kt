@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -17,17 +18,31 @@ import java.util.concurrent.TimeUnit
 class FriluftslivCompanionApp : Application() {
     override fun onCreate() {
         super.onCreate()
+        setUpImmediateWorkManager()
+        // Hvordan legge til delay ?
         setUpWorkManager()
     }
 
+    // Job that will run immediately when the app starts.
+    private fun setUpImmediateWorkManager() {
+        val immediateWorkRequest = OneTimeWorkRequestBuilder<CheckWeatherJob>()
+            .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+            .build()
+
+        WorkManager.getInstance(applicationContext).enqueue(immediateWorkRequest)
+    }
+
+    // Periodic job that will run every 6 hour´s
     private fun setUpWorkManager() {
-        // Runs the job every 6 hour = 4 times a day.
         val weatherCheckRequest = getWorkRequestBuilder()
         enqueueJob(this, weatherCheckRequest)
     }
 
     private fun getWorkRequestBuilder(hourlyInterval: Long=6): PeriodicWorkRequest {
         return PeriodicWorkRequestBuilder<CheckWeatherJob>(hourlyInterval, TimeUnit.HOURS)
+
+            // Delay so it don't overlap with immediate job.
+            .setInitialDelay(1, TimeUnit.MINUTES)
             .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
             .build()
     }
