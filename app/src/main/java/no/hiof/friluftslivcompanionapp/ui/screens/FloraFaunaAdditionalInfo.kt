@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -163,10 +164,15 @@ fun FloraFaunaAdditionalInfo(
                                     painter = rememberImagePainter(data = species?.photoUrl),
                                     contentDescription = "${species?.speciesName}",
                                     modifier = Modifier
+                                        //.aspectRatio(16f/9f)
                                         .height(180.dp)
                                         .fillMaxWidth(),
+
+                                    //denne
                                     //.clip(RoundedCornerShape(12.dp))
                                     //.wrapContentHeight(),
+                                    //TODO: Check out aspect ratio instead of ContentScale.crop.
+                                    // With crop the image is zoomed in.
                                     contentScale = ContentScale.Crop
                                 )
 
