@@ -56,5 +56,4 @@ class NotificationService : FirebaseMessagingService() {
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_MAX)
     }
-
 }
