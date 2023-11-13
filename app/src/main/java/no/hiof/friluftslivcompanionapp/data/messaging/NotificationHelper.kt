@@ -12,9 +12,9 @@ object NotificationHelper {
     private const val CHANNEL_ID = "friluftslivcompanion_notification_channel"
     private const val NOTIFICATION_ID = 1
 
-    fun showMessage(context: Context, title: String, body: String) {
+    fun showMessage(context: Context, title: String, icon: Int, body: String) {
         val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher_round)
+            .setSmallIcon(icon)
             .setContentTitle(title)
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_MAX)

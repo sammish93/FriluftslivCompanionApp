@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import no.hiof.friluftslivcompanionapp.R
 
 // Reference: https://developer.android.com/develop/ui/views/notifications/build-notification
 class NotificationService : FirebaseMessagingService() {
@@ -23,8 +24,8 @@ class NotificationService : FirebaseMessagingService() {
 
         remoteMessage.notification?.let {
             Log.d("FCM", "Notification Message Body: ${it.body}")
-            NotificationHelper.showMessage(this, it.title!!, it.body!!)
+            val icon = it.icon
+            NotificationHelper.showMessage(this, it.title!!, R.drawable.thunder_storm, it.body!!)
         }
     }
-
 }

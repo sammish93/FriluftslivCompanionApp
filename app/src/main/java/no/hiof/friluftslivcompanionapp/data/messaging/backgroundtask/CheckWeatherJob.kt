@@ -9,6 +9,7 @@ import no.hiof.friluftslivcompanionapp.domain.WeatherDeserialiser
 import no.hiof.friluftslivcompanionapp.models.Weather
 import no.hiof.friluftslivcompanionapp.models.enums.WeatherTriggers
 import no.hiof.friluftslivcompanionapp.models.enums.WeatherType
+import no.hiof.friluftslivcompanionapp.R
 
 class CheckWeatherJob(appContext: Context, workerParams: WorkerParameters)
     : CoroutineWorker(appContext, workerParams) {
@@ -20,7 +21,7 @@ class CheckWeatherJob(appContext: Context, workerParams: WorkerParameters)
 
             is no.hiof.friluftslivcompanionapp.data.network.Result.Success -> {
                 val weather = call.value.forecast[0]
-                Log.d("CheckWeatherJob", "Successfully fetched weather data: ${call.value}")
+                Log.d("CheckWeatherJob", "Successfully fetched weather data: $weather")
                 Log.d("CheckWeatherJob", "Checking for extreme weather...")
                 checkForExtremeWeather(weather)
                 Result.success()
@@ -40,6 +41,7 @@ class CheckWeatherJob(appContext: Context, workerParams: WorkerParameters)
                 Log.d("CheckForExtremeWeather", "Sending notification for thunder storm.")
                 sendNotification(
                     "Thunder Storm",
+                    R.drawable.thunder_storm,
                     "Watch out there is a thunder storm in your area!"
                 )
             }
@@ -47,6 +49,7 @@ class CheckWeatherJob(appContext: Context, workerParams: WorkerParameters)
                 Log.d("CheckForExtremeWeather", "Sending notification for snow.")
                 sendNotification(
                     "Snow",
+                    R.drawable.snow,
                     "It is snow in your area, be careful when driving!"
                 )
             }
@@ -55,17 +58,19 @@ class CheckWeatherJob(appContext: Context, workerParams: WorkerParameters)
                     Log.d("CheckForExtremeWeather", "Sending notification for strong wind.")
                     sendNotification(
                         "Windy",
+                        R.drawable.windy,
                         "There is a lot of wind in your area, stay inside!"
                         )
                 }
                 else {
+
                     Log.d("CheckForExtremeWeather", "No extreme weather at the moment.")
                 }
             }
         }
     }
 
-    private fun sendNotification(title: String, body: String) {
-        NotificationHelper.showMessage(applicationContext, title, body)
+    private fun sendNotification(title: String, icon: Int, body: String) {
+        NotificationHelper.showMessage(applicationContext, title, icon, body)
     }
 }

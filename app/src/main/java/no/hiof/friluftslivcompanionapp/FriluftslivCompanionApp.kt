@@ -51,4 +51,8 @@ class FriluftslivCompanionApp : Application() {
             .enqueueUniquePeriodicWork("CheckWeatherWork", ExistingPeriodicWorkPolicy.KEEP, job)
     }
 
+    // Function used to cancel the periodic job.
+    fun cancelWeatherCheckJob() {
+        WorkManager.getInstance(applicationContext).cancelUniqueWork("CheckWeatherWork")
+    }
 }
