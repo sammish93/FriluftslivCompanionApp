@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -80,13 +81,14 @@ fun TripItem(trip: Hike, height: Dp, aspectRatio: Float) {
                         .padding(4.dp)
                 ) {
                     val roundedDistance = String.format("%.1f", trip.distanceKm)
+                    val durationInMins = trip.duration?.toMinutes().toString()
                     Text(
-                        text = "Distance: $roundedDistance km",
+                        text = stringResource(R.string.distance_km, roundedDistance),
                         style = CustomTypography.titleSmall,
                         color = MaterialTheme.colorScheme.tertiary
                     )
                     Text(
-                        text = "Duration: ${trip.duration?.toMinutes()} min",
+                        text = stringResource(R.string.duration_min, durationInMins),
                         style = CustomTypography.titleSmall,
                         color = MaterialTheme.colorScheme.tertiary
                     )

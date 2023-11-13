@@ -16,9 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.domain.DateFormatter
 import no.hiof.friluftslivcompanionapp.models.TripActivity
 import no.hiof.friluftslivcompanionapp.models.enums.TripType
@@ -33,8 +35,8 @@ fun RecentActivityListItem(recentActivity: TripActivity, width: Dp) {
         recentActivity.trip.route.first().latitude, recentActivity.trip.route.first().longitude, 1
     )
 
-    val municipality = location?.firstOrNull()?.subAdminArea ?: "Unkown Location"
-    val county = location?.firstOrNull()?.adminArea ?: "Unknown Location"
+    val municipality = location?.firstOrNull()?.subAdminArea ?: stringResource(R.string.unknown_location)
+    val county = location?.firstOrNull()?.adminArea ?: stringResource(R.string.unknown_location)
 
     Card(
         modifier = Modifier

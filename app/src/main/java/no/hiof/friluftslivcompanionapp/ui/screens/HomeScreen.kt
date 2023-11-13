@@ -165,7 +165,7 @@ fun HomeScreen(
                 if (hikesState.isNullOrEmpty()) {
                     if ((!locPermissionState.status.isGranted || userState.lastKnownLocation == null)) {
                         Text(
-                            text = "No trips can be found in your area because you aren't currently sharing your location",
+                            text = stringResource(R.string.no_trips_can_be_found_in_your_area_because_you_aren_t_currently_sharing_your_location),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Medium,
                             textAlign = TextAlign.Center
@@ -191,7 +191,7 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Sightings in your area",
+                    text = stringResource(R.string.sightings_in_your_area),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Medium,
                 )
@@ -201,14 +201,14 @@ fun HomeScreen(
                 if (sightingsState.isNullOrEmpty()) {
                     if ((!locPermissionState.status.isGranted || userState.lastKnownLocation == null)) {
                         Text(
-                            text = "No sights can be found in your area because you aren't currently sharing your location",
+                            text = stringResource(R.string.no_sightings_can_be_found_in_your_area_because_you_aren_t_currently_sharing_your_location),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Medium,
                             textAlign = TextAlign.Center
                         )
                     } else {
                         Text(
-                            text = "There are currently no sightings in your area",
+                            text = stringResource(R.string.there_are_currently_no_sightings_in_your_area),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Medium,
                             textAlign = TextAlign.Center
@@ -239,7 +239,7 @@ fun HomeScreen(
 
                 if (lifelistState.isNullOrEmpty()) {
                     Text(
-                        text = "You currently have no sightings in your lifelist",
+                        text = stringResource(R.string.you_currently_have_no_sightings_in_your_lifelist),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Center
@@ -269,7 +269,7 @@ fun HomeScreen(
 
                 if (recentActivityState.isNullOrEmpty()) {
                     Text(
-                        text = "You currently have no trips in your trip log",
+                        text = stringResource(R.string.you_currently_have_no_trips_in_your_trip_log),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Center

@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -93,7 +94,7 @@ fun LifelistItem(lifeList: Lifelist, height: Dp, aspectRatio: Float) {
                     val dateString = dateFormat.format(lifeList.sightings.date)
 
                     Text(
-                        text = "Date seen: $dateString",
+                        text = stringResource(R.string.date_seen, dateString),
                         style = CustomTypography.titleSmall,
                         color = MaterialTheme.colorScheme.tertiary
                     )
