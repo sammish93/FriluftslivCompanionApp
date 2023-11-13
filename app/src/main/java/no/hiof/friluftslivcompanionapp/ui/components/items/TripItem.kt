@@ -32,7 +32,7 @@ import no.hiof.friluftslivcompanionapp.models.Hike
 import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 
 @Composable
-fun TripItem(trip: Hike, height: Dp, aspectRatio: Float, onClick: () -> Unit) {
+fun TripItem(trip: Hike, height: Dp, aspectRatio: Float, onClick: () -> Unit, drawableRes: Int) {
     Card(
         modifier = Modifier
             .padding(2.dp)
@@ -48,7 +48,7 @@ fun TripItem(trip: Hike, height: Dp, aspectRatio: Float, onClick: () -> Unit) {
                 .fillMaxSize()
         ) {
             Image(
-                painter = painterResource(id = R.drawable.hike),
+                painter = painterResource(id = drawableRes),
                 contentDescription = "Hiking Image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()

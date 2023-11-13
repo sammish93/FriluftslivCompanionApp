@@ -35,6 +35,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -187,11 +188,18 @@ fun HomeScreen(
                         val hikesToDisplay = hikes.take(5)
 
                         Carousel(items = hikesToDisplay, currentPage = currentPage) { hike ->
-                            TripItem(trip = hike, height = height, aspectRatio = aspectRatio,
+                            val index = hikesToDisplay.indexOf(hike)
+
+                            TripItem(
+                                trip = hike,
+                                height = height,
+                                aspectRatio = aspectRatio,
                                 onClick = {
-                                tripsViewModel.updateSelectedTrip(hike)
-                                navController.navigate(Screen.TRIPS_ADDITIONAL_INFO.name)
-                            })
+                                    tripsViewModel.updateSelectedTrip(hike)
+                                    navController.navigate(Screen.TRIPS_ADDITIONAL_INFO.name)
+                                },
+                                tripsViewModel.tripImages[index] ?: R.drawable.oslomarka
+                            )
                         }
                     }
                 }
@@ -230,7 +238,9 @@ fun HomeScreen(
                             items = sightingsToDisplay,
                             currentPage = currentPage
                         ) { sighting ->
-                            BirdItem(sighting = sighting, height = height, aspectRatio = aspectRatio,
+                            BirdItem(sighting = sighting,
+                                height = height,
+                                aspectRatio = aspectRatio,
                                 onClick = {
                                     floraFaunaViewModel.updateSelectedSpeciesInfo(sighting.species)
                                     navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.name)
@@ -264,7 +274,9 @@ fun HomeScreen(
                             items = sightingsToDisplay,
                             currentPage = currentPage
                         ) { sighting ->
-                            LifelistItem(lifeList = sighting, height = height, aspectRatio = aspectRatio,
+                            LifelistItem(lifeList = sighting,
+                                height = height,
+                                aspectRatio = aspectRatio,
                                 onClick = {
                                     floraFaunaViewModel.updateSelectedSpeciesInfo(sighting.sightings.species)
                                     navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.name)

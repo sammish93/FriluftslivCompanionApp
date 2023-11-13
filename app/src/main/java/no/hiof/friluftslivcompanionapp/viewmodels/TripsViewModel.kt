@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.data.repositories.ActivityRepository
 import no.hiof.friluftslivcompanionapp.data.repositories.OperationResult
 import no.hiof.friluftslivcompanionapp.data.repositories.TripsRepository
@@ -75,6 +76,14 @@ class TripsViewModel @Inject constructor(
         TripType.HIKE,
         TripType.SKI,
         TripType.CLIMB
+    )
+
+    val tripImages = mapOf(
+        0 to R.drawable.oslomarka,
+        1 to R.drawable.jotunheimen,
+        2 to R.drawable.geiranger,
+        3 to R.drawable.lofoten,
+        4 to R.drawable.hvaler
     )
 
     // Used to get trips from the db which is near the users location.
@@ -275,13 +284,6 @@ class TripsViewModel @Inject constructor(
             }
         }
     }
-
-
-
-
-
-
-
 
     // Function to clear all data relating to create tripActivity.
     fun clearTripActivity() {
