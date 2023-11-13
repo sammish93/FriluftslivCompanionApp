@@ -1,5 +1,7 @@
 package no.hiof.friluftslivcompanionapp.ui.components
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -46,11 +48,13 @@ fun CustomTabsBar(viewModel: TabNavigation, navController: NavController, modifi
 
     val tabsUiState by viewModel.uiState.collectAsState()
 
-    SecondaryTabRow(selectedTabIndex = tabsUiState.currentTabIndex, modifier = modifier) {
+    PrimaryTabRow(selectedTabIndex = tabsUiState.currentTabIndex, modifier = modifier) {
         viewModel.tabDestinations.onEachIndexed { index, (destination, title) ->
             Tab(
                 text = { Text(stringResource(title)) },
                 selected = tabsUiState.currentTabIndex == index,
+                selectedContentColor = MaterialTheme.colorScheme.primary,
+                unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                 //selected = tabIndex == index,
                 onClick = {
                     viewModel.changeHighlightedTab(index)
