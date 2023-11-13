@@ -164,15 +164,12 @@ fun FloraFaunaAdditionalInfo(
                                     painter = rememberImagePainter(data = species?.photoUrl),
                                     contentDescription = "${species?.speciesName}",
                                     modifier = Modifier
-                                        //.aspectRatio(16f/9f)
                                         .height(180.dp)
                                         .fillMaxWidth(),
 
-                                    //denne
+                                    
                                     //.clip(RoundedCornerShape(12.dp))
                                     //.wrapContentHeight(),
-                                    //TODO: Check out aspect ratio instead of ContentScale.crop.
-                                    // With crop the image is zoomed in.
                                     contentScale = ContentScale.Crop
                                 )
 
