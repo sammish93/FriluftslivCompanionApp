@@ -118,7 +118,7 @@ fun TripsRecentActivityScreen(
                     }
                     if (!isNetworkAvailable()) {
                         Text(
-                            text = stringResource(R.string.no_internett_connection),
+                            text = stringResource(R.string.no_internet_connection),
                             style = CustomTypography.headlineMedium,
                             textAlign = TextAlign.Center,
                             modifier = modifier.wrapContentSize(Alignment.Center)

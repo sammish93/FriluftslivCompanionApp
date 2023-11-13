@@ -178,7 +178,7 @@ fun WeatherSearchScreen(
 
                     SnackbarWithCondition(
                         snackbarHostState = snackbarHostState,
-                        message = stringResource(R.string.no_internett_connection),
+                        message = stringResource(R.string.no_internet_connection),
                         actionLabel = stringResource(R.string.understood),
                         condition = !isNetworkAvailable()
                     )

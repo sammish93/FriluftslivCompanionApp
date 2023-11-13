@@ -128,12 +128,12 @@ fun GoogleMapTripStartNodes(
                     if (trips.isEmpty()) {
                         Toast.makeText(
                             context,
-                            "There are no trips in this radius",
+                            R.string.no_trips_in_this_radius,
                             Toast.LENGTH_LONG
                         ).show()
                     }
                     if (!isNetworkAvailable()) {
-                        Toast.makeText(context, "No internet connection", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, R.string.no_internet_connection, Toast.LENGTH_LONG).show()
                     }
 
                 },

@@ -1,11 +1,13 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -47,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -163,6 +166,8 @@ fun FloraFaunaAdditionalInfo(
                                     modifier = Modifier
                                         .height(180.dp)
                                         .fillMaxWidth(),
+
+                                    
                                     //.clip(RoundedCornerShape(12.dp))
                                     //.wrapContentHeight(),
                                     contentScale = ContentScale.Crop
@@ -412,6 +417,8 @@ fun SpeciesBottomSheet(
     }
 
     if (showAddPopup) {
+        val context = LocalContext.current
+
         AlertDialog(
             onDismissRequest = {
                 showAddPopup = false
@@ -428,6 +435,9 @@ fun SpeciesBottomSheet(
                         )
                     )
                     floraFaunaViewModel.createSighting()
+                    Toast.makeText(context,
+                        R.string.s_successfully_added_to_life_list,
+                        Toast.LENGTH_LONG).show()
                 }) {
                     Text(stringResource(R.string.yes))
                 }

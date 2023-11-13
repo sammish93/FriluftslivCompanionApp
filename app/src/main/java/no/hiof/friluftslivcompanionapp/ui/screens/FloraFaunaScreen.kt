@@ -66,7 +66,7 @@ fun FloraFaunaScreen(
         true -> CustomLoadingScreen()
         else -> {
             if (!isNetworkAvailable()) {
-                ErrorView(message = stringResource(R.string.no_internett_connection))
+                ErrorView(message = stringResource(R.string.no_internet_connection))
             } else if (lifeListState.isFailure) {
                 ErrorView(message = stringResource(R.string.error_retrieving_api_success_response))
             } else {
