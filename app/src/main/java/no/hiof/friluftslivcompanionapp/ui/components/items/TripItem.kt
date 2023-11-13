@@ -1,6 +1,7 @@
 package no.hiof.friluftslivcompanionapp.ui.components.items
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -21,19 +22,21 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.models.Hike
+import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 
 @Composable
-fun TripItem(trip: Hike) {
+fun TripItem(trip: Hike, height: Dp, aspectRatio: Float) {
     Card(
         modifier = Modifier
             .padding(2.dp)
             .fillMaxWidth()
-            .height(200.dp)
-            .aspectRatio(0.59f),
+            .height(height)
+            .aspectRatio(aspectRatio),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Box(
@@ -47,40 +50,48 @@ fun TripItem(trip: Hike) {
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
-            Text(
-                text = "${trip.description?.replaceFirstChar { it.uppercase() }}",
-                color = MaterialTheme.colorScheme.surface,
-                style = MaterialTheme.typography.labelLarge,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.ExtraBold,
+
+            Box(
                 modifier = Modifier
                     .align(Alignment.TopStart)
-                    .padding(8.dp),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Column(
-                modifier = Modifier.align(Alignment.BottomStart)
+                    .padding(8.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.7f))
             ) {
-                val roundedDistance = String.format("%.1f", trip.distanceKm)
                 Text(
-                    text = "Distance: $roundedDistance km",
-                    color = MaterialTheme.colorScheme.surface,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.ExtraBold,
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                )
-                Text(
-                    text = "Duration: ${trip.duration?.toMinutes()} min",
-                    color = MaterialTheme.colorScheme.surface,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.ExtraBold,
-                    modifier = Modifier
-                        .padding(start = 8.dp, bottom = 8.dp)
+                    text = "${trip.description?.replaceFirstChar { it.uppercase() }}",
+                    style = CustomTypography.headlineSmall,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.padding(4.dp),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
 
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(8.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.7f))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(4.dp)
+                ) {
+                    val roundedDistance = String.format("%.1f", trip.distanceKm)
+                    Text(
+                        text = "Distance: $roundedDistance km",
+                        style = CustomTypography.titleSmall,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                    Text(
+                        text = "Duration: ${trip.duration?.toMinutes()} min",
+                        style = CustomTypography.titleSmall,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                }
+            }
         }
     }
 }

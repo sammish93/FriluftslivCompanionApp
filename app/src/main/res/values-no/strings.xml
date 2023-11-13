@@ -155,7 +155,7 @@
     <string name="search_this_area">Søk i dette området</string>
     <string name="trips_in_your_area">Turer i ditt nærområde</string>
     <string name="there_are_currently_no_trips_in_your_area">Det er for øyeblikket ingen turer i ditt område.</string>
-    <string name="recent_sightings">Nylige observasjoner.</string>
-    <string name="recent_activity">Nylig aktivitet.</string>
+    <string name="recent_sightings">Nylige observasjoner</string>
+    <string name="recent_activity">Nylig aktivitet</string>
 
 </resources>

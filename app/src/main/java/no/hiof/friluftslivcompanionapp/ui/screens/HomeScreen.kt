@@ -22,6 +22,8 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -76,7 +78,6 @@ fun HomeScreen(
         capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
     }
 
-
     // Sensors(userViewModel)
     val userState by userViewModel.state.collectAsState()
     val hikesState by tripsViewModel.hikes.collectAsState()
@@ -85,13 +86,34 @@ fun HomeScreen(
     val recentActivityState by tripsViewModel.recentActivity.collectAsState()
     val sightingsState by floraFaunaViewModel.sightingsFlow.collectAsState()
 
-
     val error = tripsViewModel.errorMessage.value
     val locPermissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
     val snackbarHostState = remember { SnackbarHostState() }
 
     val scrollState = rememberScrollState()
     val isTripCarouselQueryCalled = remember { mutableStateOf(false) }
+
+    // Dimensions below are used for responsive design with carousel cards.
+    val width = when (userState.windowSizeClass.widthSizeClass) {
+        WindowWidthSizeClass.Compact -> 200.dp
+        WindowWidthSizeClass.Medium -> 300.dp
+
+        else -> 350.dp
+    }
+
+    val height = when (userState.windowSizeClass.heightSizeClass) {
+        WindowHeightSizeClass.Compact -> 150.dp
+        WindowHeightSizeClass.Medium -> 200.dp
+
+        else -> 250.dp
+    }
+
+    val aspectRatio = when (userState.windowSizeClass.widthSizeClass) {
+        WindowWidthSizeClass.Compact -> 1f
+        WindowWidthSizeClass.Medium -> 2f
+
+        else -> 2.5f
+    }
 
     if (error != null) {
         Snackbar(modifier = Modifier.padding(16.dp)) {
@@ -161,7 +183,7 @@ fun HomeScreen(
                         val hikesToDisplay = hikes.take(5)
 
                         Carousel(items = hikesToDisplay, currentPage = currentPage) { hike ->
-                            TripItem(trip = hike)
+                            TripItem(trip = hike, height = height, aspectRatio = aspectRatio)
                         }
                     }
                 }
@@ -200,7 +222,7 @@ fun HomeScreen(
                             items = sightingsToDisplay,
                             currentPage = currentPage
                         ) { sighting ->
-                            BirdItem(sighting = sighting)
+                            BirdItem(sighting = sighting, height = height, aspectRatio = aspectRatio)
                         }
                     }
                 }
@@ -230,7 +252,7 @@ fun HomeScreen(
                             items = sightingsToDisplay,
                             currentPage = currentPage
                         ) { sighting ->
-                            LifelistItem(lifeList = sighting)
+                            LifelistItem(lifeList = sighting, height = height, aspectRatio = aspectRatio)
                         }
                     }
                 }
@@ -260,7 +282,7 @@ fun HomeScreen(
                             items = limitedActivity,
                             currentPage = currentPage
                         ) { recentActivity ->
-                            RecentActivityListItem(recentActivity = recentActivity)
+                            RecentActivityListItem(recentActivity = recentActivity, width = width)
                         }
                     }
                 }
