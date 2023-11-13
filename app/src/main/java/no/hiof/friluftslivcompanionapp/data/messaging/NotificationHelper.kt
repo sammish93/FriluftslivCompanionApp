@@ -15,7 +15,8 @@ object NotificationHelper {
 
     fun showMessage(context: Context, title: String, icon: Int, body: String) {
         val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(icon)
+            .setSmallIcon(R.drawable._1d)
+            .setLargeIcon(BitmapFactory.decodeResource(context.resources, icon))
             .setContentTitle(title)
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_MAX)
