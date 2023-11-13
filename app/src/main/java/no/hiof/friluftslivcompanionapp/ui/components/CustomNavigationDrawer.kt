@@ -21,6 +21,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBar
@@ -92,7 +93,15 @@ fun CustomNavigationDrawer(navController: NavController, userViewModel: UserView
                     NavigationDrawerItem(
                         icon = { Icon(icon, contentDescription = contentDescription) },
                         label = { Text(stringResource(screenPage.navBarLabel)) },
-                        selected = currentDestination?.hierarchy?.any { it.route == screenPage.route } == true,
+                        selected = if (screenPage == Screen.HOME) {
+                            currentDestination?.route == Screen.HOME.name
+                        } else {
+                            currentDestination?.hierarchy?.any { it.route == screenPage.route } == true
+                        },
+                        colors = androidx.compose.material3.NavigationDrawerItemDefaults
+                            .colors(
+                                selectedIconColor = MaterialTheme.colorScheme.tertiary,
+                            ),
                         onClick = {
                             navController.navigate(screenPage.name) {
                                 // Pop up to the start destination of the graph to
