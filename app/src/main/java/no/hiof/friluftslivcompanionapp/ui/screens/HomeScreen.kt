@@ -35,7 +35,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -43,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHost
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -96,7 +94,8 @@ fun HomeScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     val scrollState = rememberScrollState()
-    val isTripCarouselQueryCalled = remember { mutableStateOf(false) }
+    val isCarouselGeoQueryCalled = remember { mutableStateOf(false) }
+    val isCarouselDbQueryCalled = remember { mutableStateOf(false) }
 
     // Dimensions below are used for responsive design with carousel cards.
     val width = when (userState.windowSizeClass.widthSizeClass) {
@@ -127,18 +126,22 @@ fun HomeScreen(
     }
 
     LaunchedEffect(userState) {
-        if (!isTripCarouselQueryCalled.value) {
-            val geoPoint =
-                userState.lastKnownLocation?.let { GeoPoint(it.latitude, it.longitude) }
-            if (geoPoint != null) {
-                tripsViewModel.getTripsNearUsersLocation(geoPoint, radiusInKm = 50.0, limit = 5)
-                isTripCarouselQueryCalled.value = true
+        if (!isCarouselGeoQueryCalled.value || !isCarouselDbQueryCalled.value) {
+            if (isNetworkAvailable() && userState.lastKnownLocation != null) {
+                val geoPoint =
+                    userState.lastKnownLocation?.let { GeoPoint(it.latitude, it.longitude) }
+                if (geoPoint != null) {
+                    tripsViewModel.getTripsNearUsersLocation(geoPoint, radiusInKm = 50.0, limit = 5)
+                    floraFaunaViewModel.getSightingsNearLocation(geoPoint, 50.0, 5)
 
-                floraFaunaViewModel.getSightingsNearLocation(geoPoint, 50.0, 5)
+                    isCarouselGeoQueryCalled.value = true
+                }
             }
 
             floraFaunaViewModel.getUserLifeList()
             tripsViewModel.getRecentActivity()
+
+            isCarouselDbQueryCalled.value = true
         }
     }
 
