@@ -158,7 +158,7 @@ fun WeatherScreen(
                     Text(
                         text = when {
                             (weatherState.isNoGps)-> stringResource(R.string.error_no_gps_location_found)
-                            !isNetworkAvailable() -> stringResource(R.string.no_internett_connection)
+                            !isNetworkAvailable() -> stringResource(R.string.no_internet_connection)
                             else -> stringResource(R.string.error_retrieving_api_success_response)
                         },
                         style = CustomTypography.headlineMedium,

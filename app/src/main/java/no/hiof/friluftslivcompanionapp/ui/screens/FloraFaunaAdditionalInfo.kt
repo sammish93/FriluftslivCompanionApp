@@ -1,5 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -412,6 +414,8 @@ fun SpeciesBottomSheet(
     }
 
     if (showAddPopup) {
+        val context = LocalContext.current
+
         AlertDialog(
             onDismissRequest = {
                 showAddPopup = false
@@ -428,6 +432,9 @@ fun SpeciesBottomSheet(
                         )
                     )
                     floraFaunaViewModel.createSighting()
+                    Toast.makeText(context,
+                        R.string.s_successfully_added_to_life_list,
+                        Toast.LENGTH_LONG).show()
                 }) {
                     Text(stringResource(R.string.yes))
                 }

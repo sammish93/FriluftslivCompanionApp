@@ -479,6 +479,8 @@ private fun TripsCreateSheet(
     }
 
     if (showCreatePopup) {
+        val context = LocalContext.current
+
         // Alerts the user to confirm that they want to create a trip.
         AlertDialog(
             onDismissRequest = {
@@ -492,7 +494,12 @@ private fun TripsCreateSheet(
                     showCreatePopup = false
                     viewModel.createTrip()
                     dropdownSelectedText = R.string.trips_create_dropdown_choose_something_exciting
+                    Toast.makeText(context,
+                        R.string.the_trip_is_now_available_and_displayed_on_the_map,
+                        Toast.LENGTH_LONG).show()
+
                     viewModel.clearTrip()
+
                 }) {
                     Text(stringResource(R.string.yes))
                 }

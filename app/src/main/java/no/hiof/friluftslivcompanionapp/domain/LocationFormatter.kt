@@ -1,6 +1,7 @@
 package no.hiof.friluftslivcompanionapp.domain
 
 import android.location.Location
+import android.util.Log
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.model.RectangularBounds
 import com.google.maps.android.SphericalUtil
@@ -144,7 +145,7 @@ object LocationFormatter {
             }
             regionCode to "Success"
         } catch (e: Exception) {
-            println("Error: ${e.message}")
+            Log.e("LocationFormatter", "Error: ${e.message}")
             "NO-03" to "Error: ${e.message}"
         }
     }

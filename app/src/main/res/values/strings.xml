@@ -137,7 +137,7 @@
     <string name="no_gps_location_found_using_default_oslo">No GPS location found. Using default:Oslo</string>
     <string name="not_share_location_msg_TripScreen">You are currently not sharing your location. You can still browse trips!</string>
     <string name="noGpsMsg_CreateTripScreen">You are currently not sharing your location. You can still create a trip!</string>
-    <string name="no_internett_connection">No internet connection</string>
+    <string name="no_internet_connection">No internet connection</string>
     <string name="warning">Warning</string>
     <string name="no_internett_no_search">No internet connection. You are not able to search this area</string>
     <string name="enable_network_to_search_for_a_place">Enable network to search for a place</string>
@@ -169,4 +169,8 @@
     <string name="duration_min">Duration: %1$s min</string>
     <string name="date_seen">Date seen: %1$s</string>
     <string name="unknown_location">Unknown Location</string>
+    <string name="the_trip_is_now_available_and_displayed_on_the_map">The trip is now available and displayed on the map.</string>
+    <string name="s_successfully_added_to_life_list">Sighting has ben successfully added to life-list</string>
+    <string name="no_trips_in_this_radius">There are no trips in this radius</string>
+    <string name="trip_successfully_added_to_trip_log">Trip successfully added to Trip Log</string>
 </resources>

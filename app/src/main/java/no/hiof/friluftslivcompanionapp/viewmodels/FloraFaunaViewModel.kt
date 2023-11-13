@@ -218,6 +218,7 @@ class FloraFaunaViewModel @Inject constructor(
                 viewModelScope.launch {
                     try {
                         lifelistRepository.addSightingToLifeList(newSighting)
+                        Log.i("addSightingToLifeList", "Adding new sighting to life list")
 
                         clearSighting()
                     } catch (e: Exception) {
