@@ -19,7 +19,6 @@ class FriluftslivCompanionApp : Application() {
     override fun onCreate() {
         super.onCreate()
         setUpImmediateWorkManager()
-        // Hvordan legge til delay ?
         setUpWorkManager()
     }
 
