@@ -323,7 +323,10 @@ fun FloraFaunaSearchScreen(
                                 Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
                                 Text(
-                                    text = "${sliderPosition.toInt()} results",
+                                    text = stringResource(
+                                        R.string.n_results,
+                                        sliderPosition.toInt()
+                                    ),
                                     modifier = Modifier.align(Alignment.CenterVertically)
                                 )
                             }

@@ -173,4 +173,5 @@
     <string name="s_successfully_added_to_life_list">Sighting has ben successfully added to life-list</string>
     <string name="no_trips_in_this_radius">There are no trips in this radius</string>
     <string name="trip_successfully_added_to_trip_log">Trip successfully added to Trip Log</string>
+    <string name="n_results">%1$s results</string>
 </resources>

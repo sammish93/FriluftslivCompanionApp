@@ -171,5 +171,6 @@
     <string name="s_successfully_added_to_life_list">Observasjonen har blitt lagt til på livslisten</string>
     <string name="no_trips_in_this_radius">Det er ingen turer i denne radiusen</string>
     <string name="trip_successfully_added_to_trip_log">Turen ble vellykket lagt til i turloggen</string>
+    <string name="n_results">%1$s results</string>
 
 </resources>
