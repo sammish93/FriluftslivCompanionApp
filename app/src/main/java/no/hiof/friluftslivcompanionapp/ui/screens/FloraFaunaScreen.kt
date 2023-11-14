@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
@@ -54,11 +55,16 @@ fun FloraFaunaScreen(
     }
     val lifeList by viewModel.lifeList.collectAsState()
     val lifeListState by viewModel.lifeListState.collectAsState()
+    val isDbQueryCalled = remember { mutableStateOf(false) }
 
     val geocoder = Geocoder(LocalContext.current, Locale.getDefault())
 
     LaunchedEffect(true){
-        viewModel.getUserLifeList()
+        if (!isDbQueryCalled.value) {
+            viewModel.getUserLifeList()
+
+            isDbQueryCalled.value = true
+        }
     }
 
 
@@ -121,3 +127,4 @@ fun FloraFaunaScreen(
         }
     }
 }
+

@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
@@ -70,6 +71,7 @@ fun TripsRecentActivityScreen(
     val tripsState by tripsViewModel.tripsState.collectAsState()
 
     val recentActivity by tripsViewModel.recentActivity.collectAsState()
+    val isDbQueryCalled = remember { mutableStateOf(false) }
     val geocoder = Geocoder(LocalContext.current, Locale.getDefault())
 
    // val locPermissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -93,7 +95,11 @@ fun TripsRecentActivityScreen(
         }
 
          */
-        tripsViewModel.getRecentActivity()
+        if (!isDbQueryCalled.value) {
+            tripsViewModel.getRecentActivity()
+
+            isDbQueryCalled.value = true
+        }
     }
 
     when(tripsState.isLoading) {

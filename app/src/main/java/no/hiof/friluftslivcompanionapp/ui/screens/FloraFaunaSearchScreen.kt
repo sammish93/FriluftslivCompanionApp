@@ -118,30 +118,31 @@ fun FloraFaunaSearchScreen(
                 },
                 label = {
 
-                    if(!isNetworkAvailable()){
+                    if (!isNetworkAvailable()) {
                         Text(
                             text = stringResource(R.string.enable_network_to_search_for_a_place),
                             style = CustomTypography.labelLarge
                         )
 
-                    } else{
+                    } else {
                         Text(
-                        text = stringResource(R.string.search_search_for_a_place),
-                        style = CustomTypography.labelLarge
-                    )}
+                            text = stringResource(R.string.search_search_for_a_place),
+                            style = CustomTypography.labelLarge
+                        )
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.extraLarge,
                 colors = TextFieldDefaults.colors(),
                 leadingIcon = {
 
-                    if (!isNetworkAvailable()){
+                    if (!isNetworkAvailable()) {
                         Icon(
                             imageVector = Icons.Default.Warning,
                             contentDescription = stringResource(R.string.warningicon)
                         )
 
-                    } else{
+                    } else {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = stringResource(R.string.search_icon)
@@ -181,9 +182,11 @@ fun FloraFaunaSearchScreen(
                     WindowHeightSizeClass.Compact -> {
                         Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
-                        Row(modifier = Modifier
-                            .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
 
                             Row(
                                 modifier = Modifier
@@ -294,7 +297,8 @@ fun FloraFaunaSearchScreen(
                             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
                             Row(
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
                                     .weight(3f),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
@@ -512,7 +516,9 @@ fun FloraFaunaSearchScreen(
                                             header = species.speciesName
                                                 ?: stringResource(R.string.flora_fauna_unknown_common_name),
                                             subHeader = species.speciesNameScientific,
-                                            fetchImage = { it.photoUrl ?: "Photo of ${it.speciesName}" },
+                                            fetchImage = {
+                                                it.photoUrl ?: "Photo of ${it.speciesName}"
+                                            },
                                             onMoreInfoClick = {
                                                 viewModel.updateSelectedSpeciesInfo(species)
                                                 navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.name)
@@ -539,7 +545,9 @@ fun FloraFaunaSearchScreen(
                                             header = species.speciesName
                                                 ?: stringResource(R.string.flora_fauna_unknown_common_name),
                                             subHeader = species.speciesNameScientific,
-                                            fetchImage = { it.photoUrl ?: "Photo of ${it.speciesName}" },
+                                            fetchImage = {
+                                                it.photoUrl ?: "Photo of ${it.speciesName}"
+                                            },
                                             onMoreInfoClick = {
                                                 viewModel.updateSelectedSpeciesInfo(species)
                                                 navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.name)
@@ -551,10 +559,7 @@ fun FloraFaunaSearchScreen(
                         }
                     }
                 }
-
             }
         }
-
-
     }
 }
