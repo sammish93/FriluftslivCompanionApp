@@ -3,6 +3,7 @@ package no.hiof.friluftslivcompanionapp.ui.screens
 import android.Manifest
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
@@ -51,6 +53,7 @@ import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.data.network.remote.FirebaseConfigManager
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
+import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import no.hiof.friluftslivcompanionapp.ui.components.Carousel
 import no.hiof.friluftslivcompanionapp.ui.components.SnackbarWithCondition
 import no.hiof.friluftslivcompanionapp.ui.components.items.BirdItem
@@ -147,15 +150,23 @@ fun HomeScreen(
         }
     }
 
-    val currentPage = remember { mutableIntStateOf(0) }
+    // Key to retrieve from firebase config - you can also add conditionals but they are based on
+    // a user's phone language, not the app language. Doing it this way doesn't involve rewriting
+    // any code for userPreferences. If we had more than 2 supported languages this would be
+    // kinda cumbersome.
+    val stringKeyToRetrieve: String =
+        if (userState.language == SupportedLanguage.NORWEGIAN) "home_screen_text_no"
+        else "home_screen_text"
 
+    val currentPage = remember { mutableIntStateOf(0) }
     var textToShow by remember { mutableStateOf("Loading...") }
+
     LaunchedEffect(Unit) {
         FirebaseConfigManager.fetchConfigSingleton(0) { success ->
             textToShow = if (success) {
-                FirebaseConfigManager.getString("home_screen_text")
+                FirebaseConfigManager.getString(stringKeyToRetrieve)
             } else {
-                "Have a nice trip!"
+                "Happy adventuring!"
             }
         }
     }
@@ -174,8 +185,26 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(text = textToShow)
-                Spacer(modifier = Modifier.height(16.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            MaterialTheme.colorScheme.secondaryContainer,
+                            RoundedCornerShape(16.dp)
+                        )
+                ) {
+                    Text(
+                        text = textToShow,
+                        style = CustomTypography.titleLarge,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(8.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 Text(
                     text = stringResource(R.string.trips_in_your_area),
                     style = MaterialTheme.typography.headlineMedium,
