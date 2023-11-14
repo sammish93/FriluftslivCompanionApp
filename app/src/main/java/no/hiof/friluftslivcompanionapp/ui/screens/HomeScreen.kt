@@ -32,6 +32,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -49,6 +50,7 @@ import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
+import no.hiof.friluftslivcompanionapp.data.network.remote.FirebaseConfigManager
 import no.hiof.friluftslivcompanionapp.ui.components.Carousel
 import no.hiof.friluftslivcompanionapp.ui.components.SnackbarWithCondition
 import no.hiof.friluftslivcompanionapp.ui.components.items.BirdItem
@@ -147,6 +149,18 @@ fun HomeScreen(
 
     val currentPage = remember { mutableIntStateOf(0) }
 
+    var textToShow by remember { mutableStateOf("Loading...") }
+    LaunchedEffect(Unit) {
+        FirebaseConfigManager.fetchConfigSingleton(0) { success ->
+            if (success) {
+                textToShow = FirebaseConfigManager.getString("home_screen_text")
+            }
+            else {
+                textToShow = "Have a nice trip!"
+            }
+        }
+    }
+
     when (tripsState.isFailure || !locPermissionState.status.isGranted || !isNetworkAvailable()) {
         false -> {
             Column(
@@ -161,6 +175,8 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+                Text(text = textToShow)
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(R.string.trips_in_your_area),
                     style = MaterialTheme.typography.headlineMedium,

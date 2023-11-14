@@ -13,7 +13,7 @@ import dagger.hilt.android.HiltAndroidApp
 import no.hiof.friluftslivcompanionapp.data.messaging.backgroundtask.CheckWeatherJob
 import java.util.concurrent.TimeUnit
 
-
+// Reference: https://developer.android.com/guide/background/persistent/getting-started
 @HiltAndroidApp
 class FriluftslivCompanionApp : Application() {
     override fun onCreate() {

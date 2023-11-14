@@ -142,6 +142,13 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
 
+    // Firebase Cloud Messaging
+    implementation("com.google.firebase:firebase-messaging-ktx")
+
+    // Firebase Remote Config
+    implementation("com.google.firebase:firebase-config-ktx:21.5.0")
+    implementation("com.google.firebase:firebase-analytics-ktx:21.5.0")
+
     // Google Play - need to have this for google authentication
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
@@ -182,8 +189,5 @@ dependencies {
     // Geofire
     implementation("com.firebase:geofire-android-common:3.2.0")
     testImplementation("org.robolectric:robolectric:4.7.1")
-
-    // Firebase Cloud Messaging
-    implementation("com.google.firebase:firebase-messaging-ktx")
 
 }
