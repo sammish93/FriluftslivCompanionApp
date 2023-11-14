@@ -146,8 +146,8 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging-ktx")
 
     // Firebase Remote Config
-    implementation("com.google.firebase:firebase-config")
-    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-config-ktx:21.5.0")
+    implementation("com.google.firebase:firebase-analytics-ktx:21.5.0")
 
     // Google Play - need to have this for google authentication
     implementation("com.google.android.gms:play-services-auth:20.7.0")
