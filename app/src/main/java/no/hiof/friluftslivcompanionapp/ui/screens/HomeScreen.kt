@@ -49,8 +49,8 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
-import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.data.network.remote.FirebaseConfigManager
+import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.ui.components.Carousel
 import no.hiof.friluftslivcompanionapp.ui.components.SnackbarWithCondition
 import no.hiof.friluftslivcompanionapp.ui.components.items.BirdItem
@@ -152,11 +152,10 @@ fun HomeScreen(
     var textToShow by remember { mutableStateOf("Loading...") }
     LaunchedEffect(Unit) {
         FirebaseConfigManager.fetchConfigSingleton(0) { success ->
-            if (success) {
-                textToShow = FirebaseConfigManager.getString("home_screen_text")
-            }
-            else {
-                textToShow = "Have a nice trip!"
+            textToShow = if (success) {
+                FirebaseConfigManager.getString("home_screen_text")
+            } else {
+                "Have a nice trip!"
             }
         }
     }
