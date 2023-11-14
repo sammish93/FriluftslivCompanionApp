@@ -127,6 +127,9 @@ fun HomeScreen(
             if (success) {
                 textToShow = FirebaseConfigManager.getString("home_screen_text")
             }
+            else {
+                textToShow = "Have a nice trip!"
+            }
         }
     }
 
