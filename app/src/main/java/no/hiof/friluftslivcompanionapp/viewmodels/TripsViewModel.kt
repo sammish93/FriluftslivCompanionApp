@@ -301,6 +301,7 @@ class TripsViewModel @Inject constructor(
             viewModelScope.launch {
                 try {
                     val activities = activityRepository.getUserTripActivities()
+                        .sortedByDescending { it.date }
                     _recentActivity.value = activities
                 } catch (e: Exception) {
                     Log.e(TAG, "Exception fetching recent activities: ${e.message}")
