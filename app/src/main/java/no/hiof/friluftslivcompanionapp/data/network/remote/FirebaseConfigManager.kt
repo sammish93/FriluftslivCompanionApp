@@ -5,7 +5,6 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 
-// Reference: https://firebase.google.com/docs/remote-config/get-started?authuser=0&platform=android
 /**
  * Object to handle Firebase Remote Config-operations.
  *
