@@ -120,8 +120,8 @@ fun HomeScreen(
     }
 
     val currentPage = remember { mutableIntStateOf(0) }
-    var textToShow by remember { mutableStateOf("Loading...") }
 
+    var textToShow by remember { mutableStateOf("Loading...") }
     LaunchedEffect(Unit) {
         FirebaseConfigManager.fetchConfigSingleton(0) { success ->
             if (success) {
@@ -130,8 +130,6 @@ fun HomeScreen(
         }
     }
 
-    Text(text = textToShow)
-    Spacer(modifier = Modifier.height(8.dp))
     when (tripsState.isFailure || !locPermissionState.status.isGranted || !isNetworkAvailable()) {
         false -> {
             Column(
@@ -146,6 +144,8 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+                Text(text = textToShow)
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(R.string.trips_in_your_area),
                     style = MaterialTheme.typography.headlineMedium,

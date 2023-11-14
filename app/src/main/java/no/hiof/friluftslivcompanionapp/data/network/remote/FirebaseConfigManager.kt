@@ -6,6 +6,14 @@ import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 
 // Reference: https://firebase.google.com/docs/remote-config/get-started?authuser=0&platform=android
+/**
+ * Object to handle Firebase Remote Config-operations.
+ *
+ * This object offers functionality to retrieve and activate configuration values from Firebase Remote Config.
+ * It also contains a function to retrieve a particular configuration string based on a key.
+ *
+ * Reference: [Firebase Remote Config documentation](https://firebase.google.com/docs/remote-config/get-started?authuser=0&platform=android)
+ */
 object FirebaseConfigManager {
 
     fun fetchConfigSingleton(fetchIntervalInSeconds: Long, onComplete: (Boolean) -> Unit) {
