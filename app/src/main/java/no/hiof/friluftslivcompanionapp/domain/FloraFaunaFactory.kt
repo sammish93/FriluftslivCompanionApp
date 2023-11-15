@@ -1,6 +1,5 @@
 package no.hiof.friluftslivcompanionapp.domain
 
-import android.util.Log
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
 import no.hiof.friluftslivcompanionapp.models.FloraFauna
@@ -11,15 +10,12 @@ import java.util.Date
 object FloraFaunaFactory {
     fun createSighting(species: FloraFauna, date: Date, location: Location): FloraFaunaSighting? {
         if (date > Date()) {
-            //println("Error: The target date cannot be in the future.")
-            Log.e("createSighting", "Error: The target date cannot be in the future.")
+            println("Error: The target date cannot be in the future.")
 
             return null
         }
 
-        // Validating the location to ensure it is valid
         if (!isLocationValid(location)) {
-            Log.e("createSighting","Error: Invalid location.")
             return null
         }
 
@@ -28,7 +24,7 @@ object FloraFaunaFactory {
         location.geoHash = geohash
 
         return FloraFaunaSighting(species = species, date = date, location = location).also {
-        Log.d("createSighting", "Sighting created successfully.")}
+        }
 
     }
 
@@ -44,6 +40,3 @@ object FloraFaunaFactory {
     }
 }
 
-//If we need for the whole world, use this:
-//val validLatitudeRange = -90.0..90.0
-//val validLongitudeRange = -180.0..180.0
