@@ -15,7 +15,7 @@ import java.util.Date
 import javax.inject.Inject
 
 
-//All the codes in the repository folder were inspired by the firebase documentation
+//All the codes in the repository folder were inspired by the firebase documentation and help from chatGPt 3.5
 //https://firebase.google.com/docs/firestore/manage-data/structure-data
 class ActivityRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
