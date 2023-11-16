@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
@@ -54,11 +55,16 @@ fun FloraFaunaScreen(
     }
     val lifeList by viewModel.lifeList.collectAsState()
     val lifeListState by viewModel.lifeListState.collectAsState()
+    val isDbQueryCalled = remember { mutableStateOf(false) }
 
     val geocoder = Geocoder(LocalContext.current, Locale.getDefault())
 
     LaunchedEffect(true){
-        viewModel.getUserLifeList()
+        if (!isDbQueryCalled.value) {
+            viewModel.getUserLifeList()
+
+            isDbQueryCalled.value = true
+        }
     }
 
 
@@ -66,7 +72,7 @@ fun FloraFaunaScreen(
         true -> CustomLoadingScreen()
         else -> {
             if (!isNetworkAvailable()) {
-                ErrorView(message = stringResource(R.string.no_internett_connection))
+                ErrorView(message = stringResource(R.string.no_internet_connection))
             } else if (lifeListState.isFailure) {
                 ErrorView(message = stringResource(R.string.error_retrieving_api_success_response))
             } else {
@@ -111,7 +117,7 @@ fun FloraFaunaScreen(
                                 },
                                 onMoreInfoClick = {
                                     viewModel.updateSelectedSpeciesInfo(item.sightings.species)
-                                    navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
+                                    navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.name)
                                 }
                             )
                         }
@@ -121,3 +127,4 @@ fun FloraFaunaScreen(
         }
     }
 }
+

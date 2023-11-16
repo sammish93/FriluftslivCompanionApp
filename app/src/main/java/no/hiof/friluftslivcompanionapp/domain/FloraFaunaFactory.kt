@@ -11,12 +11,11 @@ object FloraFaunaFactory {
     fun createSighting(species: FloraFauna, date: Date, location: Location): FloraFaunaSighting? {
         if (date > Date()) {
             println("Error: The target date cannot be in the future.")
+
             return null
         }
 
-        // Validating the location to ensure it is valid
         if (!isLocationValid(location)) {
-            println("Error: Invalid location.")
             return null
         }
 
@@ -24,7 +23,9 @@ object FloraFaunaFactory {
 
         location.geoHash = geohash
 
-        return FloraFaunaSighting(species = species, date = date, location = location)
+        return FloraFaunaSighting(species = species, date = date, location = location).also {
+        }
+
     }
 
     private fun isLocationValid(location: Location): Boolean {
@@ -39,6 +40,3 @@ object FloraFaunaFactory {
     }
 }
 
-//If we need for the whole world, use this:
-//val validLatitudeRange = -90.0..90.0
-//val validLongitudeRange = -180.0..180.0

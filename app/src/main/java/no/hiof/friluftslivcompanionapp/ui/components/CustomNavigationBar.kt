@@ -11,9 +11,12 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalAbsoluteTonalElevation
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -62,9 +65,17 @@ fun CustomNavigationBar(navController: NavController) {
 
             NavigationBarItem(
                 icon = { Icon(icon, contentDescription = contentDescription) },
-                //TODO if test to determine whether to display navbar label in English or Norwegian.
                 label = { Text(stringResource(screenPage.navBarLabel)) },
-                selected = currentDestination?.hierarchy?.any { it.route == screenPage.route } == true,
+                selected = if (screenPage == Screen.HOME) {
+                    currentDestination?.route == Screen.HOME.name
+                } else {
+                    currentDestination?.hierarchy?.any { it.route == screenPage.route } == true
+                },
+                colors = androidx.compose.material3.NavigationBarItemDefaults
+                    .colors(
+                        selectedIconColor = MaterialTheme.colorScheme.tertiary,
+                        indicatorColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    ),
                 onClick = {
                     navController.navigate(screenPage.name) {
                         // Pop up to the start destination of the graph to

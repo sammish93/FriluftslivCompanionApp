@@ -218,6 +218,7 @@ class FloraFaunaViewModel @Inject constructor(
                 viewModelScope.launch {
                     try {
                         lifelistRepository.addSightingToLifeList(newSighting)
+                        Log.i("addSightingToLifeList", "Adding new sighting to life list")
 
                         clearSighting()
                     } catch (e: Exception) {
@@ -239,6 +240,7 @@ class FloraFaunaViewModel @Inject constructor(
             _lifeListState.value = _lifeListState.value.copy(isLoading = true)
             try {
                 val listItems = lifelistRepository.getAllItemsInLifeList()
+                    .sortedByDescending { it.sightings.date }
                 _lifeList.value = listItems
                 _lifeListState.value = LifeListState(lifeList = listItems, isLoading = false)
 

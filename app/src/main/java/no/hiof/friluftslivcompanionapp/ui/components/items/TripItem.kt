@@ -1,6 +1,8 @@
 package no.hiof.friluftslivcompanionapp.ui.components.items
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -19,21 +21,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.models.Hike
+import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 
 @Composable
-fun TripItem(trip: Hike) {
+fun TripItem(trip: Hike, height: Dp, aspectRatio: Float, onClick: () -> Unit, drawableRes: Int) {
     Card(
         modifier = Modifier
             .padding(2.dp)
             .fillMaxWidth()
-            .height(200.dp)
-            .aspectRatio(0.59f),
+            .height(height)
+            .aspectRatio(aspectRatio)
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Box(
@@ -42,45 +48,54 @@ fun TripItem(trip: Hike) {
                 .fillMaxSize()
         ) {
             Image(
-                painter = painterResource(id = R.drawable.hike),
+                painter = painterResource(id = drawableRes),
                 contentDescription = "Hiking Image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
-            Text(
-                text = "${trip.description?.replaceFirstChar { it.uppercase() }}",
-                color = MaterialTheme.colorScheme.surface,
-                style = MaterialTheme.typography.labelLarge,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.ExtraBold,
+
+            Box(
                 modifier = Modifier
                     .align(Alignment.TopStart)
-                    .padding(8.dp),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Column(
-                modifier = Modifier.align(Alignment.BottomStart)
+                    .padding(8.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.7f))
             ) {
-                val roundedDistance = String.format("%.1f", trip.distanceKm)
                 Text(
-                    text = "Distance: $roundedDistance km",
-                    color = MaterialTheme.colorScheme.surface,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.ExtraBold,
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                )
-                Text(
-                    text = "Duration: ${trip.duration?.toMinutes()} min",
-                    color = MaterialTheme.colorScheme.surface,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.ExtraBold,
-                    modifier = Modifier
-                        .padding(start = 8.dp, bottom = 8.dp)
+                    text = "${trip.description?.replaceFirstChar { it.uppercase() }}",
+                    style = CustomTypography.headlineSmall,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.padding(4.dp),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
 
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(8.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.7f))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(4.dp)
+                ) {
+                    val roundedDistance = String.format("%.1f", trip.distanceKm)
+                    val durationInMins = trip.duration?.toMinutes().toString()
+                    Text(
+                        text = stringResource(R.string.distance_km, roundedDistance),
+                        style = CustomTypography.titleSmall,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                    Text(
+                        text = stringResource(R.string.duration_min, durationInMins),
+                        style = CustomTypography.titleSmall,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                }
+            }
         }
     }
 }

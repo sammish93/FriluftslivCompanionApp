@@ -133,8 +133,10 @@ class BirdObservations private constructor() {
                 if (result is Result.Success) {
                     result.value.forEach { bird ->
                         if (counter < maxResult) {
-                            allObservations.add(bird)
-                            counter++
+                            if (!allObservations.contains(bird)) {
+                                allObservations.add(bird)
+                                counter++
+                            }
                         }
                     }
                 }

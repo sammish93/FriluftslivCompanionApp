@@ -22,9 +22,11 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
@@ -88,6 +90,7 @@ fun FloraFaunaSearchScreen(
         capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
     }
 
+    var sliderPosition by remember { mutableFloatStateOf(10f) }
     var text by remember { mutableStateOf("") }
     var speciesResultsShown by remember { mutableStateOf(false) }
     var resultListShown by remember { mutableStateOf(false) }
@@ -115,30 +118,31 @@ fun FloraFaunaSearchScreen(
                 },
                 label = {
 
-                    if(!isNetworkAvailable()){
+                    if (!isNetworkAvailable()) {
                         Text(
                             text = stringResource(R.string.enable_network_to_search_for_a_place),
                             style = CustomTypography.labelLarge
                         )
 
-                    } else{
+                    } else {
                         Text(
-                        text = stringResource(R.string.search_search_for_a_place),
-                        style = CustomTypography.labelLarge
-                    )}
+                            text = stringResource(R.string.search_search_for_a_place),
+                            style = CustomTypography.labelLarge
+                        )
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.extraLarge,
                 colors = TextFieldDefaults.colors(),
                 leadingIcon = {
 
-                    if (!isNetworkAvailable()){
+                    if (!isNetworkAvailable()) {
                         Icon(
                             imageVector = Icons.Default.Warning,
                             contentDescription = stringResource(R.string.warningicon)
                         )
 
-                    } else{
+                    } else {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = stringResource(R.string.search_icon)
@@ -173,184 +177,387 @@ fun FloraFaunaSearchScreen(
             }
 
             else -> {
-                Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                when (userState.windowSizeClass.heightSizeClass) {
+                    // Layout of bird results when screen width is compact. Single column.
+                    WindowHeightSizeClass.Compact -> {
+                        Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    // Button to send an API request to eBird to get birds in user's GPS area.
-                    Button(
-                        onClick = {
-                            if (!locations.isNullOrEmpty()) {
-                                val location = locations[0]
-
-                                val locality = location.adminArea
-
-                                viewModel.viewModelScope.launch {
-                                    val (regionCode) = LocationFormatter.getRegionCodeByLocation(
-                                        locality
-                                    )
-                                    Log.i("Wildlife locationSearch","Found your location: $regionCode")
-
-                                    viewModel.searchSpeciesByLocation(
-                                        regionCode,
-                                        20,
-                                        userState.language
-                                    )
-                                }
-                            } else {
-                                Log.i("Wildlife locationSearch","Unable to get location. Using default location: Oslo")
-                                viewModel.viewModelScope.launch {
-                                    val (regionCode, message) = LocationFormatter.getRegionCodeByLocation(
-                                        "Oslo"
-                                    )
-                                    Log.i("Wildlife locationSearch",message)
-                                    viewModel.searchSpeciesByLocation(
-                                        regionCode,
-                                        20,
-                                        userState.language
-                                    )
-                                }
-                            }
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .height(40.dp),
-                        // This button is greyed out unless a non-default GPS location can be
-                        // retrieved and the location is in Norway.
-                        enabled = locPermissionState.status.isGranted &&
-                                !locations.isNullOrEmpty() && locations[0].countryCode == "NO" &&
-                                userState.lastKnownLocation != null &&
-                                isNetworkAvailable()
-                    ) {
-                        Text(text = stringResource(R.string.flora_fauna_use_my_location))
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    // Button to send an API request to eBird to get birds in the search box area.
-                    Button(
-                        onClick = {
-                            val locality = placesState?.county ?: "Oslo"
-
-                            viewModel.viewModelScope.launch {
-                                val (regionCode) = LocationFormatter.getRegionCodeByLocation(
-                                    locality
-                                )
-                                Log.i("Wildlife search location","Found the searched location: $regionCode")
-
-                                viewModel.searchSpeciesByLocation(
-                                    regionCode,
-                                    20,
-                                    userState.language
-                                )
-                            }
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .height(40.dp),
-                        // This location is enabled only if the user selected a valid location from
-                        // the Places search box.
-                        enabled = text.isNotEmpty()
-
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Search, contentDescription = stringResource(
-                                R.string.search
-                            ),
+                        Row(
                             modifier = Modifier
-                                .height(40.dp)
-                                .width(40.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
 
-                        )
-                    }
-                }
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(2f),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                // Button to send an API request to eBird to get birds in user's GPS area.
+                                Button(
+                                    onClick = {
+                                        if (!locations.isNullOrEmpty()) {
+                                            val location = locations[0]
 
-                Spacer(modifier = Modifier.padding(vertical = 8.dp))
-            }
-        }
+                                            val locality = location.adminArea
 
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            when (floraFaunaState.isLoading) {
-                true -> CustomLoadingScreen()
-                else -> if ((!locPermissionState.status.isGranted || userState.lastKnownLocation == null) && text.isEmpty()) {
-                    ErrorView(message = stringResource(R.string.error_no_gps_location_found))
-                    SnackbarHost(
-                        hostState = snackbarHostState,
-                        modifier = Modifier.align(Alignment.BottomCenter)
-                    )
+                                            viewModel.viewModelScope.launch {
+                                                val (regionCode) = LocationFormatter.getRegionCodeByLocation(
+                                                    locality
+                                                )
+                                                Log.i(
+                                                    "Wildlife locationSearch",
+                                                    "Found your location: $regionCode"
+                                                )
 
-                    SnackbarWithCondition(
-                        snackbarHostState = snackbarHostState,
-                        message = stringResource(R.string.not_share_location_msg),
-                        actionLabel = stringResource(R.string.understood),
-                        condition = !locPermissionState.status.isGranted && text.isEmpty()
-                    )
+                                                viewModel.searchSpeciesByLocation(
+                                                    regionCode,
+                                                    sliderPosition.toInt(),
+                                                    userState.language
+                                                )
+                                            }
+                                        } else {
+                                            Log.i(
+                                                "Wildlife locationSearch",
+                                                "Unable to get location. Using default location: Oslo"
+                                            )
+                                            viewModel.viewModelScope.launch {
+                                                val (regionCode, message) = LocationFormatter.getRegionCodeByLocation(
+                                                    "Oslo"
+                                                )
+                                                Log.i("Wildlife locationSearch", message)
+                                                viewModel.searchSpeciesByLocation(
+                                                    regionCode,
+                                                    20,
+                                                    userState.language
+                                                )
+                                            }
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxWidth()
+                                        .height(40.dp),
+                                    // This button is greyed out unless a non-default GPS location can be
+                                    // retrieved and the location is in Norway.
+                                    enabled = locPermissionState.status.isGranted &&
+                                            !locations.isNullOrEmpty() && locations[0].countryCode == "NO" &&
+                                            userState.lastKnownLocation != null &&
+                                            isNetworkAvailable()
+                                ) {
+                                    Text(text = stringResource(R.string.flora_fauna_use_my_location))
+                                }
 
-                } else if (floraFaunaState.isFailure) {
-                    ErrorView(message = stringResource(R.string.error_retrieving_api_success_response))
+                                Spacer(modifier = Modifier.width(8.dp))
 
-                } else {
-                    // Displays eBird API results, complete with MediaWiki pictures.
-                    when (userState.windowSizeClass.widthSizeClass) {
-                        // Layout of bird results when screen width is compact. Single column.
-                        WindowWidthSizeClass.Compact -> {
-                            ListComponent(floraFaunaState.speciesResults) { species, textStyle ->
+                                // Button to send an API request to eBird to get birds in the search box area.
+                                Button(
+                                    onClick = {
+                                        val locality = placesState?.county ?: "Oslo"
 
-                                val subclass = FloraFaunaMapper.mapClassToEnum(species)
-                                val subclassToString =
-                                    subclass?.let { stringResource(it.label) }
-                                        ?: stringResource(R.string.unknown)
+                                        viewModel.viewModelScope.launch {
+                                            val (regionCode) = LocationFormatter.getRegionCodeByLocation(
+                                                locality
+                                            )
+                                            Log.i(
+                                                "Wildlife search location",
+                                                "Found the searched location: $regionCode"
+                                            )
 
-                                Spacer(modifier = Modifier.height(6.dp))
+                                            viewModel.searchSpeciesByLocation(
+                                                regionCode,
+                                                20,
+                                                userState.language
+                                            )
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxWidth()
+                                        .height(40.dp),
+                                    // This location is enabled only if the user selected a valid location from
+                                    // the Places search box.
+                                    enabled = text.isNotEmpty()
 
-                                FloraFaunaCard(
-                                    species,
-                                    textStyle,
-                                    title = subclassToString,
-                                    header = species.speciesName
-                                        ?: stringResource(R.string.flora_fauna_unknown_common_name),
-                                    subHeader = species.speciesNameScientific,
-                                    fetchImage = { it.photoUrl ?: "Photo of ${it.speciesName}" },
-                                    onMoreInfoClick = {
-                                        viewModel.updateSelectedSpeciesInfo(species)
-                                        navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
-                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Search,
+                                        contentDescription = stringResource(
+                                            R.string.search
+                                        ),
+                                        modifier = Modifier
+                                            .height(40.dp)
+                                            .width(40.dp)
+
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(3f),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Slider(
+                                    value = sliderPosition,
+                                    onValueChange = {
+                                        sliderPosition = when {
+                                            it <= 3f -> 1f
+                                            it <= 8f -> 5f
+                                            it <= 13f -> 10f
+                                            it <= 18f -> 15f
+                                            it <= 23f -> 20f
+                                            it <= 28f -> 25f
+                                            else -> 30f
+                                        }
+                                    },
+                                    steps = 100,
+                                    valueRange = 1f..30f,
+                                    modifier = Modifier.weight(1f)
                                 )
 
-                                Spacer(modifier = Modifier.height(6.dp))
+                                Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+
+                                Text(
+                                    text = stringResource(
+                                        R.string.n_results,
+                                        sliderPosition.toInt()
+                                    ),
+                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                )
+                            }
+                        }
+                    }
+
+                    else -> {
+                        Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            // Button to send an API request to eBird to get birds in user's GPS area.
+                            Button(
+                                onClick = {
+                                    if (!locations.isNullOrEmpty()) {
+                                        val location = locations[0]
+
+                                        val locality = location.adminArea
+
+                                        viewModel.viewModelScope.launch {
+                                            val (regionCode) = LocationFormatter.getRegionCodeByLocation(
+                                                locality
+                                            )
+                                            Log.i(
+                                                "Wildlife locationSearch",
+                                                "Found your location: $regionCode"
+                                            )
+
+                                            viewModel.searchSpeciesByLocation(
+                                                regionCode,
+                                                sliderPosition.toInt(),
+                                                userState.language
+                                            )
+                                        }
+                                    } else {
+                                        Log.i(
+                                            "Wildlife locationSearch",
+                                            "Unable to get location. Using default location: Oslo"
+                                        )
+                                        viewModel.viewModelScope.launch {
+                                            val (regionCode, message) = LocationFormatter.getRegionCodeByLocation(
+                                                "Oslo"
+                                            )
+                                            Log.i("Wildlife locationSearch", message)
+                                            viewModel.searchSpeciesByLocation(
+                                                regionCode,
+                                                20,
+                                                userState.language
+                                            )
+                                        }
+                                    }
+                                },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxWidth()
+                                    .height(40.dp),
+                                // This button is greyed out unless a non-default GPS location can be
+                                // retrieved and the location is in Norway.
+                                enabled = locPermissionState.status.isGranted &&
+                                        !locations.isNullOrEmpty() && locations[0].countryCode == "NO" &&
+                                        userState.lastKnownLocation != null &&
+                                        isNetworkAvailable()
+                            ) {
+                                Text(text = stringResource(R.string.flora_fauna_use_my_location))
+                            }
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            // Button to send an API request to eBird to get birds in the search box area.
+                            Button(
+                                onClick = {
+                                    val locality = placesState?.county ?: "Oslo"
+
+                                    viewModel.viewModelScope.launch {
+                                        val (regionCode) = LocationFormatter.getRegionCodeByLocation(
+                                            locality
+                                        )
+                                        Log.i(
+                                            "Wildlife search location",
+                                            "Found the searched location: $regionCode"
+                                        )
+
+                                        viewModel.searchSpeciesByLocation(
+                                            regionCode,
+                                            20,
+                                            userState.language
+                                        )
+                                    }
+                                },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxWidth()
+                                    .height(40.dp),
+                                // This location is enabled only if the user selected a valid location from
+                                // the Places search box.
+                                enabled = text.isNotEmpty()
+
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Search,
+                                    contentDescription = stringResource(
+                                        R.string.search
+                                    ),
+                                    modifier = Modifier
+                                        .height(40.dp)
+                                        .width(40.dp)
+
+                                )
                             }
                         }
 
-                        else -> {
-                            // Layout of bird results when screen width is wide. Two columns.
-                            ListComponentWide(floraFaunaState.speciesResults) { species, textStyle ->
+                        Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
-                                val subclass = FloraFaunaMapper.mapClassToEnum(species)
-                                val subclassToString =
-                                    subclass?.let { stringResource(it.label) }
-                                        ?: stringResource(R.string.unknown)
-
-                                FloraFaunaCard(
-                                    species,
-                                    textStyle,
-                                    title = subclassToString,
-                                    header = species.speciesName
-                                        ?: stringResource(R.string.flora_fauna_unknown_common_name),
-                                    subHeader = species.speciesNameScientific,
-                                    fetchImage = { it.photoUrl ?: "Photo of ${it.speciesName}" },
-                                    onMoreInfoClick = {
-                                        viewModel.updateSelectedSpeciesInfo(species)
-                                        navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.route)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Slider(
+                                value = sliderPosition,
+                                onValueChange = {
+                                    sliderPosition = when {
+                                        it <= 3f -> 1f
+                                        it <= 8f -> 5f
+                                        it <= 13f -> 10f
+                                        it <= 18f -> 15f
+                                        it <= 23f -> 20f
+                                        it <= 28f -> 25f
+                                        else -> 30f
                                     }
-                                )
+                                },
+                                steps = 100,
+                                valueRange = 1f..30f,
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+
+                            Text(
+                                text = "${sliderPosition.toInt()} results",
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            )
+                        }
+                    }
+                }
+
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    when (floraFaunaState.isLoading) {
+                        true -> CustomLoadingScreen()
+                        else -> if ((!locPermissionState.status.isGranted || userState.lastKnownLocation == null) && text.isEmpty()) {
+                            ErrorView(message = stringResource(R.string.error_no_gps_location_found))
+                            SnackbarHost(
+                                hostState = snackbarHostState,
+                                modifier = Modifier.align(Alignment.BottomCenter)
+                            )
+
+                            SnackbarWithCondition(
+                                snackbarHostState = snackbarHostState,
+                                message = stringResource(R.string.not_share_location_msg),
+                                actionLabel = stringResource(R.string.understood),
+                                condition = !locPermissionState.status.isGranted && text.isEmpty()
+                            )
+
+                        } else if (floraFaunaState.isFailure) {
+                            ErrorView(message = stringResource(R.string.error_retrieving_api_success_response))
+
+                        } else {
+                            // Displays eBird API results, complete with MediaWiki pictures.
+                            when (userState.windowSizeClass.widthSizeClass) {
+                                // Layout of bird results when screen width is compact. Single column.
+                                WindowWidthSizeClass.Compact -> {
+                                    ListComponent(floraFaunaState.speciesResults) { species, textStyle ->
+
+                                        val subclass = FloraFaunaMapper.mapClassToEnum(species)
+                                        val subclassToString =
+                                            subclass?.let { stringResource(it.label) }
+                                                ?: stringResource(R.string.unknown)
+
+                                        Spacer(modifier = Modifier.height(6.dp))
+
+                                        FloraFaunaCard(
+                                            species,
+                                            textStyle,
+                                            title = subclassToString,
+                                            header = species.speciesName
+                                                ?: stringResource(R.string.flora_fauna_unknown_common_name),
+                                            subHeader = species.speciesNameScientific,
+                                            fetchImage = {
+                                                it.photoUrl ?: "Photo of ${it.speciesName}"
+                                            },
+                                            onMoreInfoClick = {
+                                                viewModel.updateSelectedSpeciesInfo(species)
+                                                navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.name)
+                                            }
+                                        )
+
+                                        Spacer(modifier = Modifier.height(6.dp))
+                                    }
+                                }
+
+                                else -> {
+                                    // Layout of bird results when screen width is wide. Two columns.
+                                    ListComponentWide(floraFaunaState.speciesResults) { species, textStyle ->
+
+                                        val subclass = FloraFaunaMapper.mapClassToEnum(species)
+                                        val subclassToString =
+                                            subclass?.let { stringResource(it.label) }
+                                                ?: stringResource(R.string.unknown)
+
+                                        FloraFaunaCard(
+                                            species,
+                                            textStyle,
+                                            title = subclassToString,
+                                            header = species.speciesName
+                                                ?: stringResource(R.string.flora_fauna_unknown_common_name),
+                                            subHeader = species.speciesNameScientific,
+                                            fetchImage = {
+                                                it.photoUrl ?: "Photo of ${it.speciesName}"
+                                            },
+                                            onMoreInfoClick = {
+                                                viewModel.updateSelectedSpeciesInfo(species)
+                                                navController.navigate(Screen.FLORA_FAUNA_ADDITIONAL_INFO.name)
+                                            }
+                                        )
+                                    }
+                                }
                             }
                         }
                     }

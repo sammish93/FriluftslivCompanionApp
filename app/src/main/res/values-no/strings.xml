@@ -135,7 +135,7 @@
     <string name="no_gps_location_found_using_default_oslo">Ingen GPS-posisjon funnet. Bruker standard:Oslo</string>
     <string name="not_share_location_msg_TripScreen">Aktiver lokasjonen din for å bruke kartet i ditt område.</string>
     <string name="noGpsMsg_CreateTripScreen">Du deler ikke lokasjon, aktiver for å opprette tur i ditt område.</string>
-    <string name="no_internett_connection">"Ingen internettforbindelse.</string>
+    <string name="no_internet_connection">"Ingen internettforbindelse.</string>
     <string name="warning">Advarsel</string>
     <string name="no_internett_no_search">Ingen internettforbindelse. Du kan ikke søke i dette området.</string>
     <string name="enable_network_to_search_for_a_place">Aktiver internettforbindelse for å søke etter et sted.</string>
@@ -155,7 +155,22 @@
     <string name="search_this_area">Søk i dette området</string>
     <string name="trips_in_your_area">Turer i ditt nærområde</string>
     <string name="there_are_currently_no_trips_in_your_area">Det er for øyeblikket ingen turer i ditt område.</string>
-    <string name="recent_sightings">Nylige observasjoner.</string>
-    <string name="recent_activity">Nylig aktivitet.</string>
+    <string name="recent_sightings">Nylige observasjoner</string>
+    <string name="recent_activity">Nylig aktivitet</string>
+    <string name="no_trips_can_be_found_in_your_area_because_you_aren_t_currently_sharing_your_location">Kan ikke hente turer i ditt nærområdet, fordi du for øyeblikket ikke deler din posisjon.</string>
+    <string name="sightings_in_your_area">Sightings in your area</string>
+    <string name="no_sightings_can_be_found_in_your_area_because_you_aren_t_currently_sharing_your_location">Kan ikke hente observasjoner i ditt nærområdet, fordi du for øyeblikket ikke deler din posisjon.</string>
+    <string name="there_are_currently_no_sightings_in_your_area">Det er for øyeblikket ingen observasjoner i ditt område</string>
+    <string name="you_currently_have_no_sightings_in_your_lifelist">Du har for øyeblikket ingen observasjoner i din livsliste</string>
+    <string name="you_currently_have_no_trips_in_your_trip_log">Du har for øyeblikket ingen turer i din tur logg</string>
+    <string name="distance_km">Lengde: %1$s km</string>
+    <string name="duration_min">Varighet: %1$s min</string>
+    <string name="date_seen">Dato observert: %1$s</string>
+    <string name="unknown_location">Ukjent posisjon</string>
+    <string name="the_trip_is_now_available_and_displayed_on_the_map">Turen er nå tilgjengelig og vises på kartet.</string>
+    <string name="s_successfully_added_to_life_list">Observasjonen har blitt lagt til på livslisten</string>
+    <string name="no_trips_in_this_radius">Det er ingen turer i denne radiusen</string>
+    <string name="trip_successfully_added_to_trip_log">Turen ble vellykket lagt til i turloggen</string>
+    <string name="n_results">%1$s results</string>
 
 </resources>

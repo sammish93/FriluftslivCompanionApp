@@ -18,7 +18,6 @@ import java.util.Date
 class TripFactoryTest {
     @Test
     fun testConvertTripDifficultyFromIntToStringEnglish() {
-        // Test for English language
         assertEquals("Very Easy", TripFactory.convertTripDifficultyFromIntToString(1, SupportedLanguage.ENGLISH))
         assertEquals("Easy", TripFactory.convertTripDifficultyFromIntToString(2, SupportedLanguage.ENGLISH))
         assertEquals("Moderate", TripFactory.convertTripDifficultyFromIntToString(3, SupportedLanguage.ENGLISH))
@@ -29,7 +28,6 @@ class TripFactoryTest {
 
     @Test
     fun testConvertTripDifficultyFromIntToStringNorwegian() {
-        // Test for Norwegian language
         assertEquals("Veldig Lett", TripFactory.convertTripDifficultyFromIntToString(1, SupportedLanguage.NORWEGIAN))
         assertEquals("Lett", TripFactory.convertTripDifficultyFromIntToString(2, SupportedLanguage.NORWEGIAN))
         assertEquals("Middels", TripFactory.convertTripDifficultyFromIntToString(3, SupportedLanguage.NORWEGIAN))
@@ -38,10 +36,9 @@ class TripFactoryTest {
         assertEquals("UNKNOWN", TripFactory.convertTripDifficultyFromIntToString(0, SupportedLanguage.NORWEGIAN))
     }
 
-    /* Required to add German and Spanish to enum class*/
+
     @Test
     fun testConvertTripDifficultyFromIntToStringUnknownLocale() {
-        // Test for an unknown locale
         assertEquals("UNKNOWN", TripFactory.convertTripDifficultyFromIntToString(3, SupportedLanguage.GERMAN))
         assertEquals("UNKNOWN", TripFactory.convertTripDifficultyFromIntToString(1, SupportedLanguage.SPANISH))
     }

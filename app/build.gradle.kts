@@ -108,6 +108,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -140,6 +141,13 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
+
+    // Firebase Cloud Messaging
+    implementation("com.google.firebase:firebase-messaging-ktx")
+
+    // Firebase Remote Config
+    implementation("com.google.firebase:firebase-config-ktx:21.5.0")
+    implementation("com.google.firebase:firebase-analytics-ktx:21.5.0")
 
     // Google Play - need to have this for google authentication
     implementation("com.google.android.gms:play-services-auth:20.7.0")
@@ -180,7 +188,6 @@ dependencies {
 
     // Geofire
     implementation("com.firebase:geofire-android-common:3.2.0")
-
     testImplementation("org.robolectric:robolectric:4.7.1")
 
 }

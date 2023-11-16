@@ -41,15 +41,12 @@ class DateFormatterTest {
 
     @Test
     fun formatDurationToPrettyString_returnsExpectedResult() {
-        // Arrange
         val duration = Duration.ofHours(1).plusMinutes(30)
         val hoursLocalised = "Hours"
         val minutesLocalised = "Minutes"
 
-        // Act
         val result = DateFormatter.formatDurationToPrettyString(duration, hoursLocalised, minutesLocalised)
 
-        // Assert
         val expected = "1 Hours 30 Minutes"
         assertEquals(expected, result)
     }

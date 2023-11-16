@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
+import android.util.Log
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -68,13 +69,13 @@ object TripFactory {
 
     fun createTripActivity(trip: Trip, date: Date): TripActivity? {
         if (trip == null || date == null) {
-            println("Error: Trip or date is null")
+            Log.e("TripFactory","Error: Trip or date is null")
             return null
         }
         if (trip.route.isEmpty() || trip.description.isNullOrEmpty() || trip.duration == null ||
             trip.distanceKm == null || trip.difficulty == null
         ) {
-            println("Error: Trip data is invalid")
+            Log.e("TripFactory", "Error: Trip data is invalid")
             return null
         }
 

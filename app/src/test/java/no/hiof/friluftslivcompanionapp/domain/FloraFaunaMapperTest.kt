@@ -11,14 +11,11 @@ import org.mockito.Mockito
 class FloraFaunaMapperTest{
     @Test
     fun testMapClassToEnum_Bird_ReturnsBirdEnum() {
-        // Arrange
         val bird = Bird("Sparrow", "Passeridae", 100,
             "A small bird", "sparrow.jpg", Location(40.0, 20.0))
 
-        // Act
         val result = FloraFaunaMapper.mapClassToEnum(bird)
 
-        // Assert
         assertEquals(FloraFaunaSubclass.BIRD, result)
     }
 
