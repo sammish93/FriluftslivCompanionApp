@@ -21,6 +21,8 @@ import no.hiof.friluftslivcompanionapp.data.repositories.UserRepository
 import no.hiof.friluftslivcompanionapp.models.User
 import no.hiof.friluftslivcompanionapp.models.UserPreferences
 
+
+//Inspired by: https://github.com/siecola/AndroidFirestoreArchitectureComponents/blob/master/app/src/main/java/br/com/siecola/firestorearchcomp/SignInActivity.java
 @AndroidEntryPoint
 class SignInActivity : AppCompatActivity() {
 
