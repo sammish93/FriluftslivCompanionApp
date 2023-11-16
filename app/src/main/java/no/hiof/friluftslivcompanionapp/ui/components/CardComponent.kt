@@ -102,46 +102,7 @@ fun CardComponent(cardItem: CardItem) {
     }
 }
 
-/*
 
-@Composable
-fun Carousel(cards: List<CardItem>) {
-    var index by remember { mutableStateOf(0) }
-    val scrollState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
-
-    // Auto-scrolling logic
-    LaunchedEffect(key1 = true, block = {
-        while (isActive) {
-            delay(3000)
-            if (index == cards.size - 1) index = 0
-            else index++
-            scrollState.animateScrollToItem(index)
-        }
-    })
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        Box(modifier = Modifier.padding(16.dp)) {
-            LazyRow(
-                state = scrollState,
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                itemsIndexed(cards) { idx, card ->
-                    if (idx == index) {
-                        // This is the Hero card.
-                        ElevatedCardComponent(cardItem = card, isHero = true)
-                    } else {
-                        ElevatedCardComponent(cardItem = card)
-                    }
-                }
-            }
-        }
-    }
-}
-
-
- */
 @OptIn(ExperimentalCoilApi::class)
 @Composable
 fun ElevatedCardComponent(cardItem: CardItem) {
