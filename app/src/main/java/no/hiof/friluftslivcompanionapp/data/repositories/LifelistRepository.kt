@@ -15,13 +15,12 @@ import java.util.Calendar
 import javax.inject.Inject
 
 class LifelistRepository @Inject constructor(
-    private val firestore: FirebaseFirestore,
-    private val auth: FirebaseAuth
-){
+    private val firestore: FirebaseFirestore, private val auth: FirebaseAuth
+) {
     // Responsible for retrieving a single user's lifelist. Used by the UserRepository.
     suspend fun addSightingToLifeList(newSighting: FloraFaunaSighting) {
-        val currentUser = auth.currentUser
-            ?: throw IllegalStateException("No user currently signed in")
+        val currentUser =
+            auth.currentUser ?: throw IllegalStateException("No user currently signed in")
 
         val userId = currentUser.uid
         val userDocumentRef = firestore.collection("users").document(userId)
@@ -38,8 +37,8 @@ class LifelistRepository @Inject constructor(
 
 
     suspend fun getAllItemsInLifeList(): List<Lifelist> {
-        val currentUser = auth.currentUser
-            ?: throw IllegalStateException("No user currently signed in")
+        val currentUser =
+            auth.currentUser ?: throw IllegalStateException("No user currently signed in")
 
         val userId = currentUser.uid
         val userDocumentRef = firestore.collection("users").document(userId)
@@ -54,31 +53,29 @@ class LifelistRepository @Inject constructor(
         }
     }
 
-    suspend fun getSightingsNearLocation(geoPoint: GeoPoint, radiusInKm: Double, limit: Int): OperationResult<List<FloraFaunaSighting>> {
+    suspend fun getSightingsNearLocation(
+        geoPoint: GeoPoint, radiusInKm: Double, limit: Int
+    ): OperationResult<List<FloraFaunaSighting>> {
         return try {
             val radiusInMeter = radiusInKm * 1000
             val center = GeoLocation(geoPoint.latitude, geoPoint.longitude)
             val bounds = GeoFireUtils.getGeoHashQueryBounds(center, radiusInMeter)
-            val matchingSightings = getSightingsWithinGeoHashBounds(bounds, limit, radiusInMeter, center)
+            val matchingSightings =
+                getSightingsWithinGeoHashBounds(bounds, limit, radiusInMeter, center)
 
             OperationResult.Success(matchingSightings)
         } catch (e: Exception) {
             OperationResult.Error(e)
         }
     }
+
     private suspend fun getSightingsWithinGeoHashBounds(
-        bounds: List<GeoQueryBounds>,
-        limit: Int,
-        radius: Double,
-        center: GeoLocation
+        bounds: List<GeoQueryBounds>, limit: Int, radius: Double, center: GeoLocation
     ): List<FloraFaunaSighting> {
         val matchingSightings: MutableList<FloraFaunaSighting> = ArrayList()
         for (bound in bounds) {
-            val sightingsQuery = firestore.collectionGroup("lifelist")
-                .orderBy("location.geoHash")
-                .startAt(bound.startHash)
-                .endAt(bound.endHash)
-                .limit(limit.toLong())
+            val sightingsQuery = firestore.collectionGroup("lifelist").orderBy("location.geoHash")
+                .startAt(bound.startHash).endAt(bound.endHash).limit(limit.toLong())
 
             val querySnapshot = sightingsQuery.get().await()
             val sightingsFromSnapshot = getSightingsFromQuerySnapshot(querySnapshot, radius, center)
@@ -88,9 +85,7 @@ class LifelistRepository @Inject constructor(
     }
 
     private fun getSightingsFromQuerySnapshot(
-        querySnapshot: QuerySnapshot,
-        radius: Double,
-        center: GeoLocation
+        querySnapshot: QuerySnapshot, radius: Double, center: GeoLocation
     ): List<FloraFaunaSighting> {
         val sightings: MutableList<FloraFaunaSighting> = ArrayList()
         for (doc in querySnapshot.documents) {
@@ -110,7 +105,6 @@ class LifelistRepository @Inject constructor(
     }
 
 
-
     suspend fun countSpeciesSightedThisYear(): Int {
         val allLifelists = getAllItemsInLifeList()
 
@@ -126,7 +120,8 @@ class LifelistRepository @Inject constructor(
             set(Calendar.MILLISECOND, 0)
         }.time
 
-        val filteredSightingsForThisYear = allSightings.filter { sighting -> sighting.date.after(startOfYear) }
+        val filteredSightingsForThisYear =
+            allSightings.filter { sighting -> sighting.date.after(startOfYear) }
 
         return filteredSightingsForThisYear.map { it.species }.count()
     }

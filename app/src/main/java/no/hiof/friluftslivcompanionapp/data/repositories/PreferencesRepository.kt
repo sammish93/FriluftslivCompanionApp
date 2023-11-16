@@ -9,10 +9,10 @@ import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import javax.inject.Inject
 
 class PreferencesRepository @Inject constructor(
-    private val firestore: FirebaseFirestore,
-    private val  auth: FirebaseAuth
+    private val firestore: FirebaseFirestore, private val auth: FirebaseAuth
 ) {
     private val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
+
     companion object {
         private const val TAG = "Preference Repository"
     }
@@ -85,7 +85,8 @@ class PreferencesRepository @Inject constructor(
         val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
         val document = firestore.collection("users").document(userId).get().await()
         val userPreferences = document["preferences"] as? Map<String, Any>
-        val displayPictureString = userPreferences?.get("displayPicture") as? String ?: DisplayPicture.DP_DEFAULT.name
+        val displayPictureString =
+            userPreferences?.get("displayPicture") as? String ?: DisplayPicture.DP_DEFAULT.name
         return DisplayPicture.valueOf(displayPictureString)
     }
 
@@ -106,10 +107,10 @@ class PreferencesRepository @Inject constructor(
         val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
         val document = firestore.collection("users").document(userId).get().await()
         val userPreferences = document["preferences"] as? Map<String, Any>
-        val displaySupportedLanguageString = userPreferences?.get("language") as? String ?: SupportedLanguage.ENGLISH.name
+        val displaySupportedLanguageString =
+            userPreferences?.get("language") as? String ?: SupportedLanguage.ENGLISH.name
         return SupportedLanguage.valueOf(displaySupportedLanguageString)
     }
-
 
 
 }

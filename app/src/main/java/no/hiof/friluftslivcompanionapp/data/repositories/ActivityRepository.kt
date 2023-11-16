@@ -35,11 +35,13 @@ class ActivityRepository @Inject constructor(
                 throw IllegalStateException("Trip not found")
             }
 
-            val tripData = tripDocument.data ?: throw IllegalStateException("Data is missing from the trip")
+            val tripData =
+                tripDocument.data ?: throw IllegalStateException("Data is missing from the trip")
             val trip = Hike.fromMap(tripData)
             val tripActivity = TripActivity(trip, selectedDate)
 
-            val userTripActivityRef = firestore.collection("users").document(userId).collection("tripActivity")
+            val userTripActivityRef =
+                firestore.collection("users").document(userId).collection("tripActivity")
             userTripActivityRef.add(tripActivity.toMap()).await()
 
             incrementYearlyTripCount(userId)
@@ -70,7 +72,8 @@ class ActivityRepository @Inject constructor(
 
         return withContext(Dispatchers.IO) {
             try {
-                val activityCollectionRef = firestore.collection("users").document(userId).collection("tripActivity")
+                val activityCollectionRef =
+                    firestore.collection("users").document(userId).collection("tripActivity")
                 val querySnapshot = activityCollectionRef.get().await()
 
                 val tripActivities: MutableList<TripActivity> = mutableListOf()
@@ -102,13 +105,18 @@ class ActivityRepository @Inject constructor(
             try {
                 Log.d(functionTag, "Initiating retrieval of user trip count for the year")
 
-                val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
+                val userId =
+                    auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
                 Log.d(functionTag, "User is logged in with ID: $userId")
 
                 val startOfYear = getStartOfYear()
 
-                val activityCollectionRef = firestore.collection("users").document(userId).collection("tripActivity")
-                    .whereGreaterThanOrEqualTo("date", startOfYear)  // Filters to get activities from the start of the year
+                val activityCollectionRef =
+                    firestore.collection("users").document(userId).collection("tripActivity")
+                        .whereGreaterThanOrEqualTo(
+                            "date",
+                            startOfYear
+                        )  // Filters to get activities from the start of the year
 
                 Log.d(functionTag, "Fetching trip count from Firestore")
                 val querySnapshot = activityCollectionRef.get().await()
@@ -118,12 +126,15 @@ class ActivityRepository @Inject constructor(
                 Log.d(functionTag, "Successfully retrieved trip count for the year: $tripCount")
                 OperationResult.Success(tripCount)
             } catch (e: Exception) {
-                Log.e(functionTag, "Exception occurred while retrieving trip count for the year: ${e.message}", e)
+                Log.e(
+                    functionTag,
+                    "Exception occurred while retrieving trip count for the year: ${e.message}",
+                    e
+                )
                 OperationResult.Error(e)
             }
         }
     }
-
 
 
     suspend fun getTotalKilometersForYear(): Double {
@@ -131,7 +142,7 @@ class ActivityRepository @Inject constructor(
 
         return allTrips
             .filter { it.date.after(getStartOfYear()) }
-            .sumOf { it.trip.distanceKm?: 0.0 }
+            .sumOf { it.trip.distanceKm ?: 0.0 }
 
     }
 

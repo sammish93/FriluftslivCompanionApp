@@ -17,24 +17,20 @@ import javax.inject.Inject
 class TripsRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth
-){
+) {
     suspend fun createTrip(hike: Trip?): OperationResult<Unit> {
         return try {
 
             val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
-
 
             val hikeData = when (hike) {
                 is Hike -> hike.toMap()
                 else -> throw IllegalArgumentException("Unsupported trip type or trip is null")
             }
 
-
             val tripDocument = firestore.collection("trips").document()
 
-
             tripDocument.set(hikeData).await()
-
 
             OperationResult.Success(Unit)
         } catch (e: Exception) {
@@ -46,28 +42,28 @@ class TripsRepository @Inject constructor(
 
 
     suspend fun getTripById(tripId: String): OperationResult<Hike> {
-            return try {
-                val tripDocumentRef = firestore.collection("trips").document(tripId)
-                val snapshot = tripDocumentRef.get().await()
+        return try {
+            val tripDocumentRef = firestore.collection("trips").document(tripId)
+            val snapshot = tripDocumentRef.get().await()
 
-                if (snapshot.exists()) {
-                    val trip = snapshot.toObject(Hike::class.java)
-                    if (trip != null) {
+            if (snapshot.exists()) {
+                val trip = snapshot.toObject(Hike::class.java)
+                if (trip != null) {
 
-                        OperationResult.Success(trip)
-                    } else {
-
-                        OperationResult.Error(Exception("Trip could not be parsed."))
-                    }
+                    OperationResult.Success(trip)
                 } else {
 
-                    OperationResult.Error(Exception("No trip found with the provided ID."))
+                    OperationResult.Error(Exception("Trip could not be parsed."))
                 }
-            } catch (e: Exception) {
+            } else {
 
-                Log.e("TripsRepository", "Error getting trip with ID: $tripId", e)
-                OperationResult.Error(e)
+                OperationResult.Error(Exception("No trip found with the provided ID."))
             }
+        } catch (e: Exception) {
+
+            Log.e("TripsRepository", "Error getting trip with ID: $tripId", e)
+            OperationResult.Error(e)
+        }
     }
 
     suspend fun getAllTrips(): OperationResult<List<Hike>> {
@@ -146,7 +142,11 @@ class TripsRepository @Inject constructor(
      * @param limit The maximum number of trips to retrieve per query.
      * @return An OperationResult containing a list of Trip objects if successful, or an exception if failed.
      */
-    suspend fun getTripsNearUsersLocation(geoPoint: GeoPoint, radiusInKm: Double, limit: Int): OperationResult<List<Hike>> {
+    suspend fun getTripsNearUsersLocation(
+        geoPoint: GeoPoint,
+        radiusInKm: Double,
+        limit: Int
+    ): OperationResult<List<Hike>> {
         return try {
             val radiusInMeter = radiusInKm * 1000
             val center = GeoLocation(geoPoint.latitude, geoPoint.longitude)

@@ -16,7 +16,7 @@ import javax.inject.Inject
 class UserRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth
-){
+) {
     /**
      * Method for creating a new user with the id of
      * the firestore auth token. It can also be used for editing an
@@ -95,7 +95,6 @@ class UserRepository @Inject constructor(
             throw e
         }
     }
-
 
 
     suspend fun deleteUser(uid: String): OperationResult<Unit> {
@@ -183,9 +182,6 @@ class UserRepository @Inject constructor(
             OperationResult.Error(e)
         }
     }
-
-
-
 
 
     suspend fun updateUserName(uid: String, newUsername: String): OperationResult<Unit> {
