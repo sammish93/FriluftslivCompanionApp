@@ -14,6 +14,9 @@ import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
 
+
+//All the codes in the repository folder were inspired by the firebase documentation
+//https://firebase.google.com/docs/firestore/manage-data/structure-data
 class ActivityRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth
@@ -23,42 +26,24 @@ class ActivityRepository @Inject constructor(
         val functionTag = "AddTripActivity"
         try {
             val userId = auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
-            Log.d(functionTag, "User is logged in with ID: $userId")
-
 
             val tripDocumentRef = firestore.collection("trips").document(tripId)
-
-
             val tripDocument = tripDocumentRef.get().await()
 
             if (!tripDocument.exists()) {
-                Log.w(functionTag, "Trip document does not exist")
+                Log.w(functionTag, "Trip document does not exist for ID: $tripId")
                 throw IllegalStateException("Trip not found")
             }
 
-            Log.d(functionTag, "Trip document retrieved successfully")
-
-
             val tripData = tripDocument.data ?: throw IllegalStateException("Data is missing from the trip")
-
-
             val trip = Hike.fromMap(tripData)
-
-
             val tripActivity = TripActivity(trip, selectedDate)
 
-
-            Log.d(functionTag, "Creating a new TripActivity")
-
-
             val userTripActivityRef = firestore.collection("users").document(userId).collection("tripActivity")
-
-
             userTripActivityRef.add(tripActivity.toMap()).await()
 
             incrementYearlyTripCount(userId)
 
-            Log.d(functionTag, "TripActivity added successfully to Firestore for user: $userId")
         } catch (e: Exception) {
             Log.e(functionTag, "Error adding trip activity: ${e.message}", e)
             throw e
