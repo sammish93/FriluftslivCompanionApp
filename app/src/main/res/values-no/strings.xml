@@ -3,7 +3,7 @@
     <string name="trips">Turer</string>
     <string name="weather">Vær</string>
     <string name="home">Hjem</string>
-    <string name="flora_and_fauna">Flora og Fauna</string>
+    <string name="flora_and_fauna">Plante og dyreliv</string>
     <string name="profile">Profil</string>
     <string name="unknown">Ukjent</string>
     <string name="more_info_icon">Mer info ikon</string>
@@ -158,7 +158,7 @@
     <string name="recent_sightings">Nylige observasjoner</string>
     <string name="recent_activity">Nylig aktivitet</string>
     <string name="no_trips_can_be_found_in_your_area_because_you_aren_t_currently_sharing_your_location">Kan ikke hente turer i ditt nærområdet, fordi du for øyeblikket ikke deler din posisjon.</string>
-    <string name="sightings_in_your_area">Sightings in your area</string>
+    <string name="sightings_in_your_area">Observasjoner i ditt området</string>
     <string name="no_sightings_can_be_found_in_your_area_because_you_aren_t_currently_sharing_your_location">Kan ikke hente observasjoner i ditt nærområdet, fordi du for øyeblikket ikke deler din posisjon.</string>
     <string name="there_are_currently_no_sightings_in_your_area">Det er for øyeblikket ingen observasjoner i ditt område</string>
     <string name="you_currently_have_no_sightings_in_your_lifelist">Du har for øyeblikket ingen observasjoner i din livsliste</string>
@@ -171,6 +171,6 @@
     <string name="s_successfully_added_to_life_list">Observasjonen har blitt lagt til på livslisten</string>
     <string name="no_trips_in_this_radius">Det er ingen turer i denne radiusen</string>
     <string name="trip_successfully_added_to_trip_log">Turen ble vellykket lagt til i turloggen</string>
-    <string name="n_results">%1$s results</string>
+    <string name="n_results">%1$s resultater</string>
 
 </resources>
