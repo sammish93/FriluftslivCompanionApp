@@ -2,9 +2,7 @@ package no.hiof.friluftslivcompanionapp.data.repositories
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.Dispatchers
@@ -197,6 +195,4 @@ class UserRepository @Inject constructor(
             OperationResult.Error(e)
         }
     }
-
-
 }

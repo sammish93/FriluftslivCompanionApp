@@ -51,8 +51,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.data.states.UserState
@@ -65,7 +63,6 @@ import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 
-//TODO Change display for landscape.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WeatherScreen(

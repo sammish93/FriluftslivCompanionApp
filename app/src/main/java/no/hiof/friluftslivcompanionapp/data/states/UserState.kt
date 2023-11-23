@@ -6,10 +6,8 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.ui.unit.DpSize
 import com.google.firebase.auth.FirebaseUser
-import no.hiof.friluftslivcompanionapp.models.User
 import no.hiof.friluftslivcompanionapp.models.enums.DisplayPicture
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
-import java.util.Locale
 
 /**
  * Represents the state of the logged in user, primarily focusing on the user's last known location.

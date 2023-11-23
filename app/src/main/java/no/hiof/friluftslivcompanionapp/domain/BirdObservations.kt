@@ -6,7 +6,6 @@ import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import javax.inject.Inject
 
 /**
  * The `BirdObservations` class serves as a domain layer in the application architecture,

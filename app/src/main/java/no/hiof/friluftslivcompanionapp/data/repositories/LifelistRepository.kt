@@ -35,7 +35,6 @@ class LifelistRepository @Inject constructor(
         lifelistSubcollectionRef.add(sightingData).await()
     }
 
-
     suspend fun getAllItemsInLifeList(): List<Lifelist> {
         val currentUser =
             auth.currentUser ?: throw IllegalStateException("No user currently signed in")
@@ -104,7 +103,6 @@ class LifelistRepository @Inject constructor(
         return sightings
     }
 
-
     suspend fun countSpeciesSightedThisYear(): Int {
         val allLifelists = getAllItemsInLifeList()
 
@@ -140,7 +138,6 @@ class LifelistRepository @Inject constructor(
             OperationResult.Error(e)
         }
     }
-
 }
 
 

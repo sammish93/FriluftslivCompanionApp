@@ -92,5 +92,4 @@ fun<T> RecentActivityCard(
             }
         }
     }
-
 }

@@ -14,9 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,19 +24,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.domain.DateFormatter
-import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.Weather
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
-import no.hiof.friluftslivcompanionapp.models.enums.WeatherType
 import no.hiof.friluftslivcompanionapp.models.enums.WeatherUnit
-import no.hiof.friluftslivcompanionapp.ui.theme.CustomTypography
-import no.hiof.friluftslivcompanionapp.ui.theme.FriluftslivCompanionAppTheme
 import java.time.LocalDate
-import java.util.Locale
 
 
 @Composable

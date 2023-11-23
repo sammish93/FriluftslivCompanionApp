@@ -4,12 +4,12 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.data.messaging.NotificationHelper
 import no.hiof.friluftslivcompanionapp.domain.WeatherDeserialiser
 import no.hiof.friluftslivcompanionapp.models.Weather
 import no.hiof.friluftslivcompanionapp.models.enums.WeatherTriggers
 import no.hiof.friluftslivcompanionapp.models.enums.WeatherType
-import no.hiof.friluftslivcompanionapp.R
 
 class CheckWeatherJob(appContext: Context, workerParams: WorkerParameters)
     : CoroutineWorker(appContext, workerParams) {

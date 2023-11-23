@@ -160,16 +160,10 @@ fun <T> LifelistViewCard(
                             style = CustomTypography.titleSmall,
                             fontStyle = FontStyle.Italic
                         )
-
-
-
-
                     }
                 }
             }
         }
     }
-
-
 }
 

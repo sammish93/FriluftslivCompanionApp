@@ -1,6 +1,5 @@
 package no.hiof.friluftslivcompanionapp.domain
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -144,7 +143,6 @@ object TripFactory {
         )
     }
 
-    //TODO Test this.
     fun changeIconColor(context: Context, iconResId: Int, difficulty: Int): Bitmap {
         val originalIcon = BitmapFactory.decodeResource(context.resources, iconResId)
         val coloredIcon = Bitmap.createBitmap(originalIcon.width, originalIcon.height, originalIcon.config)

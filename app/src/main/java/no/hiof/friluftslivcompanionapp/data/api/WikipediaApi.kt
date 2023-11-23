@@ -3,10 +3,10 @@ package no.hiof.friluftslivcompanionapp.data.api
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.hiof.friluftslivcompanionapp.data.api.http_interface.WikipediaApiService
+import no.hiof.friluftslivcompanionapp.data.network.Result
 import no.hiof.friluftslivcompanionapp.data.network.RetrofitBuilder
 import no.hiof.friluftslivcompanionapp.models.api.SimpleWikipediaResponse
 import no.hiof.friluftslivcompanionapp.models.api.WikipediaResponse
-import no.hiof.friluftslivcompanionapp.data.network.Result
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
 import retrofit2.Response
 

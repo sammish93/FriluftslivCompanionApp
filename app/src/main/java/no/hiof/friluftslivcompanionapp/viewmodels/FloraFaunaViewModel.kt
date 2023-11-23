@@ -1,7 +1,6 @@
 package no.hiof.friluftslivcompanionapp.viewmodels
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.GeoPoint
@@ -11,17 +10,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
-import no.hiof.friluftslivcompanionapp.domain.BirdObservations
-import no.hiof.friluftslivcompanionapp.models.enums.Screen
-import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
-import javax.inject.Inject
 import no.hiof.friluftslivcompanionapp.data.network.Result
 import no.hiof.friluftslivcompanionapp.data.repositories.LifelistRepository
 import no.hiof.friluftslivcompanionapp.data.repositories.OperationResult
 import no.hiof.friluftslivcompanionapp.data.states.FloraFaunaState
 import no.hiof.friluftslivcompanionapp.data.states.LifeListState
-
+import no.hiof.friluftslivcompanionapp.data.states.TabsUiState
+import no.hiof.friluftslivcompanionapp.domain.BirdObservations
 import no.hiof.friluftslivcompanionapp.domain.FloraFaunaFactory
 import no.hiof.friluftslivcompanionapp.models.Bird
 import no.hiof.friluftslivcompanionapp.models.FloraFauna
@@ -29,11 +24,12 @@ import no.hiof.friluftslivcompanionapp.models.FloraFaunaSighting
 import no.hiof.friluftslivcompanionapp.models.Lifelist
 import no.hiof.friluftslivcompanionapp.models.Location
 import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
+import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.models.enums.SupportedLanguage
-import no.hiof.friluftslivcompanionapp.models.enums.TripType
-import java.time.Duration
+import no.hiof.friluftslivcompanionapp.models.interfaces.TabNavigation
 import java.time.LocalDate
 import java.util.Date
+import javax.inject.Inject
 
 // NOTE: Composable Screens in app/ui/screens can communicate with this viewmodel (and thus the data
 // layer via 'import androidx.lifecycle.viewmodel.compose.viewModel' at the top of the file, and

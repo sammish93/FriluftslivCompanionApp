@@ -1,9 +1,5 @@
 package no.hiof.friluftslivcompanionapp.models
 
-import android.util.Log
-import java.time.LocalDateTime
-import java.time.ZoneId
-
 data class Bird(
     override val speciesName: String? = null,
     override val speciesNameScientific: String,

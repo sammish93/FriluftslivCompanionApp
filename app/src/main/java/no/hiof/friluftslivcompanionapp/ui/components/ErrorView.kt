@@ -29,6 +29,5 @@ fun ErrorView(message: String) {
             textAlign = TextAlign.Center,
             modifier = Modifier.wrapContentSize(Alignment.Center)
         )
-
     }
 }

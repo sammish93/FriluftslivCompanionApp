@@ -5,8 +5,6 @@ import android.util.Log
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.mutableStateListOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest

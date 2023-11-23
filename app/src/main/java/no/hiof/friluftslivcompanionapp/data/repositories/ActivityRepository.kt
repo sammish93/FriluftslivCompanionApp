@@ -8,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import no.hiof.friluftslivcompanionapp.models.Hike
-import no.hiof.friluftslivcompanionapp.models.Trip
 import no.hiof.friluftslivcompanionapp.models.TripActivity
 import java.util.Calendar
 import java.util.Date
@@ -136,7 +135,6 @@ class ActivityRepository @Inject constructor(
         }
     }
 
-
     suspend fun getTotalKilometersForYear(): Double {
         val allTrips = getUserTripActivities()
 
@@ -155,6 +153,4 @@ class ActivityRepository @Inject constructor(
         calendar.set(Calendar.MILLISECOND, 0)
         return calendar.time
     }
-
-
 }

@@ -1,8 +1,6 @@
 package no.hiof.friluftslivcompanionapp.ui.screens
 
 import android.Manifest
-import android.location.Address
-import android.location.Geocoder
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,14 +24,13 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.firebase.firestore.GeoPoint
 import no.hiof.friluftslivcompanionapp.R
-import no.hiof.friluftslivcompanionapp.data.states.UserState
-import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.ui.components.CustomLoadingScreen
 import no.hiof.friluftslivcompanionapp.ui.components.ErrorView
 import no.hiof.friluftslivcompanionapp.ui.components.SnackbarWithCondition
 import no.hiof.friluftslivcompanionapp.ui.components.maps.GoogleMapTripStartNodes
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
+
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun TripsScreen(
@@ -118,14 +115,5 @@ fun TripsScreen(
             }
         }
     }
-}
-
-
-fun getLocation(userState: UserState, geocoder: Geocoder): List<Address>? {
-    return geocoder.getFromLocation(
-        userState.lastKnownLocation?.latitude ?: DefaultLocation.OSLO.lat,
-        userState.lastKnownLocation?.longitude ?: DefaultLocation.OSLO.lon,
-        1
-    )
 }
 

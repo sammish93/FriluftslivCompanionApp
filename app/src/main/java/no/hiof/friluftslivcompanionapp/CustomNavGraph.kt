@@ -21,8 +21,8 @@ import no.hiof.friluftslivcompanionapp.ui.screens.TripsScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.WeatherScreen
 import no.hiof.friluftslivcompanionapp.ui.screens.WeatherSearchScreen
 import no.hiof.friluftslivcompanionapp.viewmodels.FloraFaunaViewModel
-import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.TripsViewModel
+import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 
 object CustomNavGraph {

@@ -1,7 +1,5 @@
 package no.hiof.friluftslivcompanionapp.models
 
-import com.firebase.geofire.core.GeoHash
-
 // The properties 'lat' and 'lon' (latitude and longitude) are currently mutable (var).
 data class Location(var lat: Double, var lon: Double, var geoHash: String? = null){
     fun toMap(): Map<String, Any?> {

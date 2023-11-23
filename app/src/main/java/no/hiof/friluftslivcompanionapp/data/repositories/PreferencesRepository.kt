@@ -111,8 +111,6 @@ class PreferencesRepository @Inject constructor(
             userPreferences?.get("language") as? String ?: SupportedLanguage.ENGLISH.name
         return SupportedLanguage.valueOf(displaySupportedLanguageString)
     }
-
-
 }
 
 

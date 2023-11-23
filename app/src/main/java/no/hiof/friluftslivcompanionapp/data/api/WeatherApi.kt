@@ -9,7 +9,6 @@ import no.hiof.friluftslivcompanionapp.data.network.RetrofitBuilder
 import no.hiof.friluftslivcompanionapp.models.api.SimpleWeatherResponse
 import no.hiof.friluftslivcompanionapp.models.api.WeatherResponse
 import retrofit2.Response
-import java.lang.Exception
 
 class WeatherApi {
 

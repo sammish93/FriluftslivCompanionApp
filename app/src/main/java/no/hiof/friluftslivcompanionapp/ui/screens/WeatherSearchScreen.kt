@@ -60,7 +60,6 @@ import no.hiof.friluftslivcompanionapp.viewmodels.UserViewModel
 import no.hiof.friluftslivcompanionapp.viewmodels.WeatherViewModel
 
 
-//TODO Add behaviour if no internet connection is available.
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun WeatherSearchScreen(

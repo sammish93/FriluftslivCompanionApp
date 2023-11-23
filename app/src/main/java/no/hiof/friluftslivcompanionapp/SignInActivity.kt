@@ -10,9 +10,8 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,6 +19,7 @@ import kotlinx.coroutines.withContext
 import no.hiof.friluftslivcompanionapp.data.repositories.UserRepository
 import no.hiof.friluftslivcompanionapp.models.User
 import no.hiof.friluftslivcompanionapp.models.UserPreferences
+import javax.inject.Inject
 
 
 //Inspired by: https://github.com/siecola/AndroidFirestoreArchitectureComponents/blob/master/app/src/main/java/br/com/siecola/firestorearchcomp/SignInActivity.java

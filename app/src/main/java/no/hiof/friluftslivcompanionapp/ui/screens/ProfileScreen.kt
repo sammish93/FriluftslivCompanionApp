@@ -47,7 +47,6 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import no.hiof.friluftslivcompanionapp.R
 import no.hiof.friluftslivcompanionapp.SignInActivity
 import no.hiof.friluftslivcompanionapp.domain.NameFormatter
-import no.hiof.friluftslivcompanionapp.models.enums.DefaultLocation
 import no.hiof.friluftslivcompanionapp.models.enums.DisplayPicture
 import no.hiof.friluftslivcompanionapp.models.enums.Screen
 import no.hiof.friluftslivcompanionapp.ui.components.SettingsBar
@@ -132,8 +131,6 @@ fun ProfileScreen(
                         modifier = Modifier
                             .padding(12.dp)
                     ) {
-                        //TODO Implement functionality to calculate amount of recentactivity and
-                        // lifelist.
 
                         // Number of trails a user has added to their trip log.
                         Text(text = stringResource(R.string.profile_number_trails_completed, "$tripCount"))
@@ -181,7 +178,6 @@ fun ProfileScreen(
                             .padding(12.dp)
                     ) {
 
-                        //TODO Implement functionality to get top 3 people with most recentactivity.
                         Text(text = stringResource(R.string.profile_trips_taken),
                             style = CustomTypography.titleLarge)
 
@@ -200,7 +196,6 @@ fun ProfileScreen(
 
                         HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
-                        //TODO Implement functionality to get top 3 people with most sightings.
                         Text(text = stringResource(R.string.profile_species_spotted),
                                 style = CustomTypography.titleLarge)
                         topThreeSpecies?.forEachIndexed { index, user ->
@@ -218,39 +213,7 @@ fun ProfileScreen(
 
                     }
                 }
-                /*
-                Text(text = stringResource(R.string.profile_trips_taken))
 
-                Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-                LeaderboardRow(DisplayPicture.DP_DEFAULT, "Jim", 42, 1)
-
-                Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-                LeaderboardRow(DisplayPicture.DP_ONE, "Joris", 38, 2, 4, 0.9F)
-
-                Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-                LeaderboardRow(DisplayPicture.DP_TWO, "Jonas", 34, 3, 8, 0.8F)
-
-                HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
-
-                Text(text = stringResource(R.string.profile_species_spotted))
-
-                Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-                LeaderboardRow(DisplayPicture.DP_THREE, "Paddy", 104, 1)
-
-                Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-                LeaderboardRow(DisplayPicture.DP_FOUR, "Feargal", 97, 2, 4, 0.9F)
-
-                Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-                LeaderboardRow(DisplayPicture.DP_FIVE, "Colm", 82, 3, 8, 0.8F)
-            }
-        }
-                 */
                 HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
 
                 // Button which allows the user to log out.
@@ -331,9 +294,11 @@ private fun LeaderboardRow(
             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
 
             Text(
-                text = if (formattedUsername == "DefaultUsername")
-                    stringResource(NameFormatter.getRandomName())
-                else formattedUsername,
+                text = when (formattedUsername) {
+                    "DefaultUsername", "" -> stringResource(NameFormatter.getRandomName())
+
+                    else -> formattedUsername
+                },
                 textAlign = TextAlign.Start
             )
         }

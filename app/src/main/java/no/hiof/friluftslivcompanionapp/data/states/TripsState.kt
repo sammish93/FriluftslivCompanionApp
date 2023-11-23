@@ -20,7 +20,6 @@ data class TripsState(
     val createTripDifficulty: Int = 3,
     val createTripDescription: String = "",
     val createTripDistanceKm: Double = 0.0,
-    //TODO Swap DummyTrip with actual Trip object.
     val selectedTrip: Trip? = null,
     val selectedTripDate: LocalDate? = null,
     // If trip is from RecentActivity object then true, if trip is from map of all trips then false.
