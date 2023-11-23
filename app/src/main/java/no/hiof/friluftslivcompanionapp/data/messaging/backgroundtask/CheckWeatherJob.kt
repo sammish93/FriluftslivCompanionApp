@@ -20,7 +20,7 @@ class CheckWeatherJob(appContext: Context, workerParams: WorkerParameters)
         return when (val call = weatherApi.getWeatherForecast(59.434031, 10.657711)) {
 
             is no.hiof.friluftslivcompanionapp.data.network.Result.Success -> {
-                val weather = call.value.forecast[0]
+                val weather = call.value.forecast[2]
                 Log.d("CheckWeatherJob", "Successfully fetched weather data: $weather")
                 Log.d("CheckWeatherJob", "Checking for extreme weather...")
                 checkForExtremeWeather(weather)
@@ -40,9 +40,9 @@ class CheckWeatherJob(appContext: Context, workerParams: WorkerParameters)
             WeatherType.THUNDERSTORM -> {
                 Log.d("CheckForExtremeWeather", "Sending notification for thunder storm.")
                 sendNotification(
-                    "Thunder Storm",
+                    "Thunderstorm",
                     R.drawable.thunder_storm,
-                    "Watch out there is a thunder storm in your area!"
+                    "There will be thunderstorms tomorrow. Stay inside!"
                 )
             }
             WeatherType.SNOW -> {
@@ -50,7 +50,7 @@ class CheckWeatherJob(appContext: Context, workerParams: WorkerParameters)
                 sendNotification(
                     "Snow",
                     R.drawable.snow,
-                    "It is snow in your area, be careful when driving!"
+                    "Tomorrow will be snowy. Be careful!"
                 )
             }
             else -> {
@@ -59,15 +59,10 @@ class CheckWeatherJob(appContext: Context, workerParams: WorkerParameters)
                     sendNotification(
                         "Windy",
                         R.drawable.windy,
-                        "There is a lot of wind in your area, stay inside!"
+                        "Tomorrow will be windy. Stay safe!"
                         )
                 }
                 else {
-                    sendNotification(
-                        "Nice Weather",
-                        R.drawable.nice_weather,
-                        "It is nice weather today with little wind :)"
-                    )
                     Log.d("CheckForExtremeWeather", "No extreme weather at the moment.")
                 }
             }

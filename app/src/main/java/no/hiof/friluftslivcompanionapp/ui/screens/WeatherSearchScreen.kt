@@ -316,7 +316,7 @@ private fun ForecastCardsForSearch(
                 // of the list is scrollable.
                 Spacer(modifier = Modifier.height(20.dp))
 
-                weatherState.currentWeather?.let {
+                weatherState.currentWeatherForSearch?.let {
                     PrimaryWeatherCard(
                         weather = it,
                         units = weatherState.unitChoice,
@@ -326,7 +326,7 @@ private fun ForecastCardsForSearch(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                weatherState.todayWeather?.let {
+                weatherState.todayWeatherForSearch?.let {
                     PrimaryWeatherCard(
                         weather = it,
                         units = weatherState.unitChoice,
